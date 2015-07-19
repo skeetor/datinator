@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ManipulatorEditorDlgGUI</class>
+ <widget class="QDialog" name="ManipulatorEditorDlgGUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>541</width>
+    <height>370</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Configure Manipulators</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
+    <number>3</number>
+   </property>
+   <property name="spacing">
+    <number>3</number>
+   </property>
+   <item row="1" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,1,3">
+     <item>
+      <layout class="QVBoxLayout" name="mReferenceLayout">
+       <item>
+        <widget class="QListWidget" name="mReferenceList"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QPushButton" name="mAssignBtn">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="mRemoveBtn">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="mUpBtn">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="mDownBtn">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="mAssignedLayout">
+       <item>
+        <widget class="QListWidget" name="mAssignedList"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="mConfigLayoutParent" stretch="1,0,0,0,0">
+       <property name="spacing">
+        <number>3</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="mConfigLayout">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Test value</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="mTestValueTxt"/>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Sample</string>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QLineEdit" name="mSampleTxt">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mAssignBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>onAssign()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>154</x>
+     <y>92</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>158</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mRemoveBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>onRemove()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>154</x>
+     <y>197</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>158</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>clicked(QAbstractButton*)</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>onButton(QAbstractButton*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>284</x>
+     <y>302</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>158</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mReferenceList</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>onReferenceSelectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>51</x>
+     <y>171</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>270</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mAssignedList</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>onAssignedSelectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>270</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mUpBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>onUp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>270</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mDownBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>onDown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>279</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>270</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mTestValueTxt</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>ManipulatorEditorDlgGUI</receiver>
+   <slot>onTestValueChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>393</x>
+     <y>287</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>270</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onAssignedSelectionChanged()</slot>
+  <slot>onAssign()</slot>
+  <slot>onRemove()</slot>
+  <slot>onButton(QAbstractButton*)</slot>
+  <slot>onReferenceSelectionChanged()</slot>
+  <slot>onUp()</slot>
+  <slot>onDown()</slot>
+  <slot>onTestValueChanged(QString)</slot>
+ </slots>
+</ui>

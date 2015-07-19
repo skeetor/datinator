@@ -1,0 +1,50 @@
+/*******************************************************************************
+ *
+ * SupportLib (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef ORACLE_WRITER_PANEL_H_INCLUDED
+#define ORACLE_WRITER_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "oracle/gui/oracle_writer_gui.h"
+
+class QSettings;
+class CommitConfig;
+class OracleWriter;
+class DBExportPanel;
+
+class OracleWriterPanel : public QFrame
+{
+	Q_OBJECT
+
+public:
+	OracleWriterPanel(QWidget *oParent = NULL);
+	virtual ~OracleWriterPanel(void);
+
+	virtual void store(QSettings &oPropertyFile, QString const &oPrefix);
+	virtual void restore(QSettings &oPropertyFile, QString const &oPrefix);
+	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+
+	int getAutoCommitCount(void);
+	void setAutoCommitCount(int nValue);
+
+	QString getPath(void);
+	void setPath(QString const &oPath);
+
+	bool getExportSQL(void);
+	void setExportSQL(bool bExportSQL);
+
+	bool getExportSQLOnly(void);
+	void setExportSQLOnly(bool bExportSQLOnly);
+
+private:
+	Ui::OracleWriterPanelGUI *mGUI;
+	CommitConfig *mCommitPanel;
+	DBExportPanel *mExportPanel;
+};
+
+#endif // ORACLE_WRITER_PANEL_H_INCLUDED

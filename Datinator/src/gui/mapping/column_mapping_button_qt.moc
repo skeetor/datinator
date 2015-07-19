@@ -1,0 +1,35 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef COLUMN_MAPPING_BUTTON_H
+#define COLUMN_MAPPING_BUTTON_H
+
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QListWidgetItem>
+#include <QtCore/QModelIndex>
+
+class ColumnMappingModel;
+
+class ColumnMappingButton :
+	 public QPushButton
+{
+	Q_OBJECT
+
+public:
+	ColumnMappingButton(QList<ColumnMappingButton *> *oButtonList, ColumnMappingModel *oModel, QWidget *oParent = NULL);
+	virtual ~ColumnMappingButton(void);
+
+	void setButtonList(QList<ColumnMappingButton *> *oButtonList);
+
+protected slots:
+	void onClicked(void);
+
+private:
+	ColumnMappingModel *mModel;
+	QList<ColumnMappingButton *> *mButtonList;
+};
+
+#endif // COLUMN_MAPPING_BUTTON_H

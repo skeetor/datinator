@@ -1,0 +1,46 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef DB_EXPORT_PANEL_H_INCLUDED
+#define DB_EXPORT_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "plugin/plugin_dll_api.h"
+#include "plugin/sql/gui/db_export_gui.h"
+
+class PathSelectPanel;
+class QSettings;
+
+class PLUGIN_DLL_EXPORT DBExportPanel : public QFrame
+{
+	Q_OBJECT
+
+public:
+	DBExportPanel(QWidget *oParent = NULL);
+	virtual ~DBExportPanel(void);
+
+	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+
+	QString getPath(void);
+	void setPath(QString const &oPath);
+
+	bool getExportSQL(void);
+	void setExportSQL(bool bExportSQL);
+
+	bool getExportSQLOnly(void);
+	void setExportSQLOnly(bool bExportSQLOnly);
+
+protected slots:
+	virtual void onExportSQL(bool bExportSQL);
+
+private:
+	Ui::DBExportGUI *mGUI;
+	PathSelectPanel *mPathPanel;
+};
+
+#endif // DB_EXPORT_PANEL_H_INCLUDED

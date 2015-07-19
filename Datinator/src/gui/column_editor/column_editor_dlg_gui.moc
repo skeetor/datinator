@@ -1,0 +1,51 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED
+#define COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED
+
+#include <QtCore/QList>
+#include <QtWidgets/QDialog>
+
+#include "gui/column_editor/column_editor_model.h"
+#include "gui/column_editor/column_editor_dlg_gui.h"
+#include "support_qt/models/delegates/datatype_combobox.h"
+
+class ColumnEditorDialogBox
+	:	public QDialog,
+		Listener<bool, int, int>
+{
+	Q_OBJECT
+
+public:
+	ColumnEditorDialogBox(QWidget *oParent = NULL);
+	virtual ~ColumnEditorDialogBox(void);
+
+	QList<DatabaseColumn *> getColumns(void);
+	void setColumns(QList<DatabaseColumn *> const &oColumns);
+
+	/**
+	 * The editor keeps track of the new columns it created,
+	 * and will release them on request.
+	 */
+	void freeColumns(void);
+
+protected:
+	void handleNotification(Dispatcher<bool, int, int> *oDispatcher, bool bInserted, int nRow, int nCount);
+
+protected slots:
+	void accept(void);
+	void reject(void);
+	void onReset(void);
+
+private:
+	Ui::ColumnEditorDlgGUI *mGUI;
+	DatatypeCombobox<supportlib::db::DataType> *mDatatypeDelegate;
+	ColumnEditorModel mModel;
+	QList<DatabaseColumn *> mOriginal;
+};
+
+#endif // COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED

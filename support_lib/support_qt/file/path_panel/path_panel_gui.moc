@@ -1,0 +1,66 @@
+/*******************************************************************************
+ *
+ * Support Library QT (c) by Gerhard W. Gruber in 2014
+ *
+ ******************************************************************************/
+
+#ifndef PATH_SELECT_PANEL_GUI_H_INCLUDED
+#define PATH_SELECT_PANEL_GUI_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "support_qt/support_qt_dll_api.h"
+#include "support_qt/file/path_panel/path_panel_gui.h"
+#include "support/patterns/observer.h"
+
+/**
+ * PathSelectPanel provides a path input control with a browse
+ * button and a label. If the browse button is used and a new path
+ * is selected, the listeners will be notified about it.
+ */
+class SUPPORT_QT_DLL_EXPORT PathSelectPanel : public QFrame, protected Dispatcher<QString>
+{
+	Q_OBJECT
+
+public:
+	typedef enum { ANSI, UTF8, UTF16 } Encoding;
+
+public:
+	PathSelectPanel(bool bOpenMode = true, QWidget *oParent = NULL);
+	virtual ~PathSelectPanel(void);
+
+	QString getPath(void);
+	void setPath(QString const &oPath);
+
+	/**
+	 * setPathNotify() sets the path and additionally notifies
+	 * the listeners about the change, as if the browse button
+	 * had been used.
+	 */
+	void setPathNotify(QString const &oPath);
+
+	void setEditable(bool bEditable = true);
+	bool isEditable(void);
+
+	void addPathListener(Listener<QString> *oListener);
+	void removePathListener(Listener<QString> *oListener);
+
+	void notifyPathListeners(QString const &oPath);
+
+	/**
+	 * If openMode == true the browse dialog will look for
+	 * an existing file, otherwise it should be created.
+	 * Open vs. Save.
+	 */
+	void setOpenMode(bool bOpen = true);
+	bool isOpenMode(void);
+
+protected slots:
+	virtual void onBrowse(void);
+
+private:
+	Ui::PathSelectGUI *mGUI;
+	bool mOpenMode;
+};
+
+#endif // PATH_SELECT_PANEL_GUI_H_INCLUDED

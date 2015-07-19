@@ -1,0 +1,48 @@
+/*******************************************************************************
+ *
+ * SupportLib (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef CREATE_OPTION_CONFIG_H_INCLUDED
+#define CREATE_OPTION_CONFIG_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "plugin/plugin_dll_api.h"
+#include "plugin/sql/gui/create_option_config_gui.h"
+
+class QSettings;
+
+class PLUGIN_DLL_EXPORT CreateOptionConfig : public QFrame
+{
+	Q_OBJECT
+
+public:
+	CreateOptionConfig(QWidget *oParent = NULL);
+	virtual ~CreateOptionConfig(void);
+
+	virtual void store(QSettings &oPropertyFile, QString const &oPrefix);
+	virtual void restore(QSettings &oPropertyFile, QString const &oPrefix);
+
+	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+
+	// Return true if the table should be created if it doesn't exist.
+	bool getCreateTable(void);
+	void setCreateTable(bool bCreateTable);
+
+	// Return true if the table should be created if it doesn't exist.
+	bool getCreateColumns(void);
+	void setCreateColumns(bool bCreateColumns);
+
+	// Return true if the columns don't match and this should force the table to be recreated.
+	// if false is returned, the columns are updated/added instead.
+	bool getRecreateTable(void);
+	void setRecreateTable(bool bRecreateTable);
+
+private:
+	Ui::CreateOptionConfigGUI *mGUI;
+};
+
+#endif // CREATE_OPTION_CONFIG_H_INCLUDED

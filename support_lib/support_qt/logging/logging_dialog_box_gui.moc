@@ -1,0 +1,35 @@
+/*******************************************************************************
+ *
+ * Support Library QT (c) by Gerhard W. Gruber in 2014
+ *
+ ******************************************************************************/
+
+#ifndef LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED
+#define LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED
+
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QFrame>
+
+#include "support_qt/support_qt_dll_api.h"
+#include "support_qt/logging/logging_dialog_box_gui.h"
+#include "support_qt/logging/logging_item_model.h"
+#include "support/logging/logging.h"
+
+class SUPPORT_QT_DLL_EXPORT LoggingDialogBox : public QDialog
+{
+	Q_OBJECT
+
+public:
+	LoggingDialogBox(QWidget *oParent = NULL);
+	virtual ~LoggingDialogBox(void);
+
+	void setLog(supportlib::logging::Logging const &oLog);
+
+private:
+	Ui::LoggingDialogGUI *mGUI;
+	//QStandardItemModel *mModel;
+	LoggingItemModel *mModel;
+	bool mOK;
+};
+
+#endif // LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED

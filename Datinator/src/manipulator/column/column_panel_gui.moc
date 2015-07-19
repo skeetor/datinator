@@ -1,0 +1,39 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef COLUMN_MANIPULATOR_PANEL_H_INCLUDED
+#define COLUMN_MANIPULATOR_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+#include <QtCore/QList>
+#include <QtCore/QPair>
+
+#include "manipulator/column/column_panel_gui.h"
+#include "manipulator/manipulator_panel_qt.moc"
+
+class ColumnManipulator;
+
+class ColumnManipulatorPanel
+	:	public ManipulatorPanel
+{
+public:
+	Q_OBJECT
+
+public:
+	ColumnManipulatorPanel(ColumnManipulator *oOwner, QWidget *oParent = NULL);
+	virtual ~ColumnManipulatorPanel(void);
+
+	void setColumn(int nColumnIndex);
+	int  getColumn(void);
+
+protected slots:
+	void onColumnSelected(int nColumn);
+
+private:
+	Ui::ColumnManipulatorGUI *mGUI;
+};
+
+#endif // COLUMN_MANIPULATOR_PANEL_H_INCLUDED

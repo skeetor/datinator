@@ -1,0 +1,58 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef DATE_MANIPULATOR_PANEL_H_INCLUDED
+#define DATE_MANIPULATOR_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "manipulator/date/date.h"
+#include "manipulator/date/date_panel_gui.h"
+#include "manipulator/manipulator_panel_qt.moc"
+
+class DateManipulator;
+
+class DateManipulatorPanel
+	:	public ManipulatorPanel
+{
+public:
+	Q_OBJECT
+
+public:
+	DateManipulatorPanel(DateManipulator *oOwner, QWidget *oParent = NULL);
+	virtual ~DateManipulatorPanel(void);
+
+	QString getInputFormat(void) const;
+	void setInputFormat(QString const &oFormat);
+
+	QString getOutputFormat(void) const;
+	void setOutputFormat(QString const &oFormat);
+
+	bool isSysdate(void) const;
+	void setSysdate(bool bSysdate = true);
+
+	bool isSysdateStart(void) const;
+	void setSysdateStart(bool bSysdateStart = true);
+
+protected slots:
+	void onTextChanged(QString oText);
+	void onInputFormat(int nSelection);
+	void onOutputFormat(int nSelection);
+	void onSysdateStart(bool bSysdateStart);
+
+protected:
+	QString getFormat(QComboBox *oBox, QLineEdit *oCustomFormat) const;
+	void setFormat(QString const &oString, QComboBox *oBox, QLineEdit *oCustomFormat);
+	void formatChanged(QComboBox *oBox, QLineEdit *oCustomFormat, bool bInput);
+
+private:
+	void initCombobox(QComboBox *oBox);
+
+private:
+	Ui::DateManipulatorGUI *mGUI;
+};
+
+#endif // DATE_MANIPULATOR_PANEL_H_INCLUDED

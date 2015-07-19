@@ -1,0 +1,62 @@
+/*******************************************************************************
+ *
+ * SupportLib (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef DB_PANEL_H_INCLUDED
+#define DB_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "plugin/plugin_dll_api.h"
+#include "support/patterns/observer.h"
+#include "plugin/sql/gui/events.h"
+#include "plugin/sql/gui/db_panel_gui.h"
+
+class QSettings;
+class DBLoginPanel;
+class ContainerPanel;
+
+class PLUGIN_DLL_EXPORT DBPanel
+	:	public QFrame,
+		public Listener<SQLPreview::ActionEvent, QVariant, int>,	// Listener when changing to table select
+		public Dispatcher<QString>	// Table selected
+{
+	Q_OBJECT
+
+public:
+	DBPanel(QWidget *oParent = NULL);
+	virtual ~DBPanel(void);
+
+	void setRowStretch(int nRow, int nValue);
+	void setTables(QList<QString> const &oTables, QString const &oSelection = "", bool bNotify = true);
+	bool selectTable(QString const &oSelection, bool bNotify);
+
+	inline void addTableSelectListener(Listener<QString> *oListener) { Dispatcher<QString>::addListener(oListener); };
+	inline void removeTableSelectListener(Listener<QString> *oListener) { Dispatcher<QString>::removeListener(oListener); };
+
+	void setLoginPanel(QWidget *oLoginPanel);
+	void setConfigPanel(QWidget *oConfigPanel);
+
+	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+
+protected:
+	inline void notifyTableSelectListeners(QString const &oTable) { Dispatcher<QString>::notify(oTable); };
+	void handleNotification(Dispatcher<SQLPreview::ActionEvent, QVariant, int> *oSource, SQLPreview::ActionEvent nEvent, QVariant oData, int nRowCount);
+
+protected slots:
+	virtual void onTableSelect(int nCurrentSelection);
+	virtual void onReloadTables(void);
+
+private:
+	void init(void);
+
+private:
+	Ui::DBPanelGUI *mGUI;
+	QWidget *mLoginPanel;
+	QWidget *mConfigPanel;
+};
+
+#endif // DB_PANEL_H_INCLUDED

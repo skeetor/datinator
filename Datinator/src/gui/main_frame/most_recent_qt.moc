@@ -1,0 +1,36 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ ******************************************************************************/
+
+#ifndef MOST_RECENTQT_H_INCLUDED
+#define MOST_RECENTQT_H_INCLUDED
+
+#include <QtCore/QSettings>
+#include <QtCore/QList>
+#include <QtCore/QString>
+#include <QtCore/QMap>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
+
+#include "support/support_defs.h"
+
+class MostRecentQt : QObject
+{
+	Q_OBJECT
+
+public:
+	virtual ~MostRecentQt(void) {};
+
+protected:
+	void connectAction(QMenu *oMenu)
+	{
+		connect(oMenu, SIGNAL(triggered(QAction *)), this, SLOT(onItemTriggered(QAction *)));
+	}
+
+protected slots:
+	virtual void onItemTriggered(QAction *oAction) { UNUSED(oAction); };
+};
+
+#endif // MOST_RECENTQT_H_INCLUDED

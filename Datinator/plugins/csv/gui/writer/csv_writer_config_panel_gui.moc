@@ -1,0 +1,34 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef CSV_WRITER_CONFIG_PANEL_H_INCLUDED
+#define CSV_WRITER_CONFIG_PANEL_H_INCLUDED
+
+#include "csv/csv_dll_api.h"
+#include "plugin/container/gui/file_panel_config_panel.h"
+#include "csv/gui/writer/csv_writer_config_panel_gui.h"
+#include "datinator_types.h"
+
+class CSVWriter;
+
+class CSV_DLL_EXPORT CSVWriterConfigPanel
+	: public FilePanelConfigPanel
+{
+	Q_OBJECT
+
+public:
+	CSVWriterConfigPanel(CSVWriter *oContainer, QWidget *oParent = NULL);
+	virtual ~CSVWriterConfigPanel(void);
+
+	void reset(void);
+	StdChar getSeparator(void);
+	void setSeparator(StdChar oSeparator);
+
+private:
+	Ui::CSVWriterConfigPanelGUI *mGUI;
+};
+
+#endif // CSV_WRITER_CONFIG_PANEL_H_INCLUDED

@@ -1,0 +1,52 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ ******************************************************************************/
+
+#ifndef MAIN_WINDOW_H_INCLUDED
+#define MAIN_WINDOW_H_INCLUDED
+
+#include <QtCore/QSettings>
+#include <QtCore/QList>
+
+#include <support/supportlib_namespace.h>
+#include <support_qt/window/restorable_window.h>
+
+#include "gui/main_frame/main_window_gui.h"
+#include "gui/main_frame/main_frame_gui.moc"
+
+class IDataContainer;
+class MostRecent;
+class PluginManager;
+
+class MainWindow
+	: public QMainWindow
+{
+	Q_OBJECT
+
+public:
+	MainWindow(QWidget *oParent = NULL);
+	~MainWindow(void);
+
+	void store(QSettings &oPropertyfile);
+	void restore(QSettings &oPropertyfile);
+
+	void reloadPlugins(void);
+
+protected slots:
+	void onRun(void);
+	void onLoad(void);
+	void onSave(void);
+	void onExit(void);
+
+private:
+	Ui::MainWindowGUI *mGUI;
+	MainFrame *mMainFrame;
+	MostRecent *mRecentSource;
+	MostRecent *mRecentTarget;
+	MostRecent *mRecentProfile;
+	RestorableWindow mRestorable;
+};
+
+#endif // MAIN_WINDOW_H_INCLUDED

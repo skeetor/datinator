@@ -1,0 +1,44 @@
+/*******************************************************************************
+ *
+ * SupportLib (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef COMMIT_CONFIG_H_INCLUDED
+#define COMMIT_CONFIG_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "plugin/plugin_dll_api.h"
+#include "plugin/sql/gui/commit_config_gui.h"
+
+class QSettings;
+
+class PLUGIN_DLL_EXPORT CommitConfig : public QFrame
+{
+	Q_OBJECT
+
+public:
+	CommitConfig(QWidget *oParent = NULL);
+	virtual ~CommitConfig(void);
+
+	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+
+	/**
+	 * Returns -1 if no autocommit, 0 for commit at the end, or N for a record count.
+	 */
+	int getAutoCommitCount(void);
+	void setAutoCommitCount(int nValue);
+
+	void setRowStretch(int nIndex, int nStretch);
+
+public slots:
+	void onConfirmCommit(bool bConfirm);
+	void onAutomaticCommit(bool bAutomatic);
+
+private:
+	Ui::CommitConfigGUI *mGUI;
+};
+
+#endif // COMMIT_CONFIG_H_INCLUDED

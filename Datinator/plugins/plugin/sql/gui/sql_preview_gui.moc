@@ -1,0 +1,68 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef SQL_PREVIEW_PANEL_H_INCLUDED
+#define SQL_PREVIEW_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "plugin/plugin_dll_api.h"
+#include "plugin/sql/gui/events.h"
+#include "plugin/sql/gui/sql_preview_gui.h"
+#include "support/patterns/observer.h"
+
+class QAction;
+class QSettings;
+
+class PLUGIN_DLL_EXPORT SQLPreviewPanel
+	:	public QFrame,
+		public Dispatcher<SQLPreview::ActionEvent, QVariant, int>	// Send notification when SQL query was en-/disabled or a query is to be exectued
+{
+	Q_OBJECT
+
+public:
+	SQLPreviewPanel(QWidget *oParent = NULL);
+	virtual ~SQLPreviewPanel(void);
+
+	/**
+	 * The actionlistener gets notified on the following actions:
+	 *
+	 * SQL Box toggled (table or statement select)
+	 *   Event == EVENT_SQL_TOGGLE
+	 *   QVariant == bool : true = statement, false = table
+	 *
+	 * SQL Execute
+	 *   Event == EVENT_SQL_EXECUTE
+	 *   QVariant = QString : sql statement
+	 */
+	void addActionListener(Listener<SQLPreview::ActionEvent, QVariant, int> *oListener);
+	void removeActionListener(Listener<SQLPreview::ActionEvent, QVariant, int> *oListener);
+
+	void setPreview(QList<DatabaseColumn *> const &oColumns, QList<QList<QString>> const &oRows);
+
+	QString getQuery(void);
+	void setQuery(QString const &oQuery, bool bNotify = true);
+
+	void setPreviewLimit(int nCount);
+	int getPreviewLimit(void);
+
+	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+
+public slots:
+	virtual void onSQL(bool bState);
+	virtual void onExecute(void);
+
+protected:
+	void notifyActionListener(SQLPreview::ActionEvent nEvent, QVariant oData, int nRows = 0);
+
+private:
+	Ui::SQLPreviewGUI *mGUI;
+	QAction *mActionEnter;
+	QAction *mActionReturn;
+};
+
+#endif // SQL_PREVIEW_PANEL_H_INCLUDED

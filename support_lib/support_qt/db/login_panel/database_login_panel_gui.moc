@@ -1,0 +1,76 @@
+/*******************************************************************************
+ *
+ * Support Library QT (c) by Gerhard W. Gruber in 2014
+ *
+ ******************************************************************************/
+
+#ifndef DATABASE_LOGIN_PANEL_GUI_H_INCLUDED
+#define DATABASE_LOGIN_PANEL_GUI_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+#include <QtGui/QStandardItem>
+#include <QtGui/QStandardItemModel>
+
+#include "support_qt/support_qt_dll_api.h"
+#include "support/patterns/observer.h"
+#include "support_qt/db/login_panel/database_login_panel_gui.h"
+#include "support_qt/db/login_panel/login_panel_model.h"
+#include "support_qt/db/login_panel/login_event.h"
+
+class QSettings;
+
+class SUPPORT_QT_DLL_EXPORT DatabaseLoginPanel
+	: public QFrame
+	, protected Dispatcher<LoginEvent>
+{
+	Q_OBJECT
+
+public:
+	DatabaseLoginPanel(bool bUseSharedModel, QWidget *oParent = NULL);
+	virtual ~DatabaseLoginPanel(void);
+
+	virtual void setReadOnly(bool bReadOnly = true);
+	LoginPanelModel *getModel(void);
+
+	virtual void addLoginListener(Listener<LoginEvent> *oListener);
+	virtual void removeLoginListener(Listener<LoginEvent> *oListener);
+
+	bool select(QString const &oDatabase, QString const &oUser, QString const &oHost, bool bNotify = true);
+	bool select(supportlib::string::string_t const &oDatabase, supportlib::string::string_t const &oUser, supportlib::string::string_t const &oHost, bool bNotify = true);
+	bool select(DatabaseLogin const &oLogin, bool bNotify = true);
+
+	virtual int find(DatabaseLogin const &oLogin) const;
+	DatabaseLogin getLogin(int nIndex);
+
+private:
+	void setButtonIcon(unsigned char const *&oImageData, QPushButton *oButton, QString const &oToolTip);
+
+protected:
+	virtual void notifyLoginListeners(LoginEvent const &oLoginEvent);
+	virtual void clear(void);
+
+	// The validators are called before a configuration is saved internally.
+	virtual bool validateUser(QString const &oUser) const;
+	virtual bool validatePassword(QString const &oPassword) const;
+	virtual bool validateDatabase(QString const &oDatabase) const;
+	virtual bool validateHost(QString const &oHost) const;
+
+	virtual void setLogin(DatabaseLogin const &oLogin);
+	virtual DatabaseLogin getLogin(void) const;
+
+	virtual void addItem(DatabaseLogin const &oLogin, bool bNotify = true);
+
+protected slots:
+	virtual void onSave(void);
+	virtual void onRemove(void);
+	virtual void onMoveUp(void);
+	virtual void onMoveDown(void);
+	virtual void onItemClicked(QModelIndex const &oModelIndex);
+
+private:
+	Ui::DatabaseLoginGUI *mGUI;
+	int mCurrent;
+	LoginPanelModel *mModel;
+};
+
+#endif // DATABASE_LOGIN_PANEL_GUI_H_INCLUDED

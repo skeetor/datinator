@@ -1,0 +1,50 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef FILE_PANEL_H_INCLUDED
+#define FILE_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "plugin/plugin_dll_api.h"
+#include "support/patterns/observer.h"
+#include "plugin/container/gui/file_panel_gui.h"
+
+class DBColumn;
+class QSettings;
+class PathSelectPanel;
+class FilePanelConfigPanel;
+
+class PLUGIN_DLL_EXPORT FilePanel
+    : public QFrame
+    , public Listener<QString /* FilePath */>
+    , public Dispatcher<QString /* FilePath */>
+{
+	Q_OBJECT
+
+public:
+	FilePanel(bool bReader, FilePanelConfigPanel *oContainerConfigPanel, QWidget *oParent = NULL);
+	virtual ~FilePanel(void);
+
+	void enlargePanel(void);
+
+	virtual void setFilename(QString const &oFilename);
+	virtual QString getFilename(void);
+
+	virtual void addPathListener(Listener<QString> *oListener);
+	virtual void removePathListener(Listener<QString> *oListener);
+
+protected:
+	void handleNotification(Dispatcher<QString> *oSource, QString oPath) override;
+	virtual void notifyPathListeners(QString const &oPath);
+
+private:
+	Ui::FilePanelGUI *mGUI;
+	FilePanelConfigPanel *mContainerConfigPanel;
+	PathSelectPanel *mPathPanel;
+};
+
+#endif // FILE_PANEL_H_INCLUDED

@@ -1,0 +1,101 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef COLUMN_MAPPING_VIEW_H_INCLUDED
+#define COLUMN_MAPPING_VIEW_H_INCLUDED
+
+#include <QtWidgets/QTableView>
+
+#include <support/patterns/observer.h>
+
+#include "gui/mapping/column_mapping_delegate.h"
+#include "gui/mapping/column_mapping_model.h"
+#include "gui/dbcolumn_observer.h"
+
+class ContainerBase;
+
+class ColumnMappingView :
+		public QTableView,
+		public Dispatcher<int>
+{
+	Q_OBJECT
+
+public:
+	ColumnMappingView(QWidget *oParent = NULL);
+	virtual ~ColumnMappingView(void);
+
+	void clearRows(void);
+	void clearSelection(void);
+
+	void setRowcount(int nRows);
+
+	// Remove or move the selecrted columns up ordown
+	void removeSelected(void);
+	void moveUp(int nCount = 1);
+	void moveDown(int nCount = 1);
+
+	inline void setReadOnly(bool bReadOnly = true) { mReadOnly = bReadOnly; }
+	inline bool isReadOnly(void) { return mReadOnly; }
+
+	void setSourceColumns(QList<DatabaseColumn *> const &oColumns);
+	QList<DatabaseColumn *> getSourceColumns(void);
+
+	/**
+	 * Set the target columns in the view. If the size of the target columns == 0, the
+	 * columns are copied from the source. If default == true, then the columns are also
+	 * taken from the source.
+	 * If mReadOnly == true and the size() is 0 or default == true then the columns are
+	 * not copied over from the source. This is required for containers, which can not create
+	 * non-existing columns.
+	 */
+	void setTargetColumns(QList<DatabaseColumn *> const &oColumns, bool bCopy = false);
+	QList<DatabaseColumn *> getTargetColumns(void);
+
+	inline void addRowcountListener(Listener<int> *oListener)
+	{
+		Dispatcher<int>::addListener(oListener);
+	}
+
+	inline void removeRowcountListener(Listener<int> *oListener)
+	{
+		Dispatcher<int>::removeListener(oListener);
+	}
+
+	inline void notifyRowcountListeners(int nRows)
+	{
+		Dispatcher<int>::notify(nRows);
+	}
+
+	int rowCount(void);
+	ColumnMappingItem *rowItem(int nRow);
+	QList<ColumnMappingItem> rowItems(void);
+	QModelIndexList selectedRows(QList<ColumnMappingItem> *oItems = NULL);
+
+	bool loadProfile(QSettings &oProfile);
+	void saveProfile(QSettings &oProfile);
+
+public slots:
+	void onRowcount(int nRows);
+
+protected:
+	void updateWidgetView(void);
+
+	/**
+	 * When a new set of columns is loaded, the comboboxes should
+	 * automatically preselect the row value.
+	 */
+	void updateDefaultSelection(int nColumn, QList<DatabaseColumn *> const &oColumns);
+
+private:
+	bool mReadOnly;
+	ColumnMappingDelegate *mDelegate;
+	ColumnMappingModel mItemModel;
+	DBColumnObserver mSourceColumns;
+	DBColumnObserver mTargetColumns;
+	QList<IManipulator *> mManipulators;
+};
+
+#endif // COLUMN_MAPPING_VIEW_H_INCLUDED

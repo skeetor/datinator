@@ -1,0 +1,149 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ ******************************************************************************/
+
+#ifndef MAIN_FRAME_H_INCLUDED
+#define MAIN_FRAME_H_INCLUDED
+
+#include <QtCore/QSettings>
+#include <QtCore/QList>
+
+#include "plugins/datinator_types.h"
+#include <support/patterns/observer.h>
+#include <support/supportlib_namespace.h>
+#include <support_qt/window/restorable_window.h>
+
+#include "gui/main_frame/main_frame_gui.h"
+#include "gui/mapping/column_mapping_model.h"
+
+#include "reader_listener.h"
+#include "writer_listener.h"
+#include "gui/column_editor/column_editor_dlg_gui.moc"
+
+class IDataContainer;
+class IDataContainerReader;
+class IDataContainerWriter;
+class ProgressPtr;
+class MostRecent;
+class PluginManager;
+
+class MainFrame
+	: public QFrame,
+	public Listener<int>,
+	public Listener<QString /* oContainerId */, QString /* oConnectString*/, QString /* oText*/>	// MostRecent Listener
+{
+	Q_OBJECT
+
+public:
+	MainFrame(MostRecent *oRecentSource, MostRecent *oRecentTarget, MostRecent *oRecentProfile, QWidget *oParent = NULL);
+	~MainFrame(void);
+
+	void setSourceColumns(QList<DatabaseColumn *> const &oColumns);
+	void setTargetColumns(QList<DatabaseColumn *> const &oColumns);
+
+	/**
+	 * In the INI file, the componets will store only properties that are usefull
+	 * for the user when the application is started again. This will hold properties
+	 * for all containers.
+	 *
+	 * In a profile we store the full settings of the selected components, but only
+	 * for the selected ones. the objects must store all settings in such a way
+	 * that they can be automatically started, without additional user intervention.
+	 *
+	 * If the profile name is NULL, a file selection dialog is presented.
+	 */
+	bool runProfile(QString const *oProfileName = NULL);
+	bool loadProfile(QString const *oProfileName = NULL);
+	bool saveProfile(QString const *oProfileName = NULL);
+
+	void store(QSettings &oPropertyfile);
+	void restore(QSettings &oPropertyfile);
+
+	void reloadPlugins(void);
+
+protected: // Listener<T>
+	// Listener for rowcount changed.
+	virtual void handleNotification(Dispatcher<int> *oSource, int nRows);
+	//Listener when an item from the most recent list is selected
+	virtual void handleNotification(Dispatcher<QString, QString, QString> *oSource, QString oContainerId, QString oConnectString, QString oSelectorId);
+
+protected:
+	friend ProgressPtr;
+
+	QComboBox *getSourceBox(void);
+	QComboBox *getTargetBox(void);
+	IDataContainerReader *getCurrentSourceContainer(void);
+
+	QWidget *getSourcePanel(void);
+	QWidget *getTargetPanel(void);
+	IDataContainerWriter *getCurrentTargetContainer(void);
+
+	void setRowcount(int nRows);
+	int getRowcount(void);
+	void setButtonIcon(QString const &oIconPathm, QPushButton *oButton, QString const &oToolTip);
+
+	/**
+	 * Update the source or target configuration view, when the user selects a new
+	 * container from the combobox. It returns the new container which has been selected.
+	 */
+	void updateConfigPanel(IDataContainer *oContainer, QWidget *&oCurrentPanel, QWidget *oMainPanel);
+
+	bool performCopy(IDataContainerReader *oReader, IDataContainerWriter *oWriter);
+	void writeMostRecentItems(QSettings &oPropertyfile, QString const &oUUID, MostRecent *oMostRecent);
+	void readMostRecentItems(QSettings &oPropertyfile, QString const &oUUID, MostRecent *oMostRecent);
+
+	int findContainer(QComboBox *oBox, QString const &oUUID);
+
+	/**
+	 * Update the clickable elements to enabled if a source and a target plugin is loaded.
+	 * There must be at least one entry on each side, in order to make the application
+	 * workable.
+	 */
+	void updateGUIElements(void);
+
+protected slots:
+	void onCopy(void);
+	void onReset(void);
+
+	void onEdit(void);
+	void onRemove(void);
+	void onUp(void);
+	void onDown(void);
+	void onLoad(void);
+	void onSave(void);
+	void onSourceSelected(int nIndex);
+	void onTargetSelected(int nIndex);
+
+private:
+	void initReaders(void);
+	void initReaderContainerBox(QComboBox *oBox, IDataContainerReader *oReader);
+
+	void initWriters(void);
+	void initWriterContainerBox(QComboBox *oBox, IDataContainerWriter *oWriter);
+
+	/**
+	 * Clean up the input mapping by throwing away items which are not used (Target = NULL).
+	 */
+	QList<ColumnMappingItem> prepareItems(QList<ColumnMappingItem> const &oItems);
+
+private:
+	Ui::MainFrameGUI *mGUI;
+
+	QWidget *mCurSourcePanel;
+	QWidget *mCurTargetPanel;
+	MostRecent *mRecentSource;
+	MostRecent *mRecentTarget;
+	MostRecent *mRecentProfile;
+	PluginManager *mPluginManager;
+
+	RestorableWindow mRestorable;
+	ColumnMappingModel mMappingTableModel;
+	ReaderListener mReaderConfigListener;
+	WriterListener mWriterConfigListener;
+	ColumnEditorDialogBox mColumnEditor;
+	QString mRecentProfileTag;
+};
+
+#endif // MAIN_FRAME_H_INCLUDED

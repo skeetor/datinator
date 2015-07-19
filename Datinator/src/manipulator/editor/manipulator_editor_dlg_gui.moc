@@ -1,0 +1,64 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED
+#define MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED
+
+#include <QtCore/QList>
+#include <QtWidgets/QDialog>
+
+#include "plugins/datinator_types.h"
+#include "support/patterns/observer.h"
+#include "support/db/dbcolumn.h"
+#include "manipulator/editor/manipulator_editor_dlg_gui.h"
+
+class IManipulator;
+
+class ManipulatorEditorDialogBox
+	:	public QDialog
+	,	Listener<IManipulator *>
+{
+	Q_OBJECT
+
+public:
+	ManipulatorEditorDialogBox(QList<IManipulator *> const &oManipulators, QList<DatabaseColumn *> const &oColumns, QWidget *oParent = NULL);
+	virtual ~ManipulatorEditorDialogBox(void);
+
+	QList<IManipulator *> getManipulators(void);
+
+protected:
+	void addItem(QListWidget *oListView, IManipulator *oManipulator, bool bReference = false);
+	IManipulator *removeItem(int nRow);
+	void updateItem(int nRow, IManipulator *oManipulator = NULL);
+	IManipulator *itemAt(QListWidget *oListView, int nRow);
+
+	void handleNotification(Dispatcher<IManipulator *> *oDispatcher, IManipulator *oSource) override;
+	void updateSample(IManipulator *oSource = NULL);
+
+	void removeConfigWidget(void);
+
+protected slots:
+	void accept(void);
+	void reject(void);
+	void onReset(void);
+	void onAssign(void);
+	void onRemove(void);
+	void onUp(void);
+	void onDown(void);
+	void onButton(QAbstractButton *oButton);
+	void onReferenceSelectionChanged(void);
+	void onAssignedSelectionChanged(void);
+	void onTestValueChanged(QString oValue);
+
+private:
+	Ui::ManipulatorEditorDlgGUI *mGUI;
+	bool mClear;
+	QList<IManipulator *> mManipulators;
+	QLabel *mPlaceholder;
+	QList<DatabaseColumn *> mColumns;
+};
+
+#endif // MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED

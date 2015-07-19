@@ -1,0 +1,125 @@
+On my machine I created a D:\opt directory and created symbolic links to the
+relevant libraries, so I can more easily switch the version without
+having to update the paths in the projects for each new version.
+
+You can either use a similar setup your you must fix the include paths in the
+project file to your local environment.
+
+The following paths are needed:
+
+d:\opt\qt			-> qt-5.2.1			QT GUI Framework
+d:\opt\oracle		-> oracle_102		Oracle plugin. Requires an oracle installation.
+d:\opt\soci			-> soci-3.2.2		SOCI is a C++ database access libary.
+d:\opt\sqlite3		-> sqlite-3.8.2-aml	SQLite3 database library
+
+
+
+Compiler:
+=========
+
+For Windows: The code and all libraries (except the oracle third party libraries) were compiled
+using MingW64. You can download this here:
+https://sourceforge.net/projects/mingw-w64
+
+For Linux you can use g++.
+
+Note that Datinator uses C++11 features which must be supported by the compiler.
+
+
+CodeBlocks 13.12:
+=================
+
+Download: https://downloads.sourceforge.net/project/codeblocks/Binaries/13.12/Windows/codeblocks-13.12-nosetup.zip
+If you don't have mingw installed you need to create a compiler. Copy the settings from GCC and rename it to
+'MingW32' and again to 'MingW64'.
+If you are compiling on linux, you still need to create these compilers as a copy of gcc, but you don't need to
+change the toolchain executables.
+
+In the advanced settings you need to add the extensions '.ui' and '.moc' to be compiled by the Qt tools.
+
+
+Required packages:
+==================
+
+QT
+========
+
+The current version was built using Qt 5.2.1 in a self compiled
+version with the following configure parameters:
+
+configure -prefix d:\opt\qt-5.2.1 -opensource -nomake tests -confirm-license
+
+You can download the source code here:
+http://download.qt-project.org/archive/qt/5.2/5.2.1/single/qt-everywhere-opensource-src-5.2.1.zip
+
+
+
+SOCI:
+=====
+
+Download from: https://sourceforge.net/projects/soci/files/
+I created my own CodeBlocks projectfile for this. If needed I can make it available as
+well, as SOCI would require a build toolchain.
+
+
+SQLite3:
+========
+
+Download: http://www.sqlite.org/download.html
+
+
+
+ORACLE:
+=======
+
+For building the Oracle code/plugin, you have to have a valid installation of oracle where the
+OCI.lib is provided and the runtime environment.
+
+
+BUILDING:
+=========
+
+Load the Datinator.workspace file with CodeBlocks.
+
+
+For Windows use Debug32  (DLL version), Release32 (DLL version), Debug32 static, Release32 static
+
+The static debug version is needed because at the moment it doesn't seem to be possible to debug
+DLL code with gdb under Windows.
+
+For Linux use debug32_linux, release32_linux
+
+Debug32
+Release32
+debug32_linux
+release32_linux
+===============
+
+These are versions where the plugins are compiled as separate DLLs/SO and loaded at runtime. If
+some of the plugins are missing, then Datinator will still work with the other available plugins.
+Note that for example the Oracle plugin can be available in the plugin directory, but will not load
+if there is no Oracle installation available. The Oracle DLLs must be in the PATH in order to successfully
+load the plugin.
+IMPORTANT: Note that if you compile both versions, then the plugin DLLs will all be available
+in debug and release mode. When you run Datinator, it will find both versions and try to load them
+which will cause it to crash, because debug and release builds can not be mixed. So don't use a debug
+plugin with the release version of the main application or vice versa.
+
+
+Debug32 static
+Release32 static
+================
+
+These versions are without plins. The database connectors are compiled into the executable. This means
+that if i.E. Oracle is also compiled in and there is no Oracle installation, the executable will not work.
+For normal usage these builds are not needed. However, currently it doesn't seem to be possible to debug a
+DLL with gdb, so I had to compile the code statically for debugging.
+
+
+In order to successfully compile, you may have to adjust the include and library directories and build the
+libraries first. Soci and SQLite are statically linked.
+
+
+If you have questions you can contact me at sparhawk@gmx.at or write a ticket at the sourceforge project
+homepage.
+

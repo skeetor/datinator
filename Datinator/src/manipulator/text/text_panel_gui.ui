@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TextManipulatorGUI</class>
+ <widget class="QFrame" name="TextManipulatorGUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>454</width>
+    <height>459</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string/>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::Box</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+  <layout class="QVBoxLayout" name="mFrameLayout">
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0,0" columnstretch="0,0,0,0,0" rowminimumheight="0,0,0,0,0,0,0,0,0,0">
+     <property name="leftMargin">
+      <number>3</number>
+     </property>
+     <property name="topMargin">
+      <number>3</number>
+     </property>
+     <property name="rightMargin">
+      <number>3</number>
+     </property>
+     <property name="bottomMargin">
+      <number>3</number>
+     </property>
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <item row="3" column="0" alignment="Qt::AlignRight">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Minimum length</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2" alignment="Qt::AlignRight">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Maximum length</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" alignment="Qt::AlignRight">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Position</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="mMinLengthSpin">
+       <property name="maximum">
+        <number>1000000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" alignment="Qt::AlignRight">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Fill character</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0" colspan="4">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item alignment="Qt::AlignTop">
+        <widget class="QRadioButton" name="mPrependBtn">
+         <property name="text">
+          <string>Prepend</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">mModeGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QRadioButton" name="mAppendBtn">
+         <property name="text">
+          <string>Append</string>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">mModeGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QRadioButton" name="mReplaceBtn">
+         <property name="text">
+          <string>Replace</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">mModeGroup</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="5" column="0" alignment="Qt::AlignRight">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Pattern</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="mFillCharacterTxt">
+       <property name="maxLength">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="5">
+      <widget class="QLineEdit" name="mTextTxt"/>
+     </item>
+     <item row="0" column="0" colspan="5">
+      <widget class="QComboBox" name="mSelectionBox"/>
+     </item>
+     <item row="3" column="3">
+      <widget class="QSpinBox" name="mMaxLengthSpin">
+       <property name="maximum">
+        <number>1000000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2" colspan="3">
+      <widget class="QCheckBox" name="mFillAtEndBox">
+       <property name="text">
+        <string>Fill at end (if uncheckd in front)</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="3">
+      <widget class="QCheckBox" name="mRegularExpressionBox">
+       <property name="text">
+        <string>Regular Expression</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1" colspan="2">
+      <widget class="QLineEdit" name="mPatternTxt"/>
+     </item>
+     <item row="8" column="3">
+      <widget class="QCheckBox" name="mInvertBox">
+       <property name="text">
+        <string>Invert selection</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="2">
+      <widget class="QLineEdit" name="mPositionTxt"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="mHelpTxt">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>mTextTxt</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onTextChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>249</x>
+     <y>13</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>231</x>
+     <y>104</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mAppendBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onAppend()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>308</x>
+     <y>36</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>231</x>
+     <y>69</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mPrependBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onPrepend()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>206</x>
+     <y>36</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>231</x>
+     <y>69</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mReplaceBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onReplace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>410</x>
+     <y>36</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>231</x>
+     <y>69</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mPatternTxt</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onTextChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>105</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mRegularExpressionBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>104</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mMinLengthSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>165</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mMaxLengthSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFillCharacterTxt</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onTextChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>165</x>
+     <y>82</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mSelectionBox</sender>
+   <signal>activated(int)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onAction(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>226</x>
+     <y>13</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mFillAtEndBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>351</x>
+     <y>82</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mPositionTxt</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onTextChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>128</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mInvertBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>TextManipulatorGUI</receiver>
+   <slot>onValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>388</x>
+     <y>128</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onTextChanged(QString)</slot>
+  <slot>onPrepend()</slot>
+  <slot>onAppend()</slot>
+  <slot>onReplace()</slot>
+  <slot>onValueChanged(int)</slot>
+  <slot>onAction(int)</slot>
+ </slots>
+ <buttongroups>
+  <buttongroup name="mModeGroup"/>
+ </buttongroups>
+</ui>

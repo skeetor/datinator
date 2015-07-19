@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DatabaseLoginGUI</class>
+ <widget class="QFrame" name="DatabaseLoginGUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>435</width>
+    <height>186</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string/>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::Box</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>3</number>
+   </property>
+   <property name="leftMargin">
+    <number>1</number>
+   </property>
+   <property name="topMargin">
+    <number>1</number>
+   </property>
+   <property name="rightMargin">
+    <number>1</number>
+   </property>
+   <property name="bottomMargin">
+    <number>1</number>
+   </property>
+   <item>
+    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="1,0,0,2">
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="mSaveHostBox">
+       <property name="text">
+        <string>Save host</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" alignment="Qt::AlignTop">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Host</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="3" alignment="Qt::AlignTop">
+      <widget class="QLineEdit" name="mHostTxt"/>
+     </item>
+     <item row="0" column="2">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>3</number>
+       </property>
+       <property name="leftMargin">
+        <number>2</number>
+       </property>
+       <property name="topMargin">
+        <number>2</number>
+       </property>
+       <property name="rightMargin">
+        <number>2</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <item alignment="Qt::AlignTop">
+        <widget class="QPushButton" name="mSaveBtn">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QPushButton" name="mRemoveBtn">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignBottom">
+        <widget class="QPushButton" name="mMoveUpBtn">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignBottom">
+        <widget class="QPushButton" name="mMoveDownBtn">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,0,0,0">
+       <property name="spacing">
+        <number>3</number>
+       </property>
+       <property name="leftMargin">
+        <number>2</number>
+       </property>
+       <property name="topMargin">
+        <number>2</number>
+       </property>
+       <property name="rightMargin">
+        <number>2</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <item alignment="Qt::AlignTop">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Username</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="mUserTxt"/>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Password</string>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QLineEdit" name="mPasswordTxt">
+         <property name="echoMode">
+          <enum>QLineEdit::PasswordEchoOnEdit</enum>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Database</string>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="QLineEdit" name="mDatabaseTxt"/>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="3" rowspan="4">
+      <widget class="QListView" name="mLoginListView"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>mSaveBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>DatabaseLoginGUI</receiver>
+   <slot>onSave()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>204</x>
+     <y>26</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>217</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mRemoveBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>DatabaseLoginGUI</receiver>
+   <slot>onRemove()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>204</x>
+     <y>54</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>217</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mMoveUpBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>DatabaseLoginGUI</receiver>
+   <slot>onMoveUp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>204</x>
+     <y>82</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>217</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mMoveDownBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>DatabaseLoginGUI</receiver>
+   <slot>onMoveDown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>204</x>
+     <y>110</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>217</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mLoginListView</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>DatabaseLoginGUI</receiver>
+   <slot>onItemClicked(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>327</x>
+     <y>92</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>217</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onSave()</slot>
+  <slot>onRemove()</slot>
+  <slot>onMoveUp()</slot>
+  <slot>onMoveDown()</slot>
+  <slot>onSelect(int)</slot>
+  <slot>onItemClicked(QModelIndex)</slot>
+ </slots>
+</ui>

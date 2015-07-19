@@ -1,0 +1,66 @@
+/*******************************************************************************
+ *
+ * SupportLib (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef SQLITE_WRITER_PANEL_H_INCLUDED
+#define SQLITE_WRITER_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+
+#include "sqlite/gui/sqlite_writer_gui.h"
+
+class QSettings;
+class SQLiteWriter;
+class CreateOptionConfig;
+class CommitConfig;
+class DBExportPanel;
+
+class SQLiteWriterPanel : public QFrame
+{
+	Q_OBJECT
+
+public:
+	SQLiteWriterPanel(QWidget *oParent = NULL);
+	virtual ~SQLiteWriterPanel(void);
+
+	virtual void store(QSettings &oPropertyFile, QString const &oPrefix);
+	virtual void restore(QSettings &oPropertyFile, QString const &oPrefix);
+
+	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+
+	// Return true if the table should be created if it doesn't exist.
+	bool getCreateTable(void);
+	void setCreateTable(bool bCreateTable);
+
+	// Return true if the table should be created if it doesn't exist.
+	bool getCreateColumns(void);
+	void setCreateColumns(bool bCreateColumns);
+
+	// Return true if the columns don't match and this should force the table to be recreated.
+	// if false is returned, the columns are updated/added instead.
+	bool getRecreateTable(void);
+	void setRecreateTable(bool bRecreateTable);
+
+	QString getPath(void);
+	void setPath(QString const &oPath);
+
+	bool getExportSQL(void);
+	void setExportSQL(bool bExportSQL);
+
+	bool getExportSQLOnly(void);
+	void setExportSQLOnly(bool bExportSQLOnly);
+
+	int getAutoCommitCount(void);
+	void setAutoCommitCount(int nValue);
+
+private:
+	Ui::SQLiteWriterPanelGUI *mGUI;
+	CreateOptionConfig *mCreateOptionPanel;
+	CommitConfig *mCommitPanel;
+	DBExportPanel *mExportPanel;
+};
+
+#endif // SQLITE_WRITER_PANEL_H_INCLUDED

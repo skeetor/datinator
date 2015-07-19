@@ -1,0 +1,48 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef AUTONUMBER_PANEL_H_INCLUDED
+#define AUTONUMBER_PANEL_H_INCLUDED
+
+#include "manipulator/manipulator_panel_qt.moc"
+#include "manipulator/autonumber/autonumber_panel_gui.h"
+
+class AutoNumberManipulator;
+
+class AutoNumberPanel
+	: public ManipulatorPanel
+{
+public:
+	Q_OBJECT
+
+public:
+	AutoNumberPanel(AutoNumberManipulator *oOwner, QWidget *oParent = NULL);
+	virtual ~AutoNumberPanel(void);
+
+	int getValue(void) const;
+	void setValue(int nValue);
+
+	int getWidth(void) const;
+	void setWidth(int nWidth);
+
+	int getIncrement(void) const;
+	void setIncrement(int bIncrement);
+
+	bool getLeadingZeroes(void) const;
+	void setLeadingZeroes(bool bLeadingZeroes);
+
+protected slots:
+	void onWidthChanged(int nValue);
+	void onValueChanged(int nValue);
+	void onIncrementChanged(int nValue);
+	void onLeadingZeroes(bool bValue);
+
+private:
+	Ui::AutoNumberGUI *mGUI;
+	bool mLeadingZeroes;
+};
+
+#endif // AUTONUMBER_PANEL_H_INCLUDED

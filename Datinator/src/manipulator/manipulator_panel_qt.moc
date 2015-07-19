@@ -1,0 +1,44 @@
+/*******************************************************************************
+ *
+ * Datinator (c) by Gerhard W. Gruber in 2014
+ *
+ *******************************************************************************/
+
+#ifndef MANIPULATOR_PANEL_H_INCLUDED
+#define MANIPULATOR_PANEL_H_INCLUDED
+
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QRadioButton>
+#include "manipulator/manipulator.h"
+
+class ManipulatorPanel
+	: public QFrame
+{
+public:
+	Q_OBJECT
+
+public:
+	ManipulatorPanel(Manipulator *oOwner, QWidget *oParent = NULL);
+	virtual ~ManipulatorPanel(void);
+
+	virtual Manipulator::Mode getMode(void) const;
+	virtual void setMode(Manipulator::Mode nMode);
+
+protected slots:
+	void onAppend(void);
+	void onPrepend(void);
+	void onReplace(void);
+
+protected:
+	void notifyOwner(void);
+	void setButtons(QRadioButton *oPrependBtn, QRadioButton *oAppendBtn, QRadioButton *oReplaceBtn);
+
+private:
+	Manipulator *mOwner;
+	Manipulator::Mode mMode;
+    QRadioButton *mPrependBtn;
+    QRadioButton *mAppendBtn;
+    QRadioButton *mReplaceBtn;
+};
+
+#endif // MANIPULATOR_PANEL_H_INCLUDED
