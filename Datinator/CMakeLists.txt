@@ -116,5 +116,5 @@ find_library(SUPPORT_LIBRARY_PATH "${SUPPORT_LIB_NAME}" PATHS ${SUPPORT_LIBRARY_
 find_library(SUPPORT_LIBRARY_QT_PATH ${SUPPORT_QT_LIB_NAME} PATHS ${SUPPORT_LIBRARY_BASE_PATH}/lib)
 
 add_executable(datinator ${SOURCE_FILES} ${GENERATED_SOURCES})
-target_link_libraries(datinator ${SUPPORT_LIBRARY_QT_PATH} ${PLUGIN_LIBRARY} ${SUPPORT_LIBRARY_PATH} Qt5::Widgets Qt5::Gui Qt5::Core )
+target_link_libraries(datinator Qt5::Core ${SUPPORT_LIBRARY_PATH} ${SUPPORT_LIBRARY_QT_PATH} ${PLUGIN_LIBRARY} ${PLUGIN_LIBRARY} Qt5::Widgets Qt5::Gui )
 #target_link_libraries(datinator ${SUPPORT_LIBRARY_PATH} ${SUPPORT_LIBRARY_QT_PATH} Qt5::Widgets Qt5::Gui Qt5::Core )

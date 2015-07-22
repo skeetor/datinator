@@ -11,6 +11,8 @@
 #include <windows.h>
 #endif // _WIN32
 
+#include <support/config.h>
+
 class IDataContainerReader;
 class IDataContainerWriter;
 class QWidget;
@@ -20,27 +22,37 @@ class QWidget;
 
 #ifdef BUILD_PLUGINS_AS_STATIC
 	#define PLUGINS_EXPORT
-	#warning PLUGINS_STATIC
+	#ifdef DEBUG_EXPORT_SYMBOLS
+		#warning PLUGINS_STATIC
+	#endif
 #else
 	#ifdef BUILD_PLUGINS_AS_DLL
         #ifdef _WIN32
             #define PLUGINS_EXPORT __declspec(dllexport)
-			#warning PLUGINS_SHARED EXPORT WIN32
+			#ifdef DEBUG_EXPORT_SYMBOLS
+				#warning PLUGINS_SHARED EXPORT WIN32
+			#endif
         #endif // _WIN32
 
         #ifdef _LINUX
             #define PLUGINS_EXPORT __attribute__ ((visibility ("default")))
-			#warning PLUGINS_SHARED EXPORT LINUX
+			#ifdef DEBUG_EXPORT_SYMBOLS
+				#warning PLUGINS_SHARED EXPORT LINUX
+			#endif
         #endif // _LINUX
 	#else
         #ifdef _WIN32
             #define PLUGINS_EXPORT __declspec(dllimport)
-			#warning PLUGINS_SHARED IMPORT WIN32
+			#ifdef DEBUG_EXPORT_SYMBOLS
+				#warning PLUGINS_SHARED IMPORT WIN32
+			#endif
         #endif // _WIN32
 
         #ifdef _LINUX
             #define PLUGINS_EXPORT
-			#warning PLUGINS_SHARED IMPORT LINUX
+			#ifdef DEBUG_EXPORT_SYMBOLS
+				#warning PLUGINS_SHARED IMPORT LINUX
+			#endif
         #endif // _LINUX
 	#endif // BUILD_PLUGINS_AS_DLL
 #endif

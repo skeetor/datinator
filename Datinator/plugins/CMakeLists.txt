@@ -39,6 +39,7 @@ endif()
 include(${SUPPORT_LIBRARY_BASE_PATH}/cmake/generate_qt_sources.cmake)
 
 set(PLUGIN_SOURCES 
+	${CMAKE_CURRENT_SOURCE_DIR}/plugins_dll_api.h
 	${CMAKE_CURRENT_SOURCE_DIR}/datinator_types.h
 	${CMAKE_CURRENT_SOURCE_DIR}/idata_container.h
 	${CMAKE_CURRENT_SOURCE_DIR}/idata_container_reader.h

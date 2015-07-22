@@ -20,7 +20,7 @@
 #include <QtCore/QLibrary>
 
 #include "plugins/plugin_manager.h"
-#include "plugins/plugin_dll_api.h"
+#include "plugins/plugins_dll_api.h"
 #include "plugins/idata_container_reader.h"
 #include "plugins/idata_container_writer.h"
 

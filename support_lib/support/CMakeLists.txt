@@ -7,12 +7,14 @@
 #
 
 set(TARGET_LIBRARY support_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
-set(DEBUG_EXPORT_SYMBOLS ON CACHE BOOL "Set debug mode for exported symbols")
+set(DEBUG_EXPORT_SYMBOLS OFF CACHE BOOL "Set debug mode for exported symbols")
+set(UI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include" CACHE STRING "Include directory for generated headers")
 
-configure_file(config.h.in config.h)
+configure_file(config.h.in ${CMAKE_SOURCE_DIR}/include/support/config.h)
 
 include_directories("..")
 include_directories(${CMAKE_BINARY_DIR})
+include_directories(${UI_INCLUDE_DIR})
 
 set(SUPPORT_SOURCE
 	${CMAKE_CURRENT_SOURCE_DIR}/config.h
