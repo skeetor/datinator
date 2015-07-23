@@ -100,8 +100,6 @@ if (STATIC_BUILD)
 	set(SOCI_LIBRARY_STATIC "${SOCI_LIBRARY}")	# When we are doing a static build the soci library must be included as well.
 endif()
 
-set(PLUGIN_LIBRARY plugin_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
-
 if (UNICODE_BUILD)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE")
 endif()
@@ -122,6 +120,10 @@ include_directories(${CMAKE_SOURCE_DIR}/plugins)
 include_directories(${SUPPORT_INCLUDE_PATH})
 include_directories(${SUPPORT_INCLUDE_PATH}/include)
 
+# will be filled by subsequent CMakeLists
+set(PLUGIN_LIBRARY "")
+set(STATIC_BUILD_LIBRARIES "")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -pedantic -Wextra")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
@@ -133,5 +135,4 @@ add_subdirectory (plugins)
 generate_qt_sources(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR} GENERATED_SOURCES SOURCE_FILES)
 
 add_executable(datinator ${SOURCE_FILES} ${GENERATED_SOURCES})
-target_link_libraries(datinator Qt5::Core ${SOCI_LIBRARY_STATIC} ${PLUGIN_LIBRARY} ${SUPPORT_LIBRARY} ${SUPPORT_LIBRARY_QT} Qt5::Widgets Qt5::Gui )
-#target_link_libraries(datinator ${SUPPORT_LIBRARY} ${SUPPORT_LIBRARY_QT} Qt5::Widgets Qt5::Gui Qt5::Core )
+target_link_libraries(datinator Qt5::Core ${SOCI_LIBRARY_STATIC} ${PLUGIN_LIBRARY} ${STATIC_BUILD_LIBRARIES} ${SUPPORT_LIBRARY} ${SUPPORT_LIBRARY_QT} Qt5::Widgets Qt5::Gui )

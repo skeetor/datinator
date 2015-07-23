@@ -1,39 +1,16 @@
-	# CMake source files
+# CMake source files
 # (C) by Gerhard W. Gruber in Germany 2015
 #
-# We list the include files here for the purpose
-# of them being added to the workspace when using Visual Studio
+# PLUGINS common
+#
 
 set (SUPPORT_LIBRARY_BASE_PATH "${CMAKE_SOURCE_DIR}/../support_lib" CACHE PATH "Path where the support libraries is located (default is assumed on the same directory as Datinator is).")
 set (LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}" CACHE PATH "Path where the libraries should be put")
 
-if(NOT ARCH)
-    set(ARCH i386)
-endif()
-
-string(TOLOWER ${ARCH} ARCH)
-
-if (CMAKE_BUILD_TYPE STREQUAL Release)
-	set (BUILD_TYPE_FLAG "")		# release build
-else (NOT CMAKE_BUILD_TYPE STREQUAL Release)
-	set (BUILD_TYPE_FLAG "d")		# debug build
-endif()
-
-if (UNICODE_BUILD)
-	set (UNICODE_FLAG "u")		# UNICODE build
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE")
-else (NOT UNICODE_BUILD)
-	set (UNICODE_FLAG "a")		# ANSI build
-endif()
-
 if (STATIC_BUILD)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_PLUGINS_AS_STATIC")
-	set (STATIC_FLAG "s")		# static build
-	set(BUILD_TYPE "STATIC")
 else (NOT STATIC_BUILD)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_PLUGINS_AS_DLL")
-	set (STATIC_FLAG "")		# shared build
-	set(BUILD_TYPE "SHARED")
 endif()
 
 include(${SUPPORT_LIBRARY_BASE_PATH}/cmake/generate_qt_sources.cmake)
@@ -48,6 +25,7 @@ set(COMMON_SOURCES
 
 set(PLUGIN_SOURCES ${COMMON_SOURCES})
 add_subdirectory (plugin)
+add_subdirectory (csv)
 
 set(SOURCE_FILES ${SOURCE_FILES} ${COMMON_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.h
@@ -57,3 +35,6 @@ set(SOURCE_FILES ${SOURCE_FILES} ${COMMON_SOURCES}
 
 	PARENT_SCOPE
 )
+
+set(PLUGIN_LIBRARY "${PLUGIN_LIBRARY}" PARENT_SCOPE)
+set(STATIC_BUILD_LIBRARIES "${STATIC_BUILD_LIBRARIES}" PARENT_SCOPE)
