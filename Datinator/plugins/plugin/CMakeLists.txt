@@ -47,9 +47,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 generate_qt_sources(${PLUGIN_SOURCE_DIR} ${PLUGIN_BINARY_DIR} ${PLUGIN_GEN_INCLUDE} GENERATED_PLUGIN_SOURCES PLUGIN_SOURCES)
 
-# The plugin library acts as the interface between the main program and the plugins
-# and must always be linked to the main program.
-set(STATIC_BUILD_LIBRARIES ${STATIC_BUILD_LIBRARIES} ${PLUGIN_LIBRARY} PARENT_SCOPE)
+set(STATIC_BUILD_LIBRARIES ${STATIC_BUILD_LIBRARIES} PARENT_SCOPE)
 
 add_library(${PLUGIN_LIBRARY} ${BUILD_TYPE} ${PLUGIN_SOURCES} ${GENERATED_PLUGIN_SOURCES})
 target_link_libraries(${PLUGIN_LIBRARY} ${SUPPORT_LIBRARY_QT} ${SUPPORT_LIBRARY} ${SUPPORT_LIBRARY_QT} ${SOCI_LIBRARY} Qt5::Core Qt5::Widgets Qt5::Gui )
