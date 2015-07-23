@@ -26,7 +26,6 @@ set (SOCI_LIBRARY_PATH "d:/opt/soci" CACHE PATH "Path where the soci library is 
 set (SUPPORT_LIBRARY_BASE_PATH "${CMAKE_SOURCE_DIR}/../support_lib" CACHE PATH "Path where the support libraries is located (default is assumed on the same directory as Datinator is).")
 set (SUPPORT_INCLUDE_PATH "${SUPPORT_LIBRARY_BASE_PATH}" CACHE PATH "Path where the support library includes are located (default is assumed on the same directory as Datinator is).")
 set (BINARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin" CACHE PATH "Path where the executableand libraries should go")
-#set (SUPPORT_LIBRARY_PATH "${SUPPORT_LIBRARY_BASE_PATH}/lib" CACHE PATH "Path where the support libraries is located (default is assumed on the same directory as Datinator is).")
 
 option (STATIC_BUILD "Build as a static version (default is shared)" OFF)
 option (UNICODE_BUILD "Build for UNICODE (default is off)" OFF)
@@ -61,7 +60,7 @@ if(build_len GREATER 0)
 	set(BUILD_FLAGS "_${BUILD_FLAGS}")
 endif()
 
-set(CMAKE_PREFIX_PATH ${SOCI_LIBRARY_PATH})
+set(CMAKE_PREFIX_PATH ${SOCI_LIBRARY_PATH} ${SUPPORT_LIBRARY_BASE_PATH})
 set(SUPPORT_LIB_NAME support_${UNICODE_LIB_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
 set(SUPPORT_QT_LIB_NAME support_qt_${UNICODE_LIB_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
 
@@ -76,9 +75,38 @@ endif()
 # for more information.
 string(TOLOWER ${ARCH} ARCH)
 
+# External packages
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
+
+find_library(SUPPORT_LIBRARY
+	NAMES "${SUPPORT_LIB_NAME}"
+	HINTS "${SUPPORT_LIBRARY_BASE_PATH}"
+)
+find_library(SUPPORT_LIBRARY_QT
+	NAMES "${SUPPORT_QT_LIB_NAME}"
+	HINTS "${SUPPORT_LIBRARY_BASE_PATH}"
+)
+
+find_library(SOCI_LIBRARY
+    NAMES "soci-3.2.2_core_s${BUILD_TYPE_FLAG}"
+    HINTS "${SOCI_LIBRARY_PATH}"
+)
+
+set(SOCI_LIBRARY_STATIC "")
+if (STATIC_BUILD)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_PLUGINS_AS_STATIC -DBUILD_PLUGIN_STATIC -DBUILD_SUPPORT_STATIC -DBUILD_SUPPORT_QT_STATIC")
+	set(SOCI_LIBRARY_STATIC "${SOCI_LIBRARY}")	# When we are doing a static build the soci library must be included as well.
+endif()
+
+set(PLUGIN_LIBRARY plugin_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
+
+if (UNICODE_BUILD)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE")
+endif()
+
+# Include paths
 
 # Enable the build directory as an include path as well, required for
 # qt moc generated files.
@@ -94,40 +122,16 @@ include_directories(${CMAKE_SOURCE_DIR}/plugins)
 include_directories(${SUPPORT_INCLUDE_PATH})
 include_directories(${SUPPORT_INCLUDE_PATH}/include)
 
-find_library(SOCI_LIBRARY
-    NAMES "soci-3.2.2_core_s${BUILD_TYPE_FLAG}"
-    HINTS "${SOCI_LIBRARY_PATH}"
-)
-#message("SOCI_SEARCHPATH: ${SOCI_LIBRARY_PATH}")
-#message("SOCI_SEARCHNAME: soci-3.2.2_core_s${BUILD_TYPE_FLAG}")
-#message("SOCI_FOUND: ${SOCI_LIBRARY}")
-
-set(SOCI_LIBRARY_STATIC "")
-if (STATIC_BUILD)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_PLUGINS_AS_STATIC -DBUILD_PLUGIN_STATIC -DBUILD_SUPPORT_STATIC -DBUILD_SUPPORT_QT_STATIC")
-	set(SOCI_LIBRARY_STATIC "${SOCI_LIBRARY}")
-endif()
-#message("SOCI_STATIC: ${SOCI_LIBRARY_STATIC}")
-
-if (UNICODE_BUILD)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE")
-endif()
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -pedantic -Wextra")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-
-set(PLUGIN_LIBRARY plugin_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
 
 add_subdirectory (src)
 add_subdirectory (plugins)
 
 generate_qt_sources(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR} GENERATED_SOURCES SOURCE_FILES)
 
-find_library(SUPPORT_LIBRARY_PATH "${SUPPORT_LIB_NAME}" PATHS ${SUPPORT_LIBRARY_BASE_PATH}/lib)
-find_library(SUPPORT_LIBRARY_QT_PATH ${SUPPORT_QT_LIB_NAME} PATHS ${SUPPORT_LIBRARY_BASE_PATH}/lib)
-
 add_executable(datinator ${SOURCE_FILES} ${GENERATED_SOURCES})
-target_link_libraries(datinator Qt5::Core ${SOCI_LIBRARY_STATIC} ${PLUGIN_LIBRARY} ${SUPPORT_LIBRARY_PATH} ${SUPPORT_LIBRARY_QT_PATH} Qt5::Widgets Qt5::Gui )
-#target_link_libraries(datinator ${SUPPORT_LIBRARY_PATH} ${SUPPORT_LIBRARY_QT_PATH} Qt5::Widgets Qt5::Gui Qt5::Core )
+target_link_libraries(datinator Qt5::Core ${SOCI_LIBRARY_STATIC} ${PLUGIN_LIBRARY} ${SUPPORT_LIBRARY} ${SUPPORT_LIBRARY_QT} Qt5::Widgets Qt5::Gui )
+#target_link_libraries(datinator ${SUPPORT_LIBRARY} ${SUPPORT_LIBRARY_QT} Qt5::Widgets Qt5::Gui Qt5::Core )
