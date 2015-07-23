@@ -38,7 +38,7 @@ endif()
 
 include(${SUPPORT_LIBRARY_BASE_PATH}/cmake/generate_qt_sources.cmake)
 
-set(PLUGIN_SOURCES 
+set(COMMON_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/plugins_dll_api.h
 	${CMAKE_CURRENT_SOURCE_DIR}/datinator_types.h
 	${CMAKE_CURRENT_SOURCE_DIR}/idata_container.h
@@ -46,9 +46,10 @@ set(PLUGIN_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/idata_container_writer.h
 )
 
+set(PLUGIN_SOURCES ${COMMON_SOURCES})
 add_subdirectory (plugin)
 
-set(SOURCE_FILES ${SOURCE_FILES} ${PLUGIN_SOURCES}
+set(SOURCE_FILES ${SOURCE_FILES} ${COMMON_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.h
 	${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/plugin_manager.h
