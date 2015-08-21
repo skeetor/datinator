@@ -6,7 +6,7 @@
 
 #include <QtCore/QSettings>
 
-#include "container/sql/gui/db_panel_gui.moc"
+#include "plugin/sql/gui/db_panel_gui.moc"
 #include "sqlite/sqlite_reader.h"
 #include "sqlite/sqlite_global.h"
 

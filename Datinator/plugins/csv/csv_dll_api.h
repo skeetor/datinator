@@ -32,7 +32,7 @@
 		#ifdef DEBUG_EXPORT_SYMBOLS
 			#warning CSV_SHARED EXPORT WIN32
 		#endif
-        #endif // _WIN32
+		#endif // _WIN32
 
         #ifdef _LINUX
             #define CSV_DLL_EXPORT __attribute__ ((visibility ("default")))

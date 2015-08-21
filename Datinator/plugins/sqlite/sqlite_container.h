@@ -9,14 +9,15 @@
 
 #include <QtCore/QString>
 
-#include "container/sql/soci_container.h"
+#include "plugin/container/sql/soci_container.h"
+
 #include "support_qt/file/path_panel/path_panel_gui.moc"
 #include "support/patterns/observer.h"
 
 class QSettings;
 class QWidget;
 class PathSelectPanel;
-namespace soci { class session; };
+namespace soci { class session; }
 
 class SQLiteContainer : public SociContainer
 {
@@ -49,9 +50,9 @@ protected:
 			PathListener(SQLiteContainer *oContainer) { mContainer = oContainer; }
 			void handleNotification(Dispatcher<QString> *oSource, QString oPath)
 			{
+				UNUSED(oSource);
+
 				mContainer->connect(oPath);
-//				QList<QString> tables = mContainer->loadTables(oPath);
-//				mContainer->setTablelist(tables);
 			}
 
 		private:

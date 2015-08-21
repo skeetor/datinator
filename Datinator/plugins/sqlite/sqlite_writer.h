@@ -7,7 +7,7 @@
 #ifndef SQLITE_CONTAINER_WRITER_H_INCLUDED
 #define SQLITE_CONTAINER_WRITER_H_INCLUDED
 
-#include "container/writer_base.h"
+#include "plugin/container/writer_base.h"
 #include "sqlite/sqlite_container.h"
 #include "sqlite/gui/sqlite_writer_gui.moc"
 

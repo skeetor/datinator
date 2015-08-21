@@ -7,7 +7,7 @@
 #ifndef SQLITE_READER_H_INCLUDED
 #define SQLITE_READER_H_INCLUDED
 
-#include "container/reader_base.h"
+#include "plugin/container/reader_base.h"
 #include "sqlite/sqlite_container.h"
 
 class SQLPreviewPanel;

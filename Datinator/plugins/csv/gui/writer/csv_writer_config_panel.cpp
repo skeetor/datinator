@@ -13,6 +13,8 @@
 CSVWriterConfigPanel::CSVWriterConfigPanel(CSVWriter *oContainer, QWidget *oParent)
 :	FilePanelConfigPanel(oParent)
 {
+	UNUSED(oContainer);
+
 	mGUI = new Ui::CSVWriterConfigPanelGUI();
 	mGUI->setupUi(this);
 }

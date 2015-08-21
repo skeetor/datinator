@@ -20,9 +20,11 @@
 
 cmake_minimum_required(VERSION 3.0.2)
 
+# compare dereferenced strings with STREQUAL only if unquoted warning (QT package needs an update).
+cmake_policy(SET CMP0054 OLD)
+
 project(Datinator)
 
-set (SOCI_LIBRARY_PATH "d:/opt/soci" CACHE PATH "Path where the soci library is located.")
 set (SUPPORT_LIBRARY_BASE_PATH "${CMAKE_SOURCE_DIR}/../support_lib" CACHE PATH "Path where the support libraries is located (default is assumed on the same directory as Datinator is).")
 set (SUPPORT_INCLUDE_PATH "${SUPPORT_LIBRARY_BASE_PATH}" CACHE PATH "Path where the support library includes are located (default is assumed on the same directory as Datinator is).")
 set (BINARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin" CACHE PATH "Path where the executableand libraries should go")
@@ -60,7 +62,7 @@ if(build_len GREATER 0)
 	set(BUILD_FLAGS "_${BUILD_FLAGS}")
 endif()
 
-set(CMAKE_PREFIX_PATH ${SOCI_LIBRARY_PATH} ${SUPPORT_LIBRARY_BASE_PATH})
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SUPPORT_LIBRARY_BASE_PATH})
 set(SUPPORT_LIB_NAME support_${UNICODE_LIB_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
 set(SUPPORT_QT_LIB_NAME support_qt_${UNICODE_LIB_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
 
@@ -89,17 +91,6 @@ find_library(SUPPORT_LIBRARY_QT
 	HINTS "${SUPPORT_LIBRARY_BASE_PATH}"
 )
 
-find_library(SOCI_LIBRARY
-    NAMES "soci-3.2.2_core_s${BUILD_TYPE_FLAG}"
-    HINTS "${SOCI_LIBRARY_PATH}"
-)
-
-set(SOCI_LIBRARY_STATIC "")
-if (STATIC_BUILD)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_PLUGINS_AS_STATIC -DBUILD_PLUGIN_STATIC -DBUILD_SUPPORT_STATIC -DBUILD_SUPPORT_QT_STATIC")
-	set(SOCI_LIBRARY_STATIC "${SOCI_LIBRARY}")	# When we are doing a static build the soci library must be included as well.
-endif()
-
 if (UNICODE_BUILD)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE")
 endif()
@@ -121,8 +112,7 @@ include_directories(${SUPPORT_INCLUDE_PATH})
 include_directories(${SUPPORT_INCLUDE_PATH}/include)
 
 # will be filled by subsequent CMakeLists
-set(PLUGIN_LIBRARY "")
-set(STATIC_BUILD_LIBRARIES "")
+list(APPEND STATIC_LIBRARIES "")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -pedantic -Wextra")
 
@@ -134,5 +124,7 @@ add_subdirectory (plugins)
 
 generate_qt_sources(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR} GENERATED_SOURCES SOURCE_FILES)
 
+message("STATIC_LIBRARIES: ${STATIC_LIBRARIES}")
+
 add_executable(datinator ${SOURCE_FILES} ${GENERATED_SOURCES})
-target_link_libraries(datinator Qt5::Core ${SOCI_LIBRARY_STATIC} ${PLUGIN_LIBRARY} ${STATIC_BUILD_LIBRARIES} ${SUPPORT_LIBRARY} ${SUPPORT_LIBRARY_QT} Qt5::Widgets Qt5::Gui )
+target_link_libraries(datinator ${STATIC_LIBRARIES} ${SUPPORT_LIBRARY_QT} ${SUPPORT_LIBRARY} Qt5::Widgets Qt5::Gui Qt5::Core )

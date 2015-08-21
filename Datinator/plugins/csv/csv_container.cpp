@@ -95,6 +95,8 @@ bool CSVContainer::connect(QString const &oFilename)
 
 bool CSVContainer::disconnect(QString const &oFilename)
 {
+	UNUSED(oFilename);
+
 	CSV &csv = getCSV();
 	csv.close();
 	return true;

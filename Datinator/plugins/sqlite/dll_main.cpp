@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include "../plugin_dll_api.h"
+#include "../plugins_dll_api.h"
 
 #include "sqlite/sqlite_global.h"
 #include "sqlite/sqlite_dll_api.h"
@@ -26,6 +26,9 @@ const char *gWriterIDs[] =
 
 extern "C" SQLITE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
+	UNUSED(hinstDLL);
+	UNUSED(lpvReserved);
+
     switch (fdwReason)
     {
         case DLL_PROCESS_ATTACH:

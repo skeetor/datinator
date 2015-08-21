@@ -6,7 +6,7 @@
 
 #include "sqlite/sqlite_writer.h"
 #include "support/unicode/unicode_types.h"
-#include "container/gui/progress.h"
+#include "plugin/gui/progress.h"
 #include "sqlite/sqlite_global.h"
 
 #define MODULENAME "SQlite3"

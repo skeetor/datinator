@@ -7,9 +7,9 @@
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
 
-#include "container/sql/gui/db_export_gui.moc"
-#include "container/sql/gui/create_option_config_gui.moc"
-#include "container/sql/gui/commit_config_gui.moc"
+#include "plugin/sql/gui/db_export_gui.moc"
+#include "plugin/sql/gui/create_option_config_gui.moc"
+#include "plugin/sql/gui/commit_config_gui.moc"
 #include "sqlite/sqlite_writer.h"
 #include "sqlite/gui/sqlite_writer_gui.moc"
 
@@ -33,10 +33,14 @@ SQLiteWriterPanel::~SQLiteWriterPanel(void)
 
 void SQLiteWriterPanel::store(QSettings &oPropertyFile, QString const &oPrefix)
 {
+	UNUSED(oPropertyFile);
+	UNUSED(oPrefix);
 }
 
 void SQLiteWriterPanel::restore(QSettings &oPropertyFile, QString const &oPrefix)
 {
+	UNUSED(oPropertyFile);
+	UNUSED(oPrefix);
 }
 
 bool SQLiteWriterPanel::loadProfile(QSettings &oProfile, QString const &oKey)

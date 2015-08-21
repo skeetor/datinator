@@ -7,9 +7,11 @@
 #include <QtCore/QSettings>
 
 #include "support/unicode/unicode_types.h"
+
 #include "sqlite/sqlite_container.h"
-#include "container/sql/gui/db_panel_gui.moc"
-#include "container/gui/progress.h"
+
+#include "plugin/gui/progress.h"
+#include "plugin/sql/gui/db_panel_gui.moc"
 
 #include "soci.h"
 #include "sqlite3/soci-sqlite3.h"
@@ -80,6 +82,8 @@ QString SQLiteContainer::limitQuery(QString const &oQuery, int nLimit) const
 
 bool SQLiteContainer::tableExists(QString oTablename)
 {
+	UNUSED(oTablename);
+
 	return false;
 }
 
