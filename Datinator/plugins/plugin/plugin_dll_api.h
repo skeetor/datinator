@@ -13,6 +13,23 @@
 
 #include <support/config.h>
 
+#ifdef BUILD_PLUGINS_STATIC
+	#ifndef BUILD_PLUGIN_STATIC
+		#define BUILD_PLUGIN_STATIC
+		#ifdef DEBUG_EXPORT_SYMBOLS
+			#warning PLUGIN_STATIC because of PLUGINS dependency
+		#endif
+	#endif
+#else
+	#ifndef BUILD_PLUGIN_DLL
+		#define BUILD_PLUGIN_DLL
+		#ifdef DEBUG_EXPORT_SYMBOLS
+			#warning PLUGIN_SHARED because of PLUGINS dependency
+		#endif
+	#endif
+#endif
+
+
 // When building the DLL library, BUILD_PLUGIN_DLL must be defined
 // in order to export the symbols.
 
