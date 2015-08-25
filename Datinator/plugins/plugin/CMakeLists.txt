@@ -32,6 +32,11 @@ set(PLUGIN_SOURCES ${PLUGIN_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/dll_main.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/plugin.h
 	${CMAKE_CURRENT_SOURCE_DIR}/plugin_dll_api.h
+
+	${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.h
+	${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/plugin_manager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/plugin_manager.cpp
 )
 
 add_subdirectory (container)

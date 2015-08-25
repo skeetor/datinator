@@ -37,16 +37,12 @@ set(COMMON_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/idata_container_writer.h
 )
 
-set(PLUGIN_SOURCES ${COMMON_SOURCES})
+#set(PLUGIN_SOURCES ${COMMON_SOURCES})
 add_subdirectory (plugin)
 add_subdirectory (csv)
 add_subdirectory (sqlite)
 
 set(SOURCE_FILES ${SOURCE_FILES} ${COMMON_SOURCES}
-	${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.h
-	${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/plugin_manager.h
-	${CMAKE_CURRENT_SOURCE_DIR}/plugin_manager.cpp
 
 	PARENT_SCOPE
 )

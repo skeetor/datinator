@@ -19,7 +19,8 @@
 
 #include "plugins/idata_container_reader.h"
 #include "plugins/idata_container_writer.h"
-#include "plugins/plugin_manager.h"
+
+#include "plugins/plugin/plugin_manager.h"
 
 #include "gui/mapping/column_mapping_item.h"
 #include "gui/main_frame/main_frame_gui.moc"

@@ -12,6 +12,10 @@
 #include "csv/csv_reader.h"
 #include "csv/csv_writer.h"
 
+extern "C" CSV_DLL_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
+extern "C" CSV_DLL_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
+
+
 const char *gReaderIDs[] =
 {
 	CSV_READER_ID,
@@ -23,6 +27,40 @@ const char *gWriterIDs[] =
 	CSV_WRITER_ID,
 	NULL
 };
+
+#ifdef BUILD_CSV_STATIC
+
+#include "plugin/plugin_manager.h"
+
+class StaticCSV
+{
+public:
+	static bool mStaticInitialized;
+	static bool _init()
+	{
+		memset(0, 0, 4096);
+
+		// The manager will create an object with the Create* functions
+		// and from this it will get the UUID and other info, so we don't
+		// need to set this here (and even can't).
+		// Path stays empty as this is a statically compiled version anyway.
+		PluginInfo pi;
+		pi.setCreatePtr(reinterpret_cast<QFunctionPointer>(CreateReader));
+		pi.setFreePtr(reinterpret_cast<QFunctionPointer>(FreeReader));
+		PluginManager::registerStaticPluginReader(pi);
+
+		pi.setCreatePtr(reinterpret_cast<QFunctionPointer>(CreateWriter));
+		pi.setFreePtr(reinterpret_cast<QFunctionPointer>(FreeWriter));
+		PluginManager::registerStaticPluginWriter(pi);
+
+		return true;
+	}
+};
+
+bool StaticCSV::mStaticInitialized = StaticCSV::_init();
+
+#endif
+
 
 #ifdef _WIN32
 

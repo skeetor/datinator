@@ -4,10 +4,11 @@
  *
  *******************************************************************************/
 
-#include "plugins/plugin_info.h"
 #include "plugins/idata_container.h"
 #include "plugins/idata_container_reader.h"
 #include "plugins/idata_container_writer.h"
+
+#include "plugin_info.h"
 
 PluginInfo::PluginInfo(void)
 {
@@ -91,7 +92,7 @@ void PluginInfo::setCreatePtr(QFunctionPointer oFunctionPointer)
 	mCreate = oFunctionPointer;
 }
 
-QFunctionPointer PluginInfo::getCreatePtr(void)
+QFunctionPointer PluginInfo::getCreatePtr(void) const
 {
 	return mCreate;
 }
@@ -101,7 +102,7 @@ void PluginInfo::setFreePtr(QFunctionPointer oFunctionPointer)
 	mFree = oFunctionPointer;
 }
 
-QFunctionPointer PluginInfo::getFreePtr(void)
+QFunctionPointer PluginInfo::getFreePtr(void) const
 {
 	return mFree;
 }

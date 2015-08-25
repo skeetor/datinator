@@ -16,11 +16,19 @@
 #include <QtCore/QString>
 #include <QtCore/QFunctionPointer>
 
+#include "plugin_dll_api.h"
+
 class IDataContainer;
 class IDataContainerReader;
 class IDataContainerWriter;
 
-class PluginInfo
+typedef IDataContainerReader * APIENTRY (*PluginCreateReader)(const char *oUUID, QWidget *oMainWindow);
+typedef void APIENTRY (*PluginFreeReader)(IDataContainerReader *oReader);
+
+typedef IDataContainerWriter * APIENTRY (*PluginCreateWriter)(const char *oUUID, QWidget *oMainWindow);
+typedef void APIENTRY (*PluginFreeWriter)(IDataContainerWriter *oWriter);
+
+class PLUGIN_DLL_EXPORT PluginInfo
 {
 public:
 	PluginInfo(void);
@@ -43,9 +51,9 @@ public:
 	IDataContainer *getContainer(void) const;
 
 	void setCreatePtr(QFunctionPointer oFunctionPointer);
-	QFunctionPointer getCreatePtr(void);
+	QFunctionPointer getCreatePtr(void) const;
 	void setFreePtr(QFunctionPointer oFunctionPointer);
-	QFunctionPointer getFreePtr(void);
+	QFunctionPointer getFreePtr(void) const;
 
 private:
 	QString mPath;

@@ -17,18 +17,21 @@
 #include <QtCore/QString>
 #include <QtCore/QPair>
 
-#include "plugins/plugin_info.h"
+#include "plugin_dll_api.h"
+
+#include "plugin_info.h"
 
 class IDataContainerReader;
 class IDataContainerWriter;
 
-class PluginManager
+class PLUGIN_DLL_EXPORT PluginManager
 {
 public:
 	PluginManager(void);
 	virtual ~PluginManager(void);
 
-	static bool registerStaticPlugin(void);
+	static bool registerStaticPluginReader(PluginInfo const &oPluginInfo);
+	static bool registerStaticPluginWriter(PluginInfo const &oPluginInfo);
 
 	/**
 	 * Deletes all current readers and writers and rescans the specified

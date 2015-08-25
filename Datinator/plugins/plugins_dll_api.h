@@ -121,9 +121,6 @@ typedef const char ** APIENTRY (*PluginGetWriterList)(void);
 PLUGINS_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
 PLUGINS_EXPORT void APIENTRY FreeReader(IDataContainerReader *oReader);
 
-typedef IDataContainerReader * APIENTRY (*PluginCreateReader)(const char *oUUID, QWidget *oMainWindow);
-typedef void APIENTRY (*PluginFreeReader)(IDataContainerReader *oReader);
-
 /**
  * Create the writer with the specified UUID. If no such writer exists, NULL
  * is returned.
@@ -137,9 +134,6 @@ typedef void APIENTRY (*PluginFreeReader)(IDataContainerReader *oReader);
 #endif // _WIN32
 PLUGINS_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
 PLUGINS_EXPORT void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
-
-typedef IDataContainerWriter * APIENTRY (*PluginCreateWriter)(const char *oUUID, QWidget *oMainWindow);
-typedef void APIENTRY (*PluginFreeWriter)(IDataContainerWriter *oWriter);
 
 #ifdef __cplusplus
 }

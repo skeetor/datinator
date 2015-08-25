@@ -19,10 +19,11 @@
 #include <QtCore/QFile>
 #include <QtCore/QLibrary>
 
-#include "plugins/plugin_manager.h"
 #include "plugins/plugins_dll_api.h"
 #include "plugins/idata_container_reader.h"
 #include "plugins/idata_container_writer.h"
+
+#include "plugin_manager.h"
 
 typedef enum
 {
@@ -334,7 +335,16 @@ QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplica
 	return duplist;
 }
 
-bool PluginManager::registerStaticPlugin(void)
+bool PluginManager::registerStaticPluginReader(PluginInfo const &oPluginInfo)
 {
+	memset(0, 0, 4096);
+	std::cout << "Static plugin reader registererd" << std::endl;
+	return false;
+}
+
+bool PluginManager::registerStaticPluginWriter(PluginInfo const &oPluginInfo)
+{
+	memset(0, 0, 4096);
+	std::cout << "Static plugin reader registererd" << std::endl;
 	return false;
 }
