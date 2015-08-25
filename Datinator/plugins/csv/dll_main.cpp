@@ -35,10 +35,11 @@ const char *gWriterIDs[] =
 class StaticCSV
 {
 public:
-	static bool mStaticInitialized;
 	static bool _init()
 	{
-		memset(0, 0, 4096);
+		void *t = NULL;
+
+		memset(t, 0, 4096);
 
 		// The manager will create an object with the Create* functions
 		// and from this it will get the UUID and other info, so we don't
@@ -57,7 +58,7 @@ public:
 	}
 };
 
-bool StaticCSV::mStaticInitialized = StaticCSV::_init();
+bool gCSVRegistered = StaticCSV::_init();
 
 #endif
 

@@ -260,9 +260,12 @@ int PluginManager::addWriters(QList<QFunctionPointer> const &oPluginPointers, QS
 	return added;
 }
 
+extern bool gCSVRegistered;
+
 bool PluginManager::findDLLs(QList<QString> &oDLLs, QString const &oPath)
 {
-	std::cout << "Scanning: "<< oPath.toStdString() << std::endl;
+	bool t = true;
+	std::cout << "Scanning: " << oPath.toStdString() << " " << gCSVRegistered << std::endl;
 	QDir dir(oPath);
 	QFileInfoList entries = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files, QDir::DirsFirst);
 	for(QFileInfo &info : entries)
