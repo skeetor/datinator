@@ -46,8 +46,7 @@ const char *PluginFunctionNames[] =
 	FreeWriterName,
 };
 
-#pragma warning Implement statically registered plugins.
-static std::vector<char> gStaticPlugin;
+static QList<PluginInfo> gStaticPlugins;
 
 PluginManager::PluginManager(void)
 {
@@ -186,6 +185,7 @@ bool PluginManager::addDLL(QString const &oPath, QWidget *oParent)
 int PluginManager::addReaders(QList<QFunctionPointer> const &oPluginPointers, QString const &oPath, QWidget *oParent)
 {
 	int added = 0;
+
 	// All three pointers have to be present
 	if(oPluginPointers[PluginFunctionIndex::GetReaderListIndex]
 		&& oPluginPointers[PluginFunctionIndex::CreateReaderIndex]
@@ -260,12 +260,9 @@ int PluginManager::addWriters(QList<QFunctionPointer> const &oPluginPointers, QS
 	return added;
 }
 
-extern bool gCSVRegistered;
-
 bool PluginManager::findDLLs(QList<QString> &oDLLs, QString const &oPath)
 {
-	bool t = true;
-	std::cout << "Scanning: " << oPath.toStdString() << " " << gCSVRegistered << std::endl;
+	std::cout << "Scanning: " << oPath.toStdString() << std::endl;
 	QDir dir(oPath);
 	QFileInfoList entries = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files, QDir::DirsFirst);
 	for(QFileInfo &info : entries)
@@ -340,14 +337,12 @@ QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplica
 
 bool PluginManager::registerStaticPluginReader(PluginInfo const &oPluginInfo)
 {
-	memset(0, 0, 4096);
-	std::cout << "Static plugin reader registererd" << std::endl;
+	gStaticPlugins.append(oPluginInfo);
 	return false;
 }
 
 bool PluginManager::registerStaticPluginWriter(PluginInfo const &oPluginInfo)
 {
-	memset(0, 0, 4096);
-	std::cout << "Static plugin reader registererd" << std::endl;
+	gStaticPlugins.append(oPluginInfo);
 	return false;
 }

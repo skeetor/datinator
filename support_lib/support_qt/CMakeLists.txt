@@ -57,7 +57,7 @@ add_subdirectory (window)
 generate_qt_sources(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${UI_INCLUDE_DIR} GENERATED_SOURCES SUPPORT_SOURCE)
 
 add_library(${TARGET_LIBRARY} ${BUILD_TYPE} ${SUPPORT_SOURCE} ${GENERATED_SOURCES})
-target_link_libraries(${TARGET_LIBRARY} Qt5::Widgets ${SUPPORT_LIBRARY})
+target_link_libraries(${TARGET_LIBRARY} ${SUPPORT_LIBRARY} Qt5::Widgets)
 
 
 # The shared library versions need the option to export symbols

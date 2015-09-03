@@ -37,10 +37,6 @@ class StaticCSV
 public:
 	static bool _init()
 	{
-		void *t = NULL;
-
-		memset(t, 0, 4096);
-
 		// The manager will create an object with the Create* functions
 		// and from this it will get the UUID and other info, so we don't
 		// need to set this here (and even can't).
@@ -58,7 +54,7 @@ public:
 	}
 };
 
-bool gCSVRegistered = StaticCSV::_init();
+static bool gCSVRegistered = StaticCSV::_init();
 
 #endif
 

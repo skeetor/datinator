@@ -43,9 +43,9 @@ add_subdirectory (container)
 add_subdirectory (gui)
 add_subdirectory (sql)
 
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
+#find_package(Qt5Widgets REQUIRED)
+#find_package(Qt5Core REQUIRED)
+#find_package(Qt5Gui REQUIRED)
 
 include_directories(${Qt5Widgets_INCLUDES})
 include_directories(${CMAKE_BINARY_DIR})			# required for generated UI headers

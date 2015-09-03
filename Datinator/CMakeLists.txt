@@ -79,11 +79,6 @@ endif()
 # for more information.
 string(TOLOWER ${ARCH} ARCH)
 
-# External packages
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-
 find_library(SUPPORT_LIBRARY
 	NAMES "${SUPPORT_LIB_NAME}"
 	HINTS "${SUPPORT_LIBRARY_BASE_PATH}"
@@ -92,6 +87,11 @@ find_library(SUPPORT_LIBRARY_QT
 	NAMES "${SUPPORT_QT_LIB_NAME}"
 	HINTS "${SUPPORT_LIBRARY_BASE_PATH}"
 )
+
+# External packages
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
 
 if (UNICODE_BUILD)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE")
