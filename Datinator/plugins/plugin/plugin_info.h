@@ -70,6 +70,7 @@ public:
 
 	virtual bool isWriter() const;
 	virtual bool isReader() const;
+	virtual void setReader(bool bIsReader = true);
 
 	void setContainer(IDataContainer *oContainer);
 	inline IDataContainer *getContainer(void) const
@@ -100,6 +101,7 @@ private:
 	const char *mUUID;
 	QString *mPath;
 	QString *mName;
+	bool mIsReader;
 	IDataContainer *mContainer;
 	CreatePtr mCreate;
 	FreePtr mFree;
@@ -109,8 +111,8 @@ private:
 class PLUGIN_DLL_EXPORT PluginInfoReader : virtual public PluginInfo
 {
 public:
-	PluginInfoReader(void) : PluginInfo() {};
-	PluginInfoReader(QString const &oPath) : PluginInfo(oPath) {};
+	PluginInfoReader(void) : PluginInfo() { setReader(true); };
+	PluginInfoReader(QString const &oPath) : PluginInfo(oPath) { setReader(true); };
 	PluginInfoReader(PluginInfoReader const &oSource) : PluginInfo(oSource) {};
 	PluginInfoReader(PluginInfo const &oSource) : PluginInfo(oSource) {};
 	~PluginInfoReader(void) {};
@@ -148,8 +150,8 @@ private:
 class PLUGIN_DLL_EXPORT PluginInfoWriter : virtual public PluginInfo
 {
 public:
-	PluginInfoWriter(void) : PluginInfo() {};
-	PluginInfoWriter(QString const &oPath) : PluginInfo(oPath) {};
+	PluginInfoWriter(void) : PluginInfo() {setReader(false);};
+	PluginInfoWriter(QString const &oPath) : PluginInfo(oPath) {setReader(false);};
 	PluginInfoWriter(PluginInfoWriter const &oSource) : PluginInfo(oSource) {};
 	PluginInfoWriter(PluginInfo const &oSource) : PluginInfo(oSource) {};
 	~PluginInfoWriter(void) {};

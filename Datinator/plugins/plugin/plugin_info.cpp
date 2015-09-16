@@ -24,6 +24,8 @@ PluginInfo::PluginInfo(PluginInfo const &oSource)
 	mContainer = NULL;
 	mCreate = NULL;
 	mFree = NULL;
+	mPath = NULL;
+	mName = NULL;
 
 	copy(oSource);
 }
@@ -39,6 +41,7 @@ PluginInfo::~PluginInfo(void)
 
 void PluginInfo::copy(PluginInfo const &oSource)
 {
+	setReader(oSource.isReader());
 	setPath(oSource.getPath());
 	setUUID(oSource.getUUID());
 	setCreatePtr(oSource.getCreatePtr());
@@ -60,8 +63,15 @@ bool PluginInfo::isWriter() const
 		if(dynamic_cast<IDataContainerWriter *>(mContainer))
 			return true;
 	}
+	else
+		return !mIsReader;
 
 	return false;
+}
+
+void PluginInfo::setReader(bool bIsReader)
+{
+	mIsReader = bIsReader;
 }
 
 bool PluginInfo::isReader() const
@@ -71,6 +81,8 @@ bool PluginInfo::isReader() const
 		if(dynamic_cast<IDataContainerReader *>(mContainer))
 			return true;
 	}
+	else
+		return mIsReader;
 
 	return false;
 }
