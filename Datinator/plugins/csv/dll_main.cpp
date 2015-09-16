@@ -12,52 +12,20 @@
 #include "csv/csv_reader.h"
 #include "csv/csv_writer.h"
 
-extern "C" CSV_DLL_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
-extern "C" CSV_DLL_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
-
-
-const char *gReaderIDs[] =
-{
-	CSV_READER_ID,
-	NULL
-};
-
-const char *gWriterIDs[] =
-{
-	CSV_WRITER_ID,
-	NULL
-};
-
 #ifdef BUILD_CSV_STATIC
 
 #include "plugin/plugin_manager.h"
 
-class StaticCSV
+static bool registerPlugins(void)
 {
-public:
-	static bool _init()
-	{
-		// The manager will create an object with the Create* functions
-		// and from this it will get the UUID and other info, so we don't
-		// need to set this here (and even can't).
-		// Path stays empty as this is a statically compiled version anyway.
-		PluginInfo pi;
-		pi.setCreatePtr(reinterpret_cast<QFunctionPointer>(CreateReader));
-		pi.setFreePtr(reinterpret_cast<QFunctionPointer>(FreeReader));
-		PluginManager::registerStaticPluginReader(pi);
+	registerStaticPlugin(getPluginInfo);
 
-		pi.setCreatePtr(reinterpret_cast<QFunctionPointer>(CreateWriter));
-		pi.setFreePtr(reinterpret_cast<QFunctionPointer>(FreeWriter));
-		PluginManager::registerStaticPluginWriter(pi);
+	return true;
+}
 
-		return true;
-	}
-};
+static bool gRegistered = registerPlugins();
 
-static bool gCSVRegistered = StaticCSV::_init();
-
-#endif
-
+#endif // BUILD_CSV_STATIC
 
 #ifdef _WIN32
 
@@ -85,18 +53,27 @@ extern "C" CSV_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwRea
             // detach from thread
            break;
     }
-    return TRUE; // succesful
+    return TRUE; // successful
 }
 #endif // _WIN32
 
-extern "C" CSV_DLL_EXPORT const char ** APIENTRY GetReaderList(void)
+extern "C" CSV_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void)
 {
-	return gReaderIDs;
-}
+	QList<PluginInfo> infos;
 
-extern "C" CSV_DLL_EXPORT const char ** APIENTRY GetWriterList(void)
-{
-	return gWriterIDs;
+	PluginInfoReader r;
+	r.setUUID(CSV_READER_ID);
+	r.setCreatePtr(CreateReader);
+	r.setFreePtr(FreeReader);
+	infos.append(r);
+
+	PluginInfoWriter w;
+	w.setUUID(CSV_WRITER_ID);
+	w.setCreatePtr(CreateWriter);
+	w.setFreePtr(FreeWriter);
+	infos.append(w);
+
+	return infos;
 }
 
 extern "C" CSV_DLL_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow)

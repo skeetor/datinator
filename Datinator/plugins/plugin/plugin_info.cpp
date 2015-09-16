@@ -12,20 +12,38 @@
 
 PluginInfo::PluginInfo(void)
 {
+	mPath = NULL;
+	mName = NULL;
+	mContainer = NULL;
+	mCreate = NULL;
+	mFree = NULL;
 }
 
 PluginInfo::PluginInfo(PluginInfo const &oSource)
 {
+	mContainer = NULL;
+	mCreate = NULL;
+	mFree = NULL;
+
 	copy(oSource);
 }
 
 PluginInfo::~PluginInfo(void)
 {
+	if(mPath)
+		delete mPath;
+
+	if(mName)
+		delete mName;
 }
 
 void PluginInfo::copy(PluginInfo const &oSource)
 {
 	setPath(oSource.getPath());
+	setUUID(oSource.getUUID());
+	setCreatePtr(oSource.getCreatePtr());
+	setFreePtr(oSource.getFreePtr());
+
 	setContainer(oSource.getContainer());
 }
 
@@ -33,16 +51,6 @@ PluginInfo &PluginInfo::operator=(PluginInfo const &oSource)
 {
 	copy(oSource);
 	return *this;
-}
-
-QString PluginInfo::getPath(void) const
-{
-	return mPath;
-}
-
-void PluginInfo::setPath(QString const &oPath)
-{
-	mPath = oPath;
 }
 
 bool PluginInfo::isWriter() const
@@ -70,39 +78,14 @@ bool PluginInfo::isReader() const
 void PluginInfo::setContainer(IDataContainer *oContainer)
 {
 	mContainer = oContainer;
+	QString s;
 	if(mContainer)
-	{
-		mUUID = mContainer->getContainerUUID();
-		mName = mContainer->getContainername();
-	}
+		s = mContainer->getContainername();
 	else
-	{
-		mUUID = "";
-		mName = "";
-	}
-}
+		s = "";
 
-IDataContainer *PluginInfo::getContainer(void) const
-{
-	return mContainer;
-}
+	if(!mName)
+		mName = new QString();
 
-void PluginInfo::setCreatePtr(QFunctionPointer oFunctionPointer)
-{
-	mCreate = oFunctionPointer;
-}
-
-QFunctionPointer PluginInfo::getCreatePtr(void) const
-{
-	return mCreate;
-}
-
-void PluginInfo::setFreePtr(QFunctionPointer oFunctionPointer)
-{
-	mFree = oFunctionPointer;
-}
-
-QFunctionPointer PluginInfo::getFreePtr(void) const
-{
-	return mFree;
+	*mName = s;
 }

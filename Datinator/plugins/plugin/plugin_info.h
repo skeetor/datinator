@@ -21,12 +21,16 @@
 class IDataContainer;
 class IDataContainerReader;
 class IDataContainerWriter;
+class QWidget;
 
-typedef IDataContainerReader * APIENTRY (*PluginCreateReader)(const char *oUUID, QWidget *oMainWindow);
-typedef void APIENTRY (*PluginFreeReader)(IDataContainerReader *oReader);
+extern "C" typedef IDataContainer * APIENTRY (*CreatePtr)(const char *oUUID, QWidget *oMainWindow);
+extern "C" typedef void APIENTRY (*FreePtr)(IDataContainer *oContainer);
 
-typedef IDataContainerWriter * APIENTRY (*PluginCreateWriter)(const char *oUUID, QWidget *oMainWindow);
-typedef void APIENTRY (*PluginFreeWriter)(IDataContainerWriter *oWriter);
+extern "C" typedef IDataContainerReader * APIENTRY (*CreateReaderPtr)(const char *oUUID, QWidget *oMainWindow);
+extern "C" typedef void APIENTRY (*FreeReaderPtr)(IDataContainerReader *oContainer);
+
+extern "C" typedef IDataContainerWriter * APIENTRY (*CreateWriterPtr)(const char *oUUID, QWidget *oMainWindow);
+extern "C" typedef void APIENTRY (*FreeWriterPtr)(IDataContainerWriter *oContainer);
 
 class PLUGIN_DLL_EXPORT PluginInfo
 {
@@ -39,29 +43,148 @@ public:
 	virtual void copy(PluginInfo const &oSource);
 	virtual PluginInfo &operator=(PluginInfo const &oSource);
 
-	QString getPath(void) const;
-	void setPath(QString const &oPath);
+	inline QString getPath(void) const
+	{
+		if(mPath)
+			return *mPath;
 
-	QString getUUID(void) const { return mUUID; };
-	QString getName(void) const { return mName; };
+		return "";
+	}
+	inline void setPath(QString const &oPath)
+	{
+		if(!mPath)
+			mPath = new QString();
 
-	bool isWriter() const;
-	bool isReader() const;
+		*mPath = oPath;
+	}
+
+	inline void setUUID(const char *pUUID) { mUUID = pUUID; };
+	inline const char *getUUID(void) const { return mUUID; };
+	inline QString getName(void) const
+	{
+		if(mName)
+			return *mName;
+
+		return "";
+	};
+
+	virtual bool isWriter() const;
+	virtual bool isReader() const;
+
 	void setContainer(IDataContainer *oContainer);
-	IDataContainer *getContainer(void) const;
+	inline IDataContainer *getContainer(void) const
+	{
+		return mContainer;
+	}
 
-	void setCreatePtr(QFunctionPointer oFunctionPointer);
-	QFunctionPointer getCreatePtr(void) const;
-	void setFreePtr(QFunctionPointer oFunctionPointer);
-	QFunctionPointer getFreePtr(void) const;
+protected:
+	inline void setCreatePtr(CreatePtr oFunctionPointer)
+	{
+		mCreate = oFunctionPointer;
+	}
+	inline CreatePtr getCreatePtr(void) const
+	{
+		return mCreate;
+	}
+
+	inline void setFreePtr(FreePtr oFunctionPointer)
+	{
+		mFree = oFunctionPointer;
+	}
+	inline FreePtr getFreePtr(void) const
+	{
+		return mFree;
+	}
 
 private:
-	QString mPath;
-	QString mUUID;
-	QString mName;
+	const char *mUUID;
+	QString *mPath;
+	QString *mName;
 	IDataContainer *mContainer;
-	QFunctionPointer mCreate;
-	QFunctionPointer mFree;
+	CreatePtr mCreate;
+	FreePtr mFree;
 };
+
+// Helper classes to avoid the nasty casts.
+class PLUGIN_DLL_EXPORT PluginInfoReader : virtual public PluginInfo
+{
+public:
+	PluginInfoReader(void) : PluginInfo() {};
+	PluginInfoReader(QString const &oPath) : PluginInfo(oPath) {};
+	PluginInfoReader(PluginInfoReader const &oSource) : PluginInfo(oSource) {};
+	PluginInfoReader(PluginInfo const &oSource) : PluginInfo(oSource) {};
+	~PluginInfoReader(void) {};
+
+	inline IDataContainerReader *getContainer(void) const
+	{
+		return reinterpret_cast<IDataContainerReader *>(super::getContainer());
+	}
+
+	inline void setCreatePtr(CreateReaderPtr oFunctionPointer)
+	{
+		super::setCreatePtr(reinterpret_cast<CreatePtr>(oFunctionPointer));
+	}
+	inline CreateReaderPtr getCreatePtr(void) const
+	{
+		return reinterpret_cast<CreateReaderPtr>(super::getCreatePtr());
+	}
+
+	inline void setFreePtr(FreeReaderPtr oFunctionPointer)
+	{
+		super::setFreePtr(reinterpret_cast<FreePtr>(oFunctionPointer));
+	}
+	inline FreeReaderPtr getFreePtr(void) const
+	{
+		return reinterpret_cast<FreeReaderPtr>(super::getFreePtr());
+	}
+
+	bool isWriter() const override { return false; }
+	bool isReader() const override { return true; }
+
+private:
+	typedef PluginInfo super;
+};
+
+class PLUGIN_DLL_EXPORT PluginInfoWriter : virtual public PluginInfo
+{
+public:
+	PluginInfoWriter(void) : PluginInfo() {};
+	PluginInfoWriter(QString const &oPath) : PluginInfo(oPath) {};
+	PluginInfoWriter(PluginInfoWriter const &oSource) : PluginInfo(oSource) {};
+	PluginInfoWriter(PluginInfo const &oSource) : PluginInfo(oSource) {};
+	~PluginInfoWriter(void) {};
+
+	inline IDataContainerWriter *getContainer(void) const
+	{
+		return reinterpret_cast<IDataContainerWriter *>(super::getContainer());
+	}
+
+	inline void setCreatePtr(CreateWriterPtr oFunctionPointer)
+	{
+		super::setCreatePtr(reinterpret_cast<CreatePtr>(oFunctionPointer));
+	}
+	inline CreateWriterPtr getCreatePtr(void) const
+	{
+		return reinterpret_cast<CreateWriterPtr>(super::getCreatePtr());
+	}
+
+	inline void setFreePtr(FreeWriterPtr oFunctionPointer)
+	{
+		super::setFreePtr(reinterpret_cast<FreePtr>(oFunctionPointer));
+	}
+	inline FreeWriterPtr getFreePtr(void) const
+	{
+		return reinterpret_cast<FreeWriterPtr>(super::getFreePtr());
+	}
+
+	bool isWriter() const override { return true; }
+	bool isReader() const override { return false; }
+
+private:
+	typedef PluginInfo super;
+};
+
+extern "C" typedef QList<PluginInfo> APIENTRY (*getPluginListPtr)(void);
+bool registerStaticPlugin(getPluginListPtr pPluginLister);
 
 #endif // PLUGIN_MANAGER_H_INCLUDED

@@ -13,6 +13,8 @@
 
 #include <support/config.h>
 
+#include "plugin/plugin_info.h"
+
 // When building the DLL library, BUILD_CSV_DLL must be defined
 // in order to export the symbols.
 
@@ -63,6 +65,13 @@ extern "C"
 {
 #endif
 
+CSV_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void);
+
+CSV_DLL_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
+CSV_DLL_EXPORT void APIENTRY FreeReader(IDataContainerReader *oReader);
+
+CSV_DLL_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
+CSV_DLL_EXPORT void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
 
 
 #ifdef __cplusplus

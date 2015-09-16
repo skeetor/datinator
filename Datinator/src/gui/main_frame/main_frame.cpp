@@ -99,7 +99,7 @@ void MainFrame::reloadPlugins(void)
 {
 	Progress prg("Loading plugins", "Initializing ...");
 
-	mPluginManager->reload(NULL);
+	mPluginManager->reload();
 	initReaders();
 	initWriters();
 
@@ -242,7 +242,7 @@ void MainFrame::initReaders(void)
 	QComboBox *box = getSourceBox();
 	box->clear();
 
-	QList<IDataContainerReader *> l = mPluginManager->getReaders();
+	QList<IDataContainerReader *> l = mPluginManager->getReaders(this);
 	for(IDataContainerReader *r : l)
 		initReaderContainerBox(box, r);
 
@@ -255,7 +255,7 @@ void MainFrame::initWriters(void)
 	QComboBox *box = getTargetBox();
 	box->clear();
 
-	QList<IDataContainerWriter *> l = mPluginManager->getWriters();
+	QList<IDataContainerWriter *> l = mPluginManager->getWriters(this);
 	for(IDataContainerWriter *w : l)
 		initWriterContainerBox(box, w);
 

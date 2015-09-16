@@ -25,31 +25,32 @@
 
 #include "plugin_manager.h"
 
-typedef enum
-{
-	GetReaderListIndex,
-	CreateReaderIndex,
-	FreeReaderIndex,
-	GetWriterListIndex,
-	CreateWriterIndex,
-	FreeWriterIndex,
-	TableSize
-} PluginFunctionIndex;
+#define MAX_STATIC_PLUGINS		1000
 
-const char *PluginFunctionNames[] =
-{
-	GetReaderListName,
-	CreateReaderName,
-	FreeReaderName,
-	GetWriterListName,
-	CreateWriterName,
-	FreeWriterName,
-};
-
-static QList<PluginInfo> gStaticPlugins;
+static getPluginListPtr gStaticPlugins[MAX_STATIC_PLUGINS];		// List of plugins registered via static call
+static int gStaticPluginsCounter = 0;
 
 PluginManager::PluginManager(void)
 {
+	std::cout << "Plugins registered:" << gStaticPluginsCounter << std::endl;
+
+	for(int i = 0; i < gStaticPluginsCounter; i++)
+	{
+		QList<PluginInfo> l = gStaticPlugins[i]();
+		for(PluginInfo const &info : l)
+		{
+			if(info.isReader())
+			{
+				PluginInfoReader r = info;
+				mStaticReader.append(r);
+			}
+			else
+			{
+				PluginInfoWriter r = info;
+				mStaticWriter.append(r);
+			}
+		}
+	}
 }
 
 PluginManager::~PluginManager(void)
@@ -81,33 +82,48 @@ void PluginManager::clearErrors(void)
 	mErrors.clear();
 }
 
-QList<IDataContainerReader *> PluginManager::getReaders(void)
+QList<IDataContainerReader *> PluginManager::getReaders(QWidget *oMain)
 {
 	QList<IDataContainerReader *> l;
-	for(PluginInfo &info : mReaders)
+	for(PluginInfoReader &info : mStaticReader)
 	{
-		if(info.isReader())
-		{
-			IDataContainerReader *p = dynamic_cast<IDataContainerReader *>(info.getContainer());
-			if(p)
-				l.append(p);
-		}
+		IDataContainerReader *p = info.getContainer();
+		if(!p)
+			p = info.getCreatePtr()(info.getUUID(), oMain);
+		if(p)
+			l.append(p);
+	}
+	for(PluginInfoReader &info : mDynamicReader)
+	{
+		IDataContainerReader *p = info.getContainer();
+		if(!p)
+			p = info.getCreatePtr()(info.getUUID(), oMain);
+		if(p)
+			l.append(p);
 	}
 
 	return l;
 }
 
-QList<IDataContainerWriter *> PluginManager::getWriters(void)
+QList<IDataContainerWriter *> PluginManager::getWriters(QWidget *oMain)
 {
 	QList<IDataContainerWriter *> l;
-	for(PluginInfo &info : mWriters)
+	for(PluginInfoWriter &info : mStaticWriter)
 	{
-		if(info.isWriter())
-		{
-			IDataContainerWriter *p = dynamic_cast<IDataContainerWriter *>(info.getContainer());
-			if(p)
-				l.append(p);
-		}
+		IDataContainerWriter *p = info.getContainer();
+		if(!p)
+			p = info.getCreatePtr()(info.getUUID(), oMain);
+
+		if(p)
+			l.append(p);
+	}
+	for(PluginInfoWriter &info : mDynamicWriter)
+	{
+		IDataContainerWriter *p = info.getContainer();
+		if(!p)
+			p = info.getCreatePtr()(info.getUUID(), oMain);
+		if(p)
+			l.append(p);
 	}
 
 	return l;
@@ -121,7 +137,7 @@ void PluginManager::clearWriters(void)
 {
 }
 
-bool PluginManager::reload(QWidget *oParent)
+bool PluginManager::reload(void)
 {
 	clearErrors();
 
@@ -135,12 +151,12 @@ bool PluginManager::reload(QWidget *oParent)
 	std::cout << "DLLs: "<< dlls.size() << "\n" << std::endl;
 
 	for(QString const &path : dlls)
-		addDLL(path, oParent);
+		addDLL(path);
 
 	return true;
 }
 
-bool PluginManager::addDLL(QString const &oPath, QWidget *oParent)
+bool PluginManager::addDLL(QString const &oPath)
 {
 	std::cout << "Add shared library: "<< oPath.toStdString() << std::endl;
 	QLibrary lib(oPath);
@@ -151,25 +167,26 @@ bool PluginManager::addDLL(QString const &oPath, QWidget *oParent)
 		return false;
 	}
 
-	QList<QFunctionPointer> ptrs;
-	bool check = false;	// We only need to check if at least one pointer exists
-	bool unload = false;
-	for(int i = 0; i < PluginFunctionIndex::TableSize; i++)
+	bool unload = true;
+	getPluginListPtr getPluginList = reinterpret_cast<getPluginListPtr>(lib.resolve(getPluginListFkt));
+	std::cout << "   " << getPluginListFkt << " ... " << std::hex << getPluginList << std::endl;
+	if(getPluginList)
 	{
-		QFunctionPointer p = lib.resolve(PluginFunctionNames[i]);
-		std::cout << "   " << PluginFunctionNames[i] << " ... " << std::hex << p << std::endl;
-		ptrs.append(p);
-		if(p)
-			check = true;
-	}
+		QList<PluginInfo> infos = getPluginList();
+		if(infos.size() > 0)
+		{
+			for(PluginInfo const &info : infos)
+			{
+				if(info.isReader())
+				{
+					PluginInfoReader r = info;
+					mDynamicReader.append(r);
+				}
+			}
 
-	if(check)
-	{
-		addReaders(ptrs, oPath, oParent);
-		addWriters(ptrs, oPath, oParent);
+			unload = false;
+		}
 	}
-	else
-		unload = true;
 
 	if(unload)
 	{
@@ -182,46 +199,7 @@ bool PluginManager::addDLL(QString const &oPath, QWidget *oParent)
 	return true;
 }
 
-int PluginManager::addReaders(QList<QFunctionPointer> const &oPluginPointers, QString const &oPath, QWidget *oParent)
-{
-	int added = 0;
-
-	// All three pointers have to be present
-	if(oPluginPointers[PluginFunctionIndex::GetReaderListIndex]
-		&& oPluginPointers[PluginFunctionIndex::CreateReaderIndex]
-		&& oPluginPointers[PluginFunctionIndex::FreeReaderIndex]
-	)
-	{
-		PluginInfo info;
-		PluginGetReaderList getReaderList = reinterpret_cast<PluginGetReaderList>(oPluginPointers[PluginFunctionIndex::GetReaderListIndex]);
-		PluginCreateReader createReader = reinterpret_cast<PluginCreateReader>(oPluginPointers[PluginFunctionIndex::CreateReaderIndex]);
-
-		info.setPath(oPath);
-		info.setCreatePtr(oPluginPointers[PluginFunctionIndex::CreateReaderIndex]);
-		info.setFreePtr(oPluginPointers[PluginFunctionIndex::FreeReaderIndex]);
-		const char **uuids = getReaderList();
-		if(uuids)
-		{
-			while(*uuids)
-			{
-				const char *uuid = *uuids;
-				IDataContainerReader *r = createReader(uuid, oParent);
-				if(r)
-				{
-					std::cout << "   Reader ... " << uuid << std::endl;
-					info.setContainer(r);
-					mReaders.append(info);
-					added++;
-				}
-				uuids++;
-			}
-		}
-	}
-
-	return added;
-}
-
-int PluginManager::addWriters(QList<QFunctionPointer> const &oPluginPointers, QString const &oPath, QWidget *oParent)
+/*int PluginManager::addWriters(QList<QFunctionPointer> const &oPluginPointers, QString const &oPath, QWidget *oParent)
 {
 	int added = 0;
 
@@ -258,7 +236,7 @@ int PluginManager::addWriters(QList<QFunctionPointer> const &oPluginPointers, QS
 	}
 
 	return added;
-}
+}*/
 
 bool PluginManager::findDLLs(QList<QString> &oDLLs, QString const &oPath)
 {
@@ -295,8 +273,37 @@ bool PluginManager::findDLLs(QList<QString> &oDLLs, QString const &oPath)
 QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplicates(void)
 {
 	QList<QPair<QString, QList<QPair<QString, QString>>>> duplist;
-	QList<PluginInfo> l = mReaders;
-	l += mWriters;
+	QList<PluginInfo> l;
+
+	for(PluginInfoReader const &info : mStaticReader)
+	{
+		PluginInfo i;
+		i.setUUID(info.getUUID());
+		i.setPath(info.getPath());
+		l += i;
+	}
+	for(PluginInfoReader const &info : mDynamicReader)
+	{
+		PluginInfo i;
+		i.setUUID(info.getUUID());
+		i.setPath(info.getPath());
+		l += i;
+	}
+
+	for(PluginInfoWriter const &info : mStaticWriter)
+	{
+		PluginInfo i;
+		i.setUUID(info.getUUID());
+		i.setPath(info.getPath());
+		l += i;
+	}
+	for(PluginInfoReader const &info : mDynamicWriter)
+	{
+		PluginInfo i;
+		i.setUUID(info.getUUID());
+		i.setPath(info.getPath());
+		l += i;
+	}
 
 	for(int i0 = 0; i0 < l.count(); i0++)
 	{
@@ -306,7 +313,7 @@ QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplica
 		QList<QPair<QString, QString>> dups;
 		QPair<QString, QString> dup;
 		dup.first = info.getPath();
-		dup.second = info.getContainer()->getContainername();
+		//dup.second = info.getContainer()->getContainername();
 		dups.append(dup);
 
 		for(int i1 = 0; i1 < l.count(); i1++)
@@ -318,7 +325,7 @@ QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplica
 			if(uuid == cmp.getUUID())
 			{
 				dup.first = cmp.getPath();
-				dup.second = cmp.getContainer()->getContainername();
+				//dup.second = cmp.getContainer()->getContainername();
 				dups.append(dup);
 			}
 		}
@@ -335,14 +342,14 @@ QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplica
 	return duplist;
 }
 
-bool PluginManager::registerStaticPluginReader(PluginInfo const &oPluginInfo)
+bool registerStaticPlugin(getPluginListPtr pPluginLister)
 {
-	gStaticPlugins.append(oPluginInfo);
-	return false;
-}
+	int max_cnt = sizeof gStaticPlugins / sizeof gStaticPlugins[0];
 
-bool PluginManager::registerStaticPluginWriter(PluginInfo const &oPluginInfo)
-{
-	gStaticPlugins.append(oPluginInfo);
-	return false;
+	if(gStaticPluginsCounter >= max_cnt)
+		return false;
+
+	gStaticPlugins[gStaticPluginsCounter++] = pPluginLister;
+
+	return true;
 }

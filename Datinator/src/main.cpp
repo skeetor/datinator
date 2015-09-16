@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 #endif // _WIN32
 	}
 
-    updatePath(::getenv("PATH"), QApplication::applicationDirPath());
+    updatePath(getenv("PATH"), QApplication::applicationDirPath());
 
 	QSettings &settings = app->getPropertyFile();
 	MainWindow frame;

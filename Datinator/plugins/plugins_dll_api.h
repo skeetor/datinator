@@ -7,11 +7,14 @@
 #ifndef __PLUGINS_DLL_API_H__
 #define __PLUGINS_DLL_API_H__
 
+#include <vector>
+
 #ifdef _WIN32
 #include <windows.h>
 #endif // _WIN32
 
 #include <support/config.h>
+#include <plugin/plugin_info.h>
 
 class IDataContainerReader;
 class IDataContainerWriter;
@@ -58,13 +61,9 @@ class QWidget;
 #endif
 
 /**
- * A Plugin DLL can export the following functions. If the DLL supports only one type
- * of items (i.e. only a reader) it doesn't have to export the other symbols.
- *
- * The DLL can be placed anywhere
- * and is  loaded dynamically by searching the executable directory and below.
- * A single plugin DLL can contain multiple readers and writers, but each one
- * has to have a unique UUID to identify it.
+ * A plugin must export the following function(s). When datinator is started
+ * it will search it's working directory and any subdirectory for shared libraries.
+ * If a library has the
  */
 
 #ifndef _WIN32
@@ -79,61 +78,15 @@ extern "C"
 #endif
 
 /**
- * Return a list of UUIDs for IDataContainerReader. The list is a list of pointers
- * where the last pointer is NULL to indicate the end of the list.
- * A return value of NULL is valid if no items are available.
+ * Get the list of plugins supported by this shared library.
  */
 #ifdef _WIN32
-#define GetReaderListName	"GetReaderList@0"
+#define getPluginListFkt	"getPluginList@4"
 #else
-#define GetReaderListName	"GetReaderList"
-#endif
-
-PLUGINS_EXPORT const char ** APIENTRY GetReaderList(void);
-typedef const char ** APIENTRY (*PluginGetReaderList)(void);
-
-/**
- * Return a list of UUIDs for IDataContainerWriter. The list is a list of pointers
- * where the last pointer is NULL to indicate the end of the list.
- * A return value of NULL is valid if no items are available.
- */
-#ifdef _WIN32
-#define GetWriterListName	"GetWriterList@0"
-#else
-#define GetWriterListName	"GetWriterList"
+#define getPluginListFkt	"getPluginList"
 #endif // _WIN32
 
-PLUGINS_EXPORT const char ** APIENTRY GetWriterList(void);
-typedef const char ** APIENTRY (*PluginGetWriterList)(void);
-
-/**
- * Create the reader with the specified UUID. If no such reader exists, NULL
- * is returned.
- */
-#ifdef _WIN32
-#define CreateReaderName	"CreateReader@8"
-#define FreeReaderName		"FreeReader@4"
-#else
-#define CreateReaderName	"CreateReader"
-#define FreeReaderName		"FreeReader"
-#endif // _WIN32
-
-PLUGINS_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
-PLUGINS_EXPORT void APIENTRY FreeReader(IDataContainerReader *oReader);
-
-/**
- * Create the writer with the specified UUID. If no such writer exists, NULL
- * is returned.
- */
-#ifdef _WIN32
-#define CreateWriterName	"CreateWriter@8"
-#define FreeWriterName		"FreeWriter@4"
-#else
-#define CreateWriterName	"CreateWriter"
-#define FreeWriterName		"FreeWriter"
-#endif // _WIN32
-PLUGINS_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
-PLUGINS_EXPORT void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
+extern "C" PLUGINS_EXPORT std::vector<PluginInfo> APIENTRY getPluginList(void);
 
 #ifdef __cplusplus
 }
