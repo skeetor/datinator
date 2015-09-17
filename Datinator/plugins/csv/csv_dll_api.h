@@ -65,14 +65,9 @@ extern "C"
 {
 #endif
 
+#ifdef BUILD_CSV_DLL
 CSV_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void);
-
-CSV_DLL_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
-CSV_DLL_EXPORT void APIENTRY FreeReader(IDataContainerReader *oReader);
-
-CSV_DLL_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
-CSV_DLL_EXPORT void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
-
+#endif // BUILD_CSV_STATIC
 
 #ifdef __cplusplus
 }

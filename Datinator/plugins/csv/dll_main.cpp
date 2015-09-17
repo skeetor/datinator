@@ -12,9 +12,16 @@
 #include "csv/csv_reader.h"
 #include "csv/csv_writer.h"
 
-#ifdef BUILD_CSV_STATIC
-
 #include "plugin/plugin_manager.h"
+
+static IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
+static void APIENTRY FreeReader(IDataContainerReader *oReader);
+
+static IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
+static void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
+
+#ifdef BUILD_CSV_STATIC
+static QList<PluginInfo> APIENTRY getPluginInfo(void);
 
 static bool registerPlugins(void)
 {
@@ -25,7 +32,7 @@ static bool registerPlugins(void)
 
 static bool gRegistered = registerPlugins();
 
-#endif // BUILD_CSV_STATIC
+#else // BUILD_CSV_STATIC
 
 #ifdef _WIN32
 
@@ -57,7 +64,14 @@ extern "C" CSV_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwRea
 }
 #endif // _WIN32
 
+#endif // BUILD_CSV_STATIC
+
+
+#ifdef BUILD_CSV_STATIC
+static QList<PluginInfo> APIENTRY getPluginInfo(void)
+#else
 extern "C" CSV_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void)
+#endif
 {
 	QList<PluginInfo> infos;
 
@@ -76,7 +90,7 @@ extern "C" CSV_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void)
 	return infos;
 }
 
-extern "C" CSV_DLL_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow)
+static IDataContainerReader *CreateReader(const char *oUUID, QWidget *oMainWindow)
 {
 	// We only support a single reader here, so we can just hardcode it.
 	if(!oUUID)
@@ -88,13 +102,13 @@ extern "C" CSV_DLL_EXPORT IDataContainerReader * APIENTRY CreateReader(const cha
 	return new CSVReader(oMainWindow);
 }
 
-extern "C" CSV_DLL_EXPORT void APIENTRY FreeReader(IDataContainerReader *oReader)
+static void FreeReader(IDataContainerReader *oReader)
 {
 	if(oReader)
 		delete oReader;
 }
 
-extern "C" CSV_DLL_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow)
+static IDataContainerWriter *CreateWriter(const char *oUUID, QWidget *oMainWindow)
 {
 	// We only support a single reader here, so we can just hardcode it.
 	if(!oUUID)
@@ -106,7 +120,7 @@ extern "C" CSV_DLL_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const cha
 	return new CSVWriter(oMainWindow);
 }
 
-extern "C" CSV_DLL_EXPORT void APIENTRY FreeWriter(IDataContainerWriter *oWriter)
+static void FreeWriter(IDataContainerWriter *oWriter)
 {
 	if(oWriter)
 		delete oWriter;
