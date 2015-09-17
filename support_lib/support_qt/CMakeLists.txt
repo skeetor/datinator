@@ -8,6 +8,9 @@ include(${CMAKE_SOURCE_DIR}/cmake/generate_qt_sources.cmake)
 
 set(TARGET_LIBRARY support_qt_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
 set(SUPPORT_LIBRARY support_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
+set(UI_INCLUDE_DIR "${SUPPORT_LIB_BINARY_DIR}/include")
+#message("Create directory ${UI_INCLUDE_DIR}")
+make_directory("${UI_INCLUDE_DIR}/support_qt")
 
 # Enable the build directory as an include path as well, required for
 # qt moc generated files.
@@ -17,9 +20,6 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 
-set(UI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
-#message("Create directory ${UI_INCLUDE_DIR}")
-#make_directory("${UI_INCLUDE_DIR}/support_qt")
 
 include_directories(${Qt5Widgets_INCLUDES})
 include_directories(${CMAKE_BINARY_DIR})			# required for generated UI headers
