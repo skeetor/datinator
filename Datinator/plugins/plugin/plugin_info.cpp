@@ -12,8 +12,6 @@
 
 PluginInfo::PluginInfo(void)
 {
-	mPath = NULL;
-	mName = NULL;
 	mContainer = NULL;
 	mCreate = NULL;
 	mFree = NULL;
@@ -24,19 +22,12 @@ PluginInfo::PluginInfo(PluginInfo const &oSource)
 	mContainer = NULL;
 	mCreate = NULL;
 	mFree = NULL;
-	mPath = NULL;
-	mName = NULL;
 
 	copy(oSource);
 }
 
 PluginInfo::~PluginInfo(void)
 {
-	if(mPath)
-		delete mPath;
-
-	if(mName)
-		delete mName;
 }
 
 void PluginInfo::copy(PluginInfo const &oSource)
@@ -90,14 +81,8 @@ bool PluginInfo::isReader() const
 void PluginInfo::setContainer(IDataContainer *oContainer)
 {
 	mContainer = oContainer;
-	QString s;
 	if(mContainer)
-		s = mContainer->getContainername();
+		mName = mContainer->getContainername();
 	else
-		s = "";
-
-	if(!mName)
-		mName = new QString();
-
-	*mName = s;
+		mName = "";
 }

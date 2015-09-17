@@ -45,27 +45,18 @@ public:
 
 	inline QString getPath(void) const
 	{
-		if(mPath)
-			return *mPath;
-
-		return "";
+		return mPath;
 	}
 	inline void setPath(QString const &oPath)
 	{
-		if(!mPath)
-			mPath = new QString();
-
-		*mPath = oPath;
+		mPath = oPath;
 	}
 
 	inline void setUUID(const char *pUUID) { mUUID = pUUID; };
 	inline const char *getUUID(void) const { return mUUID; };
 	inline QString getName(void) const
 	{
-		if(mName)
-			return *mName;
-
-		return "";
+		return mName;
 	};
 
 	virtual bool isWriter() const;
@@ -99,8 +90,8 @@ protected:
 
 private:
 	const char *mUUID;
-	QString *mPath;
-	QString *mName;
+	QString mPath;
+	QString mName;
 	bool mIsReader;
 	IDataContainer *mContainer;
 	CreatePtr mCreate;
