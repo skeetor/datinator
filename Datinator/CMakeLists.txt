@@ -107,6 +107,7 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 
 include_directories(${Qt5Widgets_INCLUDES})
 include_directories(${CMAKE_BINARY_DIR}/src)			# required for generated UI headers
+include_directories(${CMAKE_BINARY_DIR}/../include)		# required for generated UI headers
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/plugins)
 
