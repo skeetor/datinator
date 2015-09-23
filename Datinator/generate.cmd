@@ -14,4 +14,7 @@ rem cmake -DCMAKE_BUILD_TYPE=Release -DUNICODE_BUILD=1 -G "MinGW Makefiles" ..
 rem cmake -DCMAKE_BUILD_TYPE=Debug -DUNICODE_BUILD=1 -DSTATIC_BUILD=1 -G "MinGW Makefiles" ..
 rem cmake -DCMAKE_BUILD_TYPE=Release -DUNICODE_BUILD=1 -DSTATIC_BUILD=1 -G "MinGW Makefiles" ..
 
+
+rem cmake -DCMAKE_BUILD_TYPE=Debug -DSTATIC_BUILD=1 -DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE -G "Eclipse CDT4 - MinGW Makefiles" ..\..\Datinator
+
 cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" ..
