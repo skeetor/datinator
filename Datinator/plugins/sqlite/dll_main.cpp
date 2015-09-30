@@ -24,6 +24,28 @@ const char *gWriterIDs[] =
 	NULL
 };
 
+static IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
+static void APIENTRY FreeReader(IDataContainerReader *oReader);
+
+static IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
+static void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
+
+#ifdef BUILD_SQLITE_STATIC
+static QList<PluginInfo> APIENTRY getPluginInfo(void);
+
+static bool registerPlugins(void)
+{
+	registerStaticPlugin(getPluginInfo);
+
+	return true;
+}
+
+static bool gRegistered = registerPlugins();
+
+#else // BUILD_SQLITE_STATIC
+
+#ifdef _WIN32
+
 extern "C" SQLITE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
 	UNUSED(hinstDLL);
@@ -48,20 +70,36 @@ extern "C" SQLITE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdw
             // detach from thread
            break;
     }
-    return TRUE; // succesful
+    return TRUE; // successful
 }
+#endif // _WIN32
 
-extern "C" PLUGINS_EXPORT const char ** APIENTRY GetReaderList(void)
+#endif // BUILD_SQLITE_STATIC
+
+#ifdef BUILD_SQLITE_STATIC
+static QList<PluginInfo> APIENTRY getPluginInfo(void)
+#else
+extern "C" SQLITE_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void)
+#endif
 {
-	return gReaderIDs;
+	QList<PluginInfo> infos;
+
+	PluginInfoReader r;
+	r.setUUID(SQLITE_READER_ID);
+	r.setCreatePtr(CreateReader);
+	r.setFreePtr(FreeReader);
+	infos.append(r);
+
+	PluginInfoWriter w;
+	w.setUUID(SQLITE_WRITER_ID);
+	w.setCreatePtr(CreateWriter);
+	w.setFreePtr(FreeWriter);
+	infos.append(w);
+
+	return infos;
 }
 
-extern "C" PLUGINS_EXPORT const char ** APIENTRY GetWriterList(void)
-{
-	return gWriterIDs;
-}
-
-extern "C" PLUGINS_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow)
+static IDataContainerReader *CreateReader(const char *oUUID, QWidget *oMainWindow)
 {
 	// We only support a single reader here, so we can just hardcode it.
 	if(!oUUID)
@@ -73,13 +111,13 @@ extern "C" PLUGINS_EXPORT IDataContainerReader * APIENTRY CreateReader(const cha
 	return new SQLiteReader(oMainWindow);
 }
 
-extern "C" PLUGINS_EXPORT void APIENTRY FreeReader(IDataContainerReader *oReader)
+static void FreeReader(IDataContainerReader *oReader)
 {
 	if(oReader)
 		delete oReader;
 }
 
-extern "C" PLUGINS_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow)
+static IDataContainerWriter *CreateWriter(const char *oUUID, QWidget *oMainWindow)
 {
 	// We only support a single reader here, so we can just hardcode it.
 	if(!oUUID)
@@ -91,7 +129,7 @@ extern "C" PLUGINS_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const cha
 	return new SQLiteWriter(oMainWindow);
 }
 
-extern "C" PLUGINS_EXPORT void APIENTRY FreeWriter(IDataContainerWriter *oWriter)
+static void FreeWriter(IDataContainerWriter *oWriter)
 {
 	if(oWriter)
 		delete oWriter;
