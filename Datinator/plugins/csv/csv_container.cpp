@@ -16,6 +16,8 @@
 CSVContainer::CSVContainer(QWidget *oMainWindow)
 : super(oMainWindow)
 {
+	mFilePanel = NULL;
+	mRownum = 0;
 	setContainername("CSV File");
 }
 

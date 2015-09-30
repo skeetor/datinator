@@ -34,6 +34,8 @@ option (UNICODE_BUILD "Build for UNICODE (default is off)" OFF)
 
 include(${SUPPORT_LIBRARY_BASE_PATH}/cmake/generate_qt_sources.cmake)
 
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")
+
 if (CMAKE_BUILD_TYPE STREQUAL Release)
 	set (BUILD_TYPE_FLAG "")		# release build
 else (NOT CMAKE_BUILD_TYPE STREQUAL Release)

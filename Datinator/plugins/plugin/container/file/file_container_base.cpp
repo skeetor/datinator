@@ -87,7 +87,10 @@ void FileContainerBase::handleNotification(Dispatcher<QString> *oSource, QString
 
 bool FileContainerBase::connect(QString const &oFilename)
 {
-	getFilePanel()->setFilename(oFilename);
+	FilePanel *p = getFilePanel();
+	if(p)
+		p->setFilename(oFilename);
+
 	return super::connect(oFilename);
 }
 

@@ -9,6 +9,7 @@
 ManipulatorPanel::ManipulatorPanel(Manipulator *oOwner, QWidget *oParent)
 : QFrame(oParent)
 {
+	mMode = Manipulator::PREPEND;
 	mOwner = oOwner;
 	mPrependBtn = NULL;
 	mAppendBtn = NULL;

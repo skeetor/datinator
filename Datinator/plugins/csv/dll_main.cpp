@@ -77,13 +77,13 @@ extern "C" CSV_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void)
 
 	PluginInfoReader r;
 	r.setUUID(CSV_READER_ID);
-	r.setCreatePtr(CreateReader);
+	r.setCreatePtr(&CreateReader);
 	r.setFreePtr(FreeReader);
 	infos.append(r);
 
 	PluginInfoWriter w;
 	w.setUUID(CSV_WRITER_ID);
-	w.setCreatePtr(CreateWriter);
+	w.setCreatePtr(&CreateWriter);
 	w.setFreePtr(FreeWriter);
 	infos.append(w);
 
