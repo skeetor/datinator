@@ -44,7 +44,7 @@ static bool gRegistered = registerPlugins();
 
 #else // BUILD_SQLITE_STATIC
 
-#ifdef _WIN32
+#if defined _WIN32 || defined _WIN64
 
 extern "C" SQLITE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
