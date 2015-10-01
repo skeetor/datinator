@@ -22,9 +22,6 @@ public:
 	CSVContainer(QWidget *oMainWindow);
 	virtual ~CSVContainer(void);
 
-	virtual CSV &getCSV(void);
-	virtual CSV const &getCSV(void) const;
-
 	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
 	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
 
@@ -37,6 +34,9 @@ public:
 	void end(void) override;
 
 protected:
+	virtual CSV &getCSV(void);
+	virtual CSV const &getCSV(void) const;
+
 	void releaseColumns(void) override;
 	virtual CSV::Openmode getOpenmode(void) = 0;
 

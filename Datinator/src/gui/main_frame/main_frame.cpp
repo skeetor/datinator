@@ -92,7 +92,6 @@ MainFrame::MainFrame(MostRecent *oRecentSource, MostRecent *oRecentTarget, MostR
 
 MainFrame::~MainFrame(void)
 {
-	delete mGUI;
 }
 
 void MainFrame::reloadPlugins(void)

@@ -29,8 +29,8 @@ bool hexdumpToFile(supportlib::string_t const &oInput, supportlib::string_t cons
 
 static const int MAX_CONSOLE_LINES = 500;
 
-void RedirectIOToConsole(void);
-void parseCommandline(int argc, char *argv[]);
+static void RedirectIOToConsole(void);
+static void parseCommandline(int argc, char *argv[]);
 
 Application *Application::mApplication = NULL;
 bool gConsoleMode = false;
@@ -116,7 +116,7 @@ QSettings &Application::getPropertyFile(void)
 	if(mPropertyFile == NULL)
     {
 		QString p = DEFAULT_CONFIG_FILE;
-#ifdef _LINUX
+#ifdef LINUX
 		QList<QString> locs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
 		p = locs.at(0) + "/."+p;
 #endif // _LINUX
@@ -130,7 +130,7 @@ QSettings &Application::getPropertyFile(void)
 	return *mPropertyFile;
 }
 
-void parseCommandline(int argc, char *argv[])
+static void parseCommandline(int argc, char *argv[])
 {
 	for(int i = 1; i < argc; i++)
 	{
@@ -140,8 +140,8 @@ void parseCommandline(int argc, char *argv[])
 	}
 }
 
-#ifdef _WIN32
-void RedirectIOToConsole(void)
+#ifdef WINDOWS
+static void RedirectIOToConsole(void)
 {
 	int hConHandle;
 	long lStdHandle;
@@ -198,7 +198,7 @@ void updatePath(QString oPath, QString oExe)
 }
 #endif // _WIN32
 
-#ifdef _LINUX
+#ifdef LINUX
 void updatePath(QString oPath, QString oExe)
 {
 	if(!oPath.contains(oExe.toUpper()+":"))
