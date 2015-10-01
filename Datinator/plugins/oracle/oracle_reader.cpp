@@ -8,7 +8,7 @@
 
 #include "oracle/oracle_global.h"
 #include "oracle/oracle_reader.h"
-#include "container/sql/gui/db_panel_gui.moc"
+#include "plugin/sql/gui/db_panel_gui.moc"
 
 #define MODULENAME "ORACLE"
 

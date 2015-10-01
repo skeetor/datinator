@@ -7,7 +7,7 @@
 #ifndef ORACLE_READER_H_INCLUDED
 #define ORACLE_READER_H_INCLUDED
 
-#include "container/reader_base.h"
+#include "plugin/container/reader_base.h"
 #include "oracle/oracle_container.h"
 
 class SQLPreviewPanel;

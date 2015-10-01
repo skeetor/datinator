@@ -7,7 +7,7 @@
 #ifndef ORACLE_WRITER_H_INCLUDED
 #define ORACLE_WRITER_H_INCLUDED
 
-#include "container/writer_base.h"
+#include "plugin/container/writer_base.h"
 #include "oracle/oracle_container.h"
 #include "oracle/gui/oracle_writer_gui.moc"
 

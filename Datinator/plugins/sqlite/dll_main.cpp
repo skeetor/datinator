@@ -12,18 +12,6 @@
 #include "sqlite/sqlite_reader.h"
 #include "sqlite/sqlite_writer.h"
 
-const char *gReaderIDs[] =
-{
-	SQLITE_READER_ID,
-	NULL
-};
-
-const char *gWriterIDs[] =
-{
-	SQLITE_WRITER_ID,
-	NULL
-};
-
 static IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
 static void APIENTRY FreeReader(IDataContainerReader *oReader);
 
@@ -44,7 +32,7 @@ static bool gRegistered = registerPlugins();
 
 #else // BUILD_SQLITE_STATIC
 
-#if defined _WIN32 || defined _WIN64
+#if defined WINDOWS || defined _WIN32 || defined _WIN64
 
 extern "C" SQLITE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {

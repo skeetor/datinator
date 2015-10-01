@@ -10,7 +10,7 @@
 #include "soci.h"
 #include "oracle/oracle_writer.h"
 #include "oracle/gui/oracle_writer_gui.moc"
-#include "container/gui/progress.h"
+#include "plugin/gui/progress.h"
 
 #include "support/db/dbcolumn.h"
 

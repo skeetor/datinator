@@ -37,6 +37,7 @@ set(COMMON_SOURCES
 add_subdirectory (plugin)
 add_subdirectory (csv)
 add_subdirectory (sqlite)
+add_subdirectory (oracle)
 
 set(SOURCE_FILES ${SOURCE_FILES} ${COMMON_SOURCES}
 

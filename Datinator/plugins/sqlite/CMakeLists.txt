@@ -3,6 +3,13 @@
 #
 # SQLITE plugin
 
+if(BUILD_SQLITE3_PLUGIN)
+    message("-- SQLite3 plugin enabled")
+else()
+    message("-- SQLite3 plugin disabled")
+    return()
+endif()
+
 set (SQLITE3_LIBRARY_BASE_PATH "D:/opt/sqlite3" CACHE PATH "Path where the SQLite3 library is located")
 
 set(SQLITE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/plugins/sqlite")

@@ -34,7 +34,7 @@ static bool gRegistered = registerPlugins();
 
 #else // BUILD_CSV_STATIC
 
-#if defined _WIN32 || defined _WIN64
+#if defined WINDOWS || defined _WIN32 || defined _WIN64
 
 extern "C" CSV_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {

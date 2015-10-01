@@ -32,6 +32,10 @@ set (BINARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin" CACHE PATH "Path where the exe
 option (STATIC_BUILD "Build as a static version (default is shared)" OFF)
 option (UNICODE_BUILD "Build for UNICODE (default is off)" OFF)
 
+option (BUILD_ORACLE_PLUGIN "Build Oracle plugin" OFF)
+option (BUILD_SQLITE3_PLUGIN "Build SQLite3 plugin" ON)
+option (BUILD_CSV_PLUGIN "Build CSV plugin" ON)
+
 include(${SUPPORT_LIBRARY_BASE_PATH}/cmake/generate_qt_sources.cmake)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")

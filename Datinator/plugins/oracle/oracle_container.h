@@ -11,13 +11,13 @@
 
 #include "support_qt/db/login_panel/login_event.h"
 #include "support_qt/db/login_panel/database_login_panel_gui.moc"
-#include "container/sql/soci_container.h"
+#include "plugin/container/sql/soci_container.h"
 
 class QSettings;
 class QWidget;
 class DatabaseLoginPanel;
 class LoginPanelModel;
-namespace soci { class session; };
+namespace soci { class session; }
 
 class OracleContainer : public SociContainer, protected Listener<LoginEvent>
 {

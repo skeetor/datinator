@@ -4,7 +4,7 @@
  *
  ******************************************************************************/
 
-#include "../plugin_dll_api.h"
+#include "../plugins_dll_api.h"
 
 #include "oracle/oracle_global.h"
 #include "oracle/oracle_dll_api.h"
@@ -12,17 +12,27 @@
 #include "oracle/oracle_reader.h"
 #include "oracle/oracle_writer.h"
 
-const char *gReaderIDs[] =
-{
-	ORACLE_READER_ID,
-	NULL
-};
+static IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow);
+static void APIENTRY FreeReader(IDataContainerReader *oReader);
 
-const char *gWriterIDs[] =
+static IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow);
+static void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
+
+#ifdef BUILD_ORACLE_STATIC
+static QList<PluginInfo> APIENTRY getPluginInfo(void);
+
+static bool registerPlugins(void)
 {
-	ORACLE_WRITER_ID,
-	NULL
-};
+	registerStaticPlugin(getPluginInfo);
+
+	return true;
+}
+
+static bool gRegistered = registerPlugins();
+
+#else // BUILD_ORACLE_STATIC
+
+#if defined WINDOWS || defined _WIN32 || defined _WIN64
 
 extern "C" ORACLE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -45,20 +55,36 @@ extern "C" ORACLE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdw
             // detach from thread
            break;
     }
-    return TRUE; // succesful
+    return TRUE; // successful
 }
+#endif // WINDOWS
 
-extern "C" PLUGINS_EXPORT const char ** APIENTRY GetReaderList(void)
+#endif // BUILD_ORACLE_STATIC
+
+#ifdef BUILD_ORACLE_STATIC
+static QList<PluginInfo> APIENTRY getPluginInfo(void)
+#else
+extern "C" ORACLE_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void)
+#endif
 {
-	return gReaderIDs;
+	QList<PluginInfo> infos;
+
+	PluginInfoReader r;
+	r.setUUID(ORACLE_READER_ID);
+	r.setCreatePtr(CreateReader);
+	r.setFreePtr(FreeReader);
+	infos.append(r);
+
+	PluginInfoWriter w;
+	w.setUUID(ORACLE_WRITER_ID);
+	w.setCreatePtr(CreateWriter);
+	w.setFreePtr(FreeWriter);
+	infos.append(w);
+
+	return infos;
 }
 
-extern "C" PLUGINS_EXPORT const char ** APIENTRY GetWriterList(void)
-{
-	return gWriterIDs;
-}
-
-extern "C" PLUGINS_EXPORT IDataContainerReader * APIENTRY CreateReader(const char *oUUID, QWidget *oMainWindow)
+static IDataContainerReader *CreateReader(const char *oUUID, QWidget *oMainWindow)
 {
 	// We only support a single reader here, so we can just hardcode it.
 	if(!oUUID)
@@ -70,13 +96,13 @@ extern "C" PLUGINS_EXPORT IDataContainerReader * APIENTRY CreateReader(const cha
 	return new OracleReader(oMainWindow);
 }
 
-extern "C" PLUGINS_EXPORT void APIENTRY FreeReader(IDataContainerReader *oReader)
+static void FreeReader(IDataContainerReader *oReader)
 {
 	if(oReader)
 		delete oReader;
 }
 
-extern "C" PLUGINS_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *oMainWindow)
+static IDataContainerWriter *CreateWriter(const char *oUUID, QWidget *oMainWindow)
 {
 	// We only support a single reader here, so we can just hardcode it.
 	if(!oUUID)
@@ -88,7 +114,7 @@ extern "C" PLUGINS_EXPORT IDataContainerWriter * APIENTRY CreateWriter(const cha
 	return new OracleWriter(oMainWindow);
 }
 
-extern "C" PLUGINS_EXPORT void APIENTRY FreeWriter(IDataContainerWriter *oWriter)
+static void FreeWriter(IDataContainerWriter *oWriter)
 {
 	if(oWriter)
 		delete oWriter;

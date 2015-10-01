@@ -3,6 +3,13 @@
 #
 # CSV plugin
 
+if(BUILD_CSV_PLUGIN)
+    message("-- CSV plugin enabled")
+else()
+    message("-- CSV plugin disabled")
+    return()
+endif()
+
 set(CSV_SOURCE_DIR "${CMAKE_SOURCE_DIR}/plugins/csv")
 set(CSV_BINARY_DIR "${CMAKE_BINARY_DIR}/plugins/csv")
 set(CSV_PLUGIN csv_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})

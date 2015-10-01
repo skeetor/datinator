@@ -8,11 +8,11 @@
 
 #include "support_qt/db/login_panel/login_panel_model.h"
 #include "oracle/oracle_container.h"
-#include "container/sql/gui/db_panel_gui.moc"
+#include "plugin/sql/gui/db_panel_gui.moc"
 
 #include "soci.h"
 #include "oracle/soci-oracle.h"
-#include "container/gui/progress.h"
+#include "plugin/gui/progress.h"
 
 #define MODULENAME "ORACLE"
 

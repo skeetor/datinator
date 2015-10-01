@@ -7,8 +7,8 @@
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
 
-#include "container/sql/gui/db_export_gui.moc"
-#include "container/sql/gui/commit_config_gui.moc"
+#include "plugin/sql/gui/db_export_gui.moc"
+#include "plugin/sql/gui/commit_config_gui.moc"
 #include "oracle/gui/oracle_writer_gui.moc"
 #include "oracle/oracle_writer.h"
 
