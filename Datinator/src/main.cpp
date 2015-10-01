@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
 	if(gConsoleMode)
 	{
-#ifdef _WIN32
+#ifdef WINDOWS
 		if(GetConsoleWindow() == NULL)
 		{
 			RedirectIOToConsole();

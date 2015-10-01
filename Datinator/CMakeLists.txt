@@ -25,6 +25,13 @@ cmake_policy(SET CMP0054 OLD)
 
 project(Datinator)
 
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWINDOWS")
+ENDIF()
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLINUX")
+ENDIF()
+
 set (SUPPORT_LIBRARY_BASE_PATH "${CMAKE_SOURCE_DIR}/../support_lib" CACHE PATH "Path where the support libraries is located (default is assumed on the same directory as Datinator is).")
 set (SUPPORT_INCLUDE_PATH "${SUPPORT_LIBRARY_BASE_PATH}" CACHE PATH "Path where the support library includes are located (default is assumed on the same directory as Datinator is).")
 set (BINARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin" CACHE PATH "Path where the executableand libraries should go")
