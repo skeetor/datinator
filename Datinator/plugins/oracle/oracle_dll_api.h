@@ -7,7 +7,8 @@
 #ifndef __ORACLE_DLL_API_H__
 #define __ORACLE_DLL_API_H__
 
-#include <windows.h>
+#include <support/config.h>
+#include "plugin/plugin_info.h"
 
 // When building the DLL library, BUILD_ORACLE_DLL must be defined
 // in order to export the symbols.
@@ -24,12 +25,12 @@
     #define BUILD_CONTAINER_DLL
 
 	#ifdef BUILD_ORACLE_DLL
-        #ifdef _WIN32
+        #ifdef _WINDOWS
             #define ORACLE_DLL_EXPORT __declspec(dllexport)
 		#ifdef DEBUG_EXPORT_SYMBOLS
 			#warning ORACLE_SHARED EXPORT WIN32
 		#endif
-		#endif // _WIN32
+		#endif // _WINDOWS
 
         #ifdef _LINUX
             #define ORACLE_DLL_EXPORT __attribute__ ((visibility ("default")))
@@ -38,12 +39,12 @@
 		#endif
         #endif // _LINUX
 	#else
-        #ifdef _WIN32
+        #ifdef _WINDOWS
             #define ORACLE_DLL_EXPORT __declspec(dllimport)
 		#ifdef DEBUG_EXPORT_SYMBOLS
 			#warning ORACLE_SHARED IMPORT WIN32
 		#endif
-        #endif // _WIN32
+        #endif // _WINDOWS
 
         #ifdef _LINUX
             #define ORACLE_DLL_EXPORT

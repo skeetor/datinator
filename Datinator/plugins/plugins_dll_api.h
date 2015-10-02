@@ -9,11 +9,12 @@
 
 #include <vector>
 
-#ifdef _WIN32
+#ifdef _WINDOWS
 #include <windows.h>
-#endif // _WIN32
+#endif // _WINDOWS
 
 #include <support/config.h>
+#include <support/support_defs.h>
 #include <plugin/plugin_info.h>
 
 class IDataContainerReader;
@@ -30,12 +31,12 @@ class QWidget;
 	#endif
 #else
 	#ifdef BUILD_PLUGINS_AS_DLL
-        #ifdef _WIN32
+        #ifdef _WINDOWS
             #define PLUGINS_EXPORT __declspec(dllexport)
 			#ifdef DEBUG_EXPORT_SYMBOLS
 				#warning PLUGINS_SHARED EXPORT WIN32
 			#endif
-        #endif // _WIN32
+        #endif // _WINDOWS
 
         #ifdef _LINUX
             #define PLUGINS_EXPORT __attribute__ ((visibility ("default")))
@@ -44,12 +45,12 @@ class QWidget;
 			#endif
         #endif // _LINUX
 	#else
-        #ifdef _WIN32
+        #ifdef _WINDOWS
             #define PLUGINS_EXPORT __declspec(dllimport)
 			#ifdef DEBUG_EXPORT_SYMBOLS
 				#warning PLUGINS_SHARED IMPORT WIN32
 			#endif
-        #endif // _WIN32
+        #endif // _WINDOWS
 
         #ifdef _LINUX
             #define PLUGINS_EXPORT
@@ -66,11 +67,11 @@ class QWidget;
  * If a library has the
  */
 
-#ifndef _WIN32
+#ifndef _WINDOWS
 
 #define APIENTRY
 
-#endif // _WIN32
+#endif // _WINDOWS
 
 #ifdef __cplusplus
 extern "C"
@@ -80,11 +81,20 @@ extern "C"
 /**
  * Get the list of plugins supported by this shared library.
  */
-#ifdef _WIN32
-#define getPluginListFkt	"getPluginList@4"
+#ifdef _DEBUG
+#define getPluginInfoFkt	getPluginInfoDebug
 #else
-#define getPluginListFkt	"getPluginList"
-#endif // _WIN32
+#define getPluginInfoFkt	getPluginInfo
+#endif // _DEBUG
+
+#define FtkExportName "" __DEFINE_TO_STRING(getPluginInfoFkt) ""
+
+
+#ifdef _WINDOWS
+#define getPluginListFktExport	FtkExportName"@0"
+#else
+#define getPluginListFktExport	FtkExportName
+#endif // _WINDOWS
 
 extern "C" PLUGINS_EXPORT std::vector<PluginInfo> APIENTRY getPluginList(void);
 

@@ -10,7 +10,7 @@ set(TARGET_LIBRARY support_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
 set(DEBUG_EXPORT_SYMBOLS OFF CACHE BOOL "Set debug mode for exported symbols")
 set(UI_INCLUDE_DIR "${SUPPORT_LIB_BINARY_DIR}/include")
 #message("Create directory ${UI_INCLUDE_DIR}")
-make_directory("${UI_INCLUDE_DIR}/support")
+file(MAKE_DIRECTORY "${UI_INCLUDE_DIR}/support")
 
 configure_file(config.h.in ${UI_INCLUDE_DIR}/support/config.h)
 

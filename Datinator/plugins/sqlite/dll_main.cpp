@@ -19,11 +19,11 @@ static IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *
 static void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
 
 #ifdef BUILD_SQLITE_STATIC
-static QList<PluginInfo> APIENTRY getPluginInfo(void);
+static QList<PluginInfo> APIENTRY getPluginInfoFkt(void);
 
 static bool registerPlugins(void)
 {
-	registerStaticPlugin(getPluginInfo);
+	registerStaticPlugin(getPluginInfoFkt);
 
 	return true;
 }
@@ -32,7 +32,7 @@ static bool gRegistered = registerPlugins();
 
 #else // BUILD_SQLITE_STATIC
 
-#if defined WINDOWS || defined _WIN32 || defined _WIN64
+#if defined _WINDOWS
 
 extern "C" SQLITE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -60,14 +60,14 @@ extern "C" SQLITE_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdw
     }
     return TRUE; // successful
 }
-#endif // _WIN32
+#endif // _WINDOWS
 
 #endif // BUILD_SQLITE_STATIC
 
 #ifdef BUILD_SQLITE_STATIC
-static QList<PluginInfo> APIENTRY getPluginInfo(void)
+static QList<PluginInfo> APIENTRY getPluginInfoFkt(void)
 #else
-extern "C" SQLITE_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void)
+extern "C" SQLITE_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfoFkt(void)
 #endif
 {
 	QList<PluginInfo> infos;

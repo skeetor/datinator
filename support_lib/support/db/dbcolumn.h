@@ -24,16 +24,18 @@ class DBColumn
 public:
 	DBColumn(void)
 	{
-		reset();
+		init();
 	}
 
 	DBColumn(DBColumn<T, V> const *oSource)
 	{
+		init();
 		copy(oSource);
 	}
 
 	DBColumn(DBColumn<T, V> const &oSource)
 	{
+		init();
 		copy(oSource);
 	}
 

@@ -7,12 +7,7 @@
 #ifndef __CSV_DLL_API_H__
 #define __CSV_DLL_API_H__
 
-#ifdef _WIN32
-#include <windows.h>
-#endif // _WIN32
-
 #include <support/config.h>
-
 #include "plugin/plugin_info.h"
 
 // When building the DLL library, BUILD_CSV_DLL must be defined
@@ -29,12 +24,12 @@
     #define BUILD_CONTAINER_DLL
 
 	#ifdef BUILD_CSV_DLL
-        #ifdef _WIN32
+        #ifdef _WINDOWS
             #define CSV_DLL_EXPORT __declspec(dllexport)
 		#ifdef DEBUG_EXPORT_SYMBOLS
 			#warning CSV_SHARED EXPORT WIN32
 		#endif
-		#endif // _WIN32
+		#endif // _WINDOWS
 
         #ifdef _LINUX
             #define CSV_DLL_EXPORT __attribute__ ((visibility ("default")))
@@ -43,12 +38,12 @@
 		#endif
         #endif // _LINUX
 	#else
-        #ifdef _WIN32
+        #ifdef _WINDOWS
             #define CSV_DLL_EXPORT __declspec(dllimport)
 		#ifdef DEBUG_EXPORT_SYMBOLS
 			#warning CSV_SHARED IMPORT WIN32
 		#endif
-        #endif // _WIN32
+        #endif // _WINDOWS
 
         #ifdef _LINUX
             #define CSV_DLL_EXPORT

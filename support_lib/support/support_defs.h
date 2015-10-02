@@ -9,4 +9,9 @@
 
 #define UNUSED(x) (void)(x)
 
+// Makro to generate a string out of a makroparameter
+// #define __DEFINE_TO_STRING(Test)  -> "Test"
+#define __STR2__(x) #x
+#define __DEFINE_TO_STRING(x) __STR2__(x)
+
 #endif // __SUPPORT_DEFS_H__

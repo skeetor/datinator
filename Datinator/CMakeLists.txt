@@ -25,16 +25,19 @@ cmake_policy(SET CMP0054 OLD)
 
 project(Datinator)
 
+set(SUPPORT_BIN_DIR "lib")
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWINDOWS")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WINDOWS")
+	set(SUPPORT_BIN_DIR "bin")
 ENDIF()
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLINUX")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_LINUX")
 ENDIF()
 
-set (SUPPORT_LIBRARY_BASE_PATH "${CMAKE_SOURCE_DIR}/../support_lib" CACHE PATH "Path where the support libraries is located (default is assumed on the same directory as Datinator is).")
+set (EXECUTABLE_BINARY_PATH "${CMAKE_BINARY_DIR}/../${SUPPORT_BIN_DIR}" CACHE PATH "Path where the executable is built to.")
+set (SUPPORT_LIBRARY_BIN_PATH "${CMAKE_BINARY_DIR}/../${SUPPORT_BIN_DIR}" CACHE PATH "Path where the support library binaries are located (default is assumed on the same directory as Datinator is).")
+set (SUPPORT_LIBRARY_BASE_PATH "${CMAKE_SOURCE_DIR}/../support_lib" CACHE PATH "Path where the support library sources are located (default is assumed on the same directory as Datinator is).")
 set (SUPPORT_INCLUDE_PATH "${SUPPORT_LIBRARY_BASE_PATH}" CACHE PATH "Path where the support library includes are located (default is assumed on the same directory as Datinator is).")
-set (BINARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin" CACHE PATH "Path where the executableand libraries should go")
 
 option (STATIC_BUILD "Build as a static version (default is shared)" OFF)
 option (UNICODE_BUILD "Build for UNICODE (default is off)" OFF)
@@ -51,6 +54,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Release)
 	set (BUILD_TYPE_FLAG "")		# release build
 else (NOT CMAKE_BUILD_TYPE STREQUAL Release)
 	set (BUILD_TYPE_FLAG "d")		# debug build
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_DEBUG")
 endif()
 
 if (STATIC_BUILD)
@@ -94,11 +98,11 @@ string(TOLOWER ${ARCH} ARCH)
 
 find_library(SUPPORT_LIBRARY
 	NAMES "${SUPPORT_LIB_NAME}"
-	HINTS "${SUPPORT_LIBRARY_BASE_PATH}"
+	HINTS "${SUPPORT_LIBRARY_BIN_PATH}"
 )
 find_library(SUPPORT_LIBRARY_QT
 	NAMES "${SUPPORT_QT_LIB_NAME}"
-	HINTS "${SUPPORT_LIBRARY_BASE_PATH}"
+	HINTS "${SUPPORT_LIBRARY_BIN_PATH}"
 )
 
 # External packages
@@ -142,3 +146,9 @@ generate_qt_sources(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR} 
 
 add_executable(datinator ${SOURCE_FILES} ${GENERATED_SOURCES})
 target_link_libraries(datinator ${STATIC_LIBRARIES} ${SUPPORT_LIBRARY_QT} ${SUPPORT_LIBRARY} Qt5::Widgets Qt5::Gui Qt5::Core )
+
+set_target_properties(datinator PROPERTIES
+                      RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_BINARY_PATH}
+                      ARCHIVE_OUTPUT_DIRECTORY ${EXECUTABLE_BINARY_PATH}
+                      LIBRARY_OUTPUT_DIRECTORY ${EXECUTABLE_BINARY_PATH}
+)

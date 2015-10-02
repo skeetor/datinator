@@ -4,9 +4,14 @@
 # PLUGINS common
 #
 
+set(LIBRARY_BIN_DIR "lib")
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(LIBRARY_BIN_DIR "bin")
+ENDIF()
+
 set (SOCI_LIBRARY_BASE_PATH "d:/opt/soci" CACHE PATH "Path where the soci library is located.")
 set (SUPPORT_LIBRARY_BASE_PATH "${CMAKE_SOURCE_DIR}/../support_lib" CACHE PATH "Path where the support libraries is located (default is assumed on the same directory as Datinator is).")
-set (LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}" CACHE PATH "Path where the libraries should be put")
+set (LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/../${LIBRARY_BIN_DIR}" CACHE PATH "Path where the libraries should be put")
 
 if (STATIC_BUILD)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_PLUGINS_AS_STATIC -DBUILD_PLUGIN_STATIC -DBUILD_SUPPORT_STATIC -DBUILD_SUPPORT_QT_STATIC")

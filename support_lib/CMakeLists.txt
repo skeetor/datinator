@@ -36,32 +36,36 @@ cmake_minimum_required(VERSION 3.0.2)
 
 project(support_lib)
 
-set (LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib" CACHE PATH "Path where the libraries should be put")
+set(SUPPORT_BIN_DIR "lib")        # default
+
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_WINDOWS")
+    set(SUPPORT_BIN_DIR "bin")
+ENDIF()
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_LINUX")
+ENDIF()
+
 set(SUPPORT_LIB_BINARY_DIR "${CMAKE_BINARY_DIR}/.." )
+set (LIBRARY_OUTPUT_PATH "${SUPPORT_LIB_BINARY_DIR}/${SUPPORT_BIN_DIR}" CACHE PATH "Path where the libraries should be put")
 
 file(MAKE_DIRECTORY "${SUPPORT_LIB_BINARY_DIR}/include")
-file(MAKE_DIRECTORY "${SUPPORT_LIB_BINARY_DIR}/lib")
+file(MAKE_DIRECTORY "${SUPPORT_LIB_BINARY_DIR}/${SUPPORT_BIN_DIR}")
 
 option (STATIC_BUILD "Build as a static version (default is shared)" OFF)
 option (UNICODE_BUILD "Build for UNICODE (default is off)" OFF)
 
 if(NOT LIBRARY_OUTPUT_PATH)
-	set (LIBRARY_OUTPUT_PATH "${SUPPORT_LIB_BINARY_DIR}/lib" CACHE PATH)
+	set (LIBRARY_OUTPUT_PATH "${SUPPORT_LIB_BINARY_DIR}/${SUPPORT_BIN_DIR}" CACHE PATH)
 endif()
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")
-
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWINDOWS")
-ENDIF()
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLINUX")
-ENDIF()
 
 if (CMAKE_BUILD_TYPE STREQUAL Release)
 	set (BUILD_TYPE_FLAG "")		# release build
 else (NOT CMAKE_BUILD_TYPE STREQUAL Release)
 	set (BUILD_TYPE_FLAG "d")		# debug build
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_DEBUG")
 endif()
 
 if (STATIC_BUILD)

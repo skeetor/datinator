@@ -12,7 +12,7 @@
 #include "gui/main_frame/main_window_gui.moc"
 #include "gui/main_frame/most_recent.h"
 
-#define CURRENT_VERSION "0.5"
+#define CURRENT_VERSION "0.5.1"
 
 MainWindow::MainWindow(QWidget *oParent)
 :	QMainWindow(oParent)

@@ -60,13 +60,13 @@ int main(int argc, char *argv[])
 
 	if(gConsoleMode)
 	{
-#ifdef WINDOWS
+#ifdef _WINDOWS
 		if(GetConsoleWindow() == NULL)
 		{
 			RedirectIOToConsole();
 			std::cout << "Datinator console activated"<<std::endl;
 		}
-#endif // _WIN32
+#endif // _WINDOWS
 	}
 
     updatePath(getenv("PATH"), QApplication::applicationDirPath());
@@ -116,7 +116,7 @@ QSettings &Application::getPropertyFile(void)
 	if(mPropertyFile == NULL)
     {
 		QString p = DEFAULT_CONFIG_FILE;
-#ifdef LINUX
+#ifdef _LINUX
 		QList<QString> locs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
 		p = locs.at(0) + "/."+p;
 #endif // _LINUX
@@ -140,7 +140,7 @@ static void parseCommandline(int argc, char *argv[])
 	}
 }
 
-#ifdef WINDOWS
+#ifdef _WINDOWS
 static void RedirectIOToConsole(void)
 {
 	int hConHandle;
@@ -196,9 +196,9 @@ void updatePath(QString oPath, QString oExe)
 		putenv(env_path.c_str());
 	}
 }
-#endif // _WIN32
+#endif // _WINDOWS
 
-#ifdef LINUX
+#ifdef _LINUX
 void updatePath(QString oPath, QString oExe)
 {
 	if(!oPath.contains(oExe.toUpper()+":"))

@@ -168,8 +168,8 @@ bool PluginManager::addDLL(QString const &oPath)
 	}
 
 	bool unload = true;
-	getPluginListPtr getPluginList = reinterpret_cast<getPluginListPtr>(lib.resolve(getPluginListFkt));
-	std::cout << "   " << getPluginListFkt << " ... " << std::hex << getPluginList << std::endl;
+	getPluginListPtr getPluginList = reinterpret_cast<getPluginListPtr>(lib.resolve(getPluginListFktExport));
+	std::cout << "   " << getPluginListFktExport << " ... " << std::hex << getPluginList << std::endl;
 	if(getPluginList)
 	{
 		QList<PluginInfo> infos = getPluginList();
@@ -181,6 +181,11 @@ bool PluginManager::addDLL(QString const &oPath)
 				{
 					PluginInfoReader r = info;
 					mDynamicReader.append(r);
+				}
+				else
+				{
+					PluginInfoWriter r = info;
+					mDynamicWriter.append(r);
 				}
 			}
 
