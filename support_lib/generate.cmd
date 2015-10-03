@@ -18,3 +18,8 @@ rem cmake -DCMAKE_BUILD_TYPE=Debug -DUNICODE_BUILD=1 -DSTATIC_BUILD=1 -G "MinGW 
 rem cmake -DCMAKE_BUILD_TYPE=Release -DUNICODE_BUILD=1 -DSTATIC_BUILD=1 -G "MinGW Makefiles" ..
 
 cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" ..
+
+
+# linux
+cmake -DCMAKE_BUILD_TYPE=Debug -DSTATIC_BUILD=1 -DCMAKE_PREFIX_PATH=/usr/local/qt-5.2.1 -G "Eclipse CDT4 - Unix Makefiles" ../../support_lib
+
