@@ -14,6 +14,7 @@
 SampleTableView::SampleTableView(QWidget *oParent)
 : QTableView(oParent)
 {
+	mContainer = NULL;
 	verticalHeader()->setDefaultSectionSize(20);
 	mDatatypeBox = NULL;
 
@@ -39,8 +40,8 @@ void SampleTableView::enableDatatypes(bool bEnableDatatypes)
 	else
 	{
 		mItemModel.showDatatypes(false);
-		if(mDatatypeBox)
-			delete mDatatypeBox;
+		//if(mDatatypeBox)
+		//	delete mDatatypeBox;
 
 		mDatatypeBox = NULL;
 	}
@@ -48,8 +49,8 @@ void SampleTableView::enableDatatypes(bool bEnableDatatypes)
 
 SampleTableView::~SampleTableView(void)
 {
-	if(mDatatypeBox)
-		delete mDatatypeBox;
+	//if(mDatatypeBox)
+	//	delete mDatatypeBox;
 }
 
 void SampleTableView::setContainer(ContainerBase *oContainer)

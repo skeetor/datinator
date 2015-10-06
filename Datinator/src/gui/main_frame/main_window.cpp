@@ -39,11 +39,11 @@ MainWindow::MainWindow(QWidget *oParent)
 
 MainWindow::~MainWindow(void)
 {
-	if(mRecentSource)
+	/*if(mRecentSource)
 		delete mRecentSource;
 
 	if(mRecentTarget)
-		delete mRecentTarget;
+		delete mRecentTarget;*/
 }
 
 void MainWindow::store(QSettings &oPropertyfile)

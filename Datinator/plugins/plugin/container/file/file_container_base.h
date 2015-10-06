@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef FILE_CONTAINER_BASE_H_INCLUDED
-#define FILE_CONTAINER_BASE_H_INCLUDED
+#ifndef _FILE_CONTAINER_BASE_H_INCLUDED
+#define _FILE_CONTAINER_BASE_H_INCLUDED
 
 #include "support/patterns/observer.h"
 #include "plugin/plugin_dll_api.h"
@@ -37,7 +37,7 @@ public:
 	 * must add their individual configuration panel by overriding
 	 * createConfigPanel();
 	 */
-	virtual QWidget *getConfigPanel(QWidget *oParentPanel) override;
+	QWidget *getConfigPanel(QWidget *oParentPanel) override;
 
 public:
 	virtual void setFilename(QString const &oFilename);
@@ -61,4 +61,4 @@ private:
 	FilePanel *mFilePanel;
 };
 
-#endif // FILE_CONTAINER_BASE_H_INCLUDED
+#endif // _FILE_CONTAINER_BASE_H_INCLUDED

@@ -26,7 +26,7 @@ public:
 	typedef enum { ANSI, UTF8, UTF16 } Encoding;
 
 public:
-	PathSelectPanel(bool bOpenMode = true, QWidget *oParent = NULL);
+	PathSelectPanel(bool bOpenMode = true, bool bDirectoryMode = false, QWidget *oParent = NULL);
 	virtual ~PathSelectPanel(void);
 
 	QString getPath(void);
@@ -55,12 +55,16 @@ public:
 	void setOpenMode(bool bOpen = true);
 	bool isOpenMode(void);
 
+	void setDirectoryMode(bool bDirectoryMode = true);
+	bool isDirectoryMode(void);
+
 protected slots:
 	virtual void onBrowse(void);
 
 private:
 	Ui::PathSelectGUI *mGUI;
 	bool mOpenMode;
+	bool mDirectoryMode;
 };
 
 #endif // PATH_SELECT_PANEL_GUI_H_INCLUDED

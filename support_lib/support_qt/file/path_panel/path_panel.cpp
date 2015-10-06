@@ -9,7 +9,7 @@
 #include "support_qt/helper/gui_helper.h"
 #include "support_qt/file/path_panel/path_panel_gui.moc"
 
-PathSelectPanel::PathSelectPanel(bool bOpenMode, QWidget *oParent)
+PathSelectPanel::PathSelectPanel(bool bOpenMode, bool bDirectoryMode, QWidget *oParent)
 : QFrame(oParent)
 {
 	mGUI = new Ui::PathSelectGUI();
@@ -17,12 +17,23 @@ PathSelectPanel::PathSelectPanel(bool bOpenMode, QWidget *oParent)
 	mGUI->mEncodingBox->addItem("ANSI");
 	mGUI->mEncodingBox->addItem("UTF8");
 	mGUI->mEncodingBox->addItem("UTF16");
+	setDirectoryMode(bDirectoryMode);
 	setOpenMode(bOpenMode);
 	setEditable(false);
 }
 
 PathSelectPanel::~PathSelectPanel(void)
 {
+}
+
+void PathSelectPanel::setDirectoryMode(bool bDirectoryMode)
+{
+	mDirectoryMode = bDirectoryMode;
+}
+
+bool PathSelectPanel::isDirectoryMode(void)
+{
+	return mDirectoryMode;
 }
 
 void PathSelectPanel::setOpenMode(bool bOpen)
@@ -38,10 +49,20 @@ bool PathSelectPanel::isOpenMode(void)
 void PathSelectPanel::onBrowse(void)
 {
 	QString fn;
-	if(isOpenMode())
-		fn = QFileDialog::getOpenFileName(this, tr("Open File"), getPath(), tr(""));
+
+	if(isDirectoryMode())
+	{
+		fn = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+													getPath(),
+		                                             QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	}
 	else
-		fn = QFileDialog::getSaveFileName(this, tr("Save File"), getPath(), tr(""));
+	{
+		if(isOpenMode())
+			fn = QFileDialog::getOpenFileName(this, tr("Open File"), getPath(), tr(""));
+		else
+			fn = QFileDialog::getSaveFileName(this, tr("Save File"), getPath(), tr(""));
+	}
 
 	if(!fn.isNull())
 		setPathNotify(fn);

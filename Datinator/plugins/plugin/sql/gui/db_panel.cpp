@@ -27,7 +27,6 @@ DBPanel::DBPanel(QWidget *oParent)
 
 DBPanel::~DBPanel(void)
 {
-	delete mGUI;
 }
 
 void DBPanel::setLoginPanel(QWidget *oLoginPanel)

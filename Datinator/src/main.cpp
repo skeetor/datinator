@@ -11,6 +11,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
+#include <QDir>
+#include <QTextStream>
 #include <QtCore/QSettings>
 #include <QtCore/QList>
 #include <QtCore/QStandardPaths>
@@ -54,7 +56,7 @@ int main(int argc, char *argv[])
     Application *app = Application::createInstance(argc, argv);
     parseCommandline(argc, argv);
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	gConsoleMode = true;
 #endif // DEBUG
 
@@ -62,10 +64,10 @@ int main(int argc, char *argv[])
 	{
 #ifdef _WINDOWS
 		if(GetConsoleWindow() == NULL)
-		{
-			RedirectIOToConsole();
-			std::cout << "Datinator console activated"<<std::endl;
-		}
+			AllocConsole();
+
+		RedirectIOToConsole();
+		std::cout << "Datinator console activated" << std::endl;
 #endif // _WINDOWS
 	}
 
@@ -74,14 +76,17 @@ int main(int argc, char *argv[])
 	QSettings &settings = app->getPropertyFile();
 	MainWindow frame;
 
+	std::cout << "Datinator started from " << supportlib::string::QtStringToStringT(QDir::currentPath()) << "\n" << std::endl;
+
 	frame.show();
 	frame.reloadPlugins();
 	frame.restore(settings);
 
 	int ret = app->exec();
 	frame.store(settings);
+	settings.sync();
 
-	delete app;
+//	delete app;
 
 	return ret;
 }
@@ -115,15 +120,21 @@ QSettings &Application::getPropertyFile(void)
 {
 	if(mPropertyFile == NULL)
     {
-		QString p = DEFAULT_CONFIG_FILE;
-#ifdef _LINUX
+		QString p;
 		QList<QString> locs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
-		p = locs.at(0) + "/."+p;
+		p = locs.at(0) + "/";
+
+#ifdef _LINUX
+		p += ".";
 #endif // _LINUX
+
+		p += DEFAULT_CONFIG_FILE;
 
 #ifdef _DEBUG
 		p += "_debug";
 #endif // _DEBUG
+
+		std::cout << "Propertyfile: " << supportlib::string::QtStringToStringT(p) << "\n" << std::endl;
 		mPropertyFile = new QSettings(p, QSettings::IniFormat);
     }
 

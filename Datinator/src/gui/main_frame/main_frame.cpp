@@ -468,7 +468,7 @@ void MainFrame::onSourceSelected(int nIndex)
 	if(!s)
 		return;
 
-	Progress p("Updating Target ...", "Loading columns ...");
+	Progress p("Source selected, updating Target ...", "Loading columns ...");
 	updateConfigPanel(s, mCurSourcePanel, mGUI->mSourcePanel);
 	setSourceColumns(s->getColumns());
 }
@@ -480,7 +480,7 @@ void MainFrame::onTargetSelected(int nIndex)
 	IDataContainerWriter *t = getCurrentTargetContainer();
 	if(!t)
 		return;
-	Progress p("Updating Target ...", "Loading columns ...");
+	Progress p("Target selected, updating Target ...", "Loading columns ...");
 
 	bool modifyColumns = t->canModifyColumns();
 	mGUI->mMappingTableView->setReadOnly(!modifyColumns);

@@ -57,7 +57,7 @@ void CSVContainer::end(void)
 {
 	CSV &csv = getCSV();
 	csv.close();
-	return super::end();
+	super::end();
 }
 
 bool CSVContainer::connect(QString const &oFilename)

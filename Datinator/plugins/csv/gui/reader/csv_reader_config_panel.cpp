@@ -24,7 +24,6 @@ CSVReaderConfigPanel::CSVReaderConfigPanel(CSVReader *oContainer, QWidget *oPare
 
 CSVReaderConfigPanel::~CSVReaderConfigPanel(void)
 {
-	delete mGUI;
 }
 
 void CSVReaderConfigPanel::setColumns(QList<DatabaseColumn *> const &oColumns)

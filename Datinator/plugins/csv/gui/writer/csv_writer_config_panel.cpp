@@ -21,7 +21,6 @@ CSVWriterConfigPanel::CSVWriterConfigPanel(CSVWriter *oContainer, QWidget *oPare
 
 CSVWriterConfigPanel::~CSVWriterConfigPanel(void)
 {
-	delete mGUI;
 }
 
 void CSVWriterConfigPanel::reset(void)

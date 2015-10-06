@@ -19,7 +19,7 @@ FilePanel::FilePanel(bool bReader, FilePanelConfigPanel *oContainerConfigPanel, 
 	mGUI = new Ui::FilePanelGUI();
 	mGUI->setupUi(this);
 	QVBoxLayout *l = mGUI->mMainLayout;
-	mPathPanel = new PathSelectPanel(bReader, NULL);
+	mPathPanel = new PathSelectPanel(bReader, false, NULL);
 	mPathPanel->addPathListener(this);
 	l->addWidget(mPathPanel);
 	l->addWidget(oContainerConfigPanel);
