@@ -11,7 +11,7 @@
 #include "sqlite/sqlite_container.h"
 #include "sqlite/gui/sqlite_writer_gui.moc"
 
-class SQLiteWriter
+class SQLITE_DLL_EXPORT SQLiteWriter
 	: public SQLiteContainer
 	, public WriterBase
 {

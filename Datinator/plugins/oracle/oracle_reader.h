@@ -12,7 +12,7 @@
 
 class SQLPreviewPanel;
 
-class OracleReader
+class ORACLE_DLL_EXPORT OracleReader
 	:	public OracleContainer
 	,	public ReaderBase
 {

@@ -19,7 +19,9 @@ class DatabaseLoginPanel;
 class LoginPanelModel;
 namespace soci { class session; }
 
-class OracleContainer : public SociContainer, protected Listener<LoginEvent>
+class ORACLE_DLL_EXPORT OracleContainer
+	: public SociContainer,
+	  protected Listener<LoginEvent>
 {
 public:
 	OracleContainer(QWidget *oMainWindow);

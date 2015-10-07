@@ -11,7 +11,7 @@
 #include "oracle/oracle_container.h"
 #include "oracle/gui/oracle_writer_gui.moc"
 
-class OracleWriter
+class ORACLE_DLL_EXPORT OracleWriter
 	: public OracleContainer
 	, public WriterBase
 {

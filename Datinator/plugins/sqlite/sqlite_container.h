@@ -9,6 +9,7 @@
 
 #include <QtCore/QString>
 
+#include "sqlite/sqlite_dll_api.h"
 #include "plugin/container/sql/soci_container.h"
 
 #include "support_qt/file/path_panel/path_panel_gui.moc"
@@ -19,7 +20,8 @@ class QWidget;
 class PathSelectPanel;
 namespace soci { class session; }
 
-class SQLiteContainer : public SociContainer
+class SQLITE_DLL_EXPORT SQLiteContainer
+	: public SociContainer
 {
 public:
 	SQLiteContainer(QWidget *oMainWindow);

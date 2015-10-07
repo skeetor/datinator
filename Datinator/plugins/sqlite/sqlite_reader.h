@@ -12,7 +12,7 @@
 
 class SQLPreviewPanel;
 
-class SQLiteReader
+class SQLITE_DLL_EXPORT SQLiteReader
 	:	public SQLiteContainer
 	,	public ReaderBase
 {
