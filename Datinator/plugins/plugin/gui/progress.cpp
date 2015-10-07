@@ -14,11 +14,13 @@
 #include "support_qt/logging/logging_dialog_box_gui.moc"
 #include "plugin/gui/progress.h"
 
+#include <iostream>
+
 // The application will share a single progress dialog. Doesn't really make sense
 // to have individual ones.
 QWidget *gMainWindow = NULL;
 QProgressDialog *gProgressDlg = NULL;
-int gProgressReference = 0;
+static int gProgressReference = 0;
 supportlib::logging::Logging gLogging;
 
 Progress::Progress(QString const &oTitle, QString const &oText)
@@ -75,13 +77,13 @@ void Progress::showProgress(QString const &oText, QString const &oTitle)
 	if(gProgressReference == 1)
 	{
 	    if(!gProgressDlg)
-            gProgressDlg = new QProgressDialog(NULL);				// In Windows this causes a crash on exit, when this is the main window.
-//            gProgressDlg = new QProgressDialog(getMainWindow());
+            gProgressDlg = new QProgressDialog(getMainWindow());
 
 		gProgressDlg->setWindowModality(Qt::WindowModal);
 		supportlib::gui::center(getMainWindow(), gProgressDlg, false, true);
 		gProgressDlg->setWindowTitle(oTitle);
 		gProgressDlg->show();
+		qApp->processEvents();
 
         gProgressDlg->setMaximum(1);
         gProgressDlg->setValue(0);
@@ -94,7 +96,6 @@ void Progress::closeProgress(void)
 {
 	if(gProgressReference)
     {
-
 		gProgressReference--;
 
         if(gProgressReference == 0)

@@ -40,8 +40,8 @@ public:
 	MainFrame(MostRecent *oRecentSource, MostRecent *oRecentTarget, MostRecent *oRecentProfile, QWidget *oParent = NULL);
 	~MainFrame(void);
 
-	void setSourceColumns(QList<DatabaseColumn *> const &oColumns);
-	void setTargetColumns(QList<DatabaseColumn *> const &oColumns);
+	void setSourceColumns(IDataContainer *oContainer, QList<DatabaseColumn *> const &oColumns);
+	void setTargetColumns(IDataContainer *oContainer, QList<DatabaseColumn *> const &oColumns);
 
 	/**
 	 * In the INI file, the componets will store only properties that are usefull

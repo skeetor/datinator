@@ -27,6 +27,19 @@ public:
 		init();
 	}
 
+	DBColumn(T const &oName, DataType oType, T const &oNativeType, bool bNullable, int nPosition, int nSize, int nPrecision = 0)
+	{
+		init();
+
+		setName(oName);
+		setType(oType);
+		setNativeType(oNativeType);
+		setPosition(nPosition);
+		setSize(nSize);
+		setPrecision(nPrecision);
+		setNullable(bNullable);
+	}
+
 	DBColumn(DBColumn<T, V> const *oSource)
 	{
 		init();
