@@ -84,7 +84,10 @@ bool CSVWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 	if(!truncateMode())
 		return true;
 
+	CSVWriterConfigPanel *p = createContainerConfigPanel(NULL);
 	CSV &csv = getCSV();
+	csv.setSeparator(p->getSeparator());
+
 	csv.clearColumns();
 	std::vector<CSVColumn *>columns;
 	for(DatabaseColumn * const &col : oColumns)
@@ -156,11 +159,22 @@ bool CSVWriter::loadProfile(QSettings &oProfile, QString const &oKey)
 
 	CSVWriterConfigPanel *p = createContainerConfigPanel(NULL);
 	QString s = oProfile.value(oKey+"_separator", ";").toString();
-	StdChar c = ';';
+	StdChar c1 = ';';
 	if(s.length() > 0)
-		c = s.at(0).toLatin1();
+		c1 = s.at(0).toLatin1();
+	p->setSeparator(c1);
 
-	p->setSeparator(c);
+	s = oProfile.value(oKey+"_bracket", "\"").toString();
+	StdChar c2 = 0;
+	c1 = '"';
+	if(s.length() > 0)
+	{
+		c1 = s.at(0).toLatin1();
+		if(s.length() > 1)
+			c2 = s.at(1).toLatin1();
+	}
+
+	p->setBracket(c1, c2);
 
 	return true;
 }
@@ -169,7 +183,14 @@ void CSVWriter::saveProfile(QSettings &oProfile, QString const &oKey)
 {
 	FileContainerBase::saveProfile(oProfile, oKey);
 	CSVWriterConfigPanel *p = createContainerConfigPanel(NULL);
-	StdChar c = p->getSeparator();
-	oProfile.setValue(oKey+"_separator", QString(c));
+	StdChar c1 = p->getSeparator();
+	oProfile.setValue(oKey+"_separator", QString(c1));
+
+	StdChar c2;
+	c1 = p->getBracket(c2);
+	QString s;
+	s += c1;
+	s += c2;
+	oProfile.setValue(oKey+"_bracket", s);
 }
 

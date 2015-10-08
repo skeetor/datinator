@@ -79,6 +79,7 @@ void Progress::showProgress(QString const &oText, QString const &oTitle)
 	    if(!gProgressDlg)
             gProgressDlg = new QProgressDialog(getMainWindow());
 
+	    gProgressDlg->reset();
 		gProgressDlg->setWindowModality(Qt::WindowModal);
 		supportlib::gui::center(getMainWindow(), gProgressDlg, false, true);
 		gProgressDlg->setWindowTitle(oTitle);

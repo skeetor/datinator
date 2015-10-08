@@ -38,6 +38,7 @@
  * Example: sizeof_member(mystruct, membername)
  */
 #define sizeof_member(type, member) sizeof(((type *)0)->member)
+#define member_offset(type, member) (size_t)&(((type *)0)->member)
 
 #ifdef __cplusplus
 #define C_TYPE extern "C"

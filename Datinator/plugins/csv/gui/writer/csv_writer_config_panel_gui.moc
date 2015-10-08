@@ -27,6 +27,9 @@ public:
 	StdChar getSeparator(void);
 	void setSeparator(StdChar oSeparator);
 
+	StdChar getBracket(StdChar &oClose) const;
+	void setBracket(StdChar oOpen, StdChar oClose = 0);
+
 private:
 	Ui::CSVWriterConfigPanelGUI *mGUI;
 };

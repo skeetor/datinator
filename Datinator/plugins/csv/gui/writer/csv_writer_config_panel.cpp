@@ -93,3 +93,90 @@ void CSVWriterConfigPanel::setSeparator(StdChar oSeparator)
 	mGUI->mSeparatorCustomBtn->setChecked(true);
 	mGUI->mSeparatorCustomTxt->setText(QString(oSeparator));
 }
+
+StdChar CSVWriterConfigPanel::getBracket(StdChar &oClose) const
+{
+	oClose = 0;
+
+	if(mGUI->mQuoteBtn->isChecked())
+		return '"';
+
+	if(mGUI->mParenthesisBtn->isChecked())
+	{
+		oClose = ')';
+		return '(';
+	}
+
+	if(mGUI->mBracketBtn->isChecked())
+	{
+		oClose = ']';
+		return '[';
+	}
+
+	if(mGUI->mCurlyBtn->isChecked())
+	{
+		oClose = '}';
+		return '{';
+	}
+
+	if(mGUI->mSignBtn->isChecked())
+	{
+		oClose = '>';
+		return '<';
+	}
+
+	if(mGUI->mCustomQuoteBtn->isChecked())
+	{
+		QString s = mGUI->mSeparatorCustomTxt->text();
+		if(s.length() > 0)
+		{
+			StdString ns = supportlib::string::QtStringToStringT(s);
+			if(s.length() > 1)
+				oClose = ns[1];
+
+			return ns[0];
+		}
+	}
+
+	return '"';
+}
+
+void CSVWriterConfigPanel::setBracket(StdChar oOpen, StdChar oClose)
+{
+	if(oOpen == '"' && oClose == 0)
+	{
+		mGUI->mQuoteBtn->setChecked(true);
+		return;
+	}
+
+	if(oOpen == '(' && oClose == ')')
+	{
+		mGUI->mParenthesisBtn->setChecked(true);
+		return;
+	}
+
+	if(oOpen == '[' && oClose == ']')
+	{
+		mGUI->mBracketBtn->setChecked(true);
+		return;
+	}
+
+	if(oOpen == '{' && oClose == '}')
+	{
+		mGUI->mCurlyBtn->setChecked(true);
+		return;
+	}
+
+	if(oOpen == '<'  && oClose == '>')
+	{
+		mGUI->mSignBtn->setChecked(true);
+		return;
+	}
+
+	mGUI->mCustomQuoteBtn->setChecked(true);
+	QString s;
+	s += oOpen;
+	s += oClose;
+
+	mGUI->mCustomQuoteTxt->setText(s);
+}
