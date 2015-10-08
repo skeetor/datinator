@@ -92,6 +92,15 @@ public:
 	CSVChar getSeparator(void) const;
 
 	/**
+	 * The brackets define how an indvidual field is enclosed. Open is the front
+	 * and close is the closing bracket. Note that the term "bracket" doesn't neccessarily
+	 * mean real brackets, it can be any characters.
+	 * Default is -"- for both.
+	 */
+	void setBracket(CSVChar oOpen = '"', CSVChar oClose = '"');
+	CSVChar getBracket(CSVChar &oClose) const;
+
+	/**
 	 * If the headers are read from a file, the code will try to determine
 	 * the datatypes algorithmically. This is of course just a guess and can
 	 * produce wrong numbers. This is done by reading the first N records of
@@ -224,7 +233,7 @@ protected:
 	 * If the field consists only of a single quote, then this is returned as the value. i.E.
 	 * "val";";
 	 * or
-	 * "value";"
+	 * "val";"
 	 *
 	 * will both be returned as 'val', '"'.
 	 */
@@ -245,7 +254,10 @@ private:
 	int mSampleRows;
 	bool mHeader;
 	bool mAutoSeparator;
+	CSVChar *mStructAdress;			// Offset used when multiple structures are loaded.
 	CSVChar mSeparator;
+	CSVChar mOpener;				// Bracket
+	CSVChar mCloser;				// Bracket
 	CSVString mFilename;
 	std::vector<CSVColumn *> mColumns;
 	std::fstream mCSVFile;

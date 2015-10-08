@@ -36,11 +36,11 @@ const char *ErrorTextArray[] =
 	NULL
 };
 
-bool initErrors(void);
-std::vector<const char *>ErrorText;
-bool init = initErrors();
+static bool initErrors(void);
+static std::vector<const char *>ErrorText;
+static bool init = initErrors();
 
-bool initErrors(void)
+static bool initErrors(void)
 {
 	int i = 0;
 	while(ErrorTextArray[i] != NULL)
@@ -54,10 +54,13 @@ bool initErrors(void)
 
 CSV::CSV()
 {
+	mAutoSeparator = true;
+	mStructAdress = NULL;
+
+	setBracket('"', '"');
 	setHeader(true);
 	setSeparator(0);
 	setSampleRowCount(DEFAULT_SAMPLE_ROWS);
-	mAutoSeparator = true;
 }
 
 CSV::~CSV()
@@ -116,6 +119,18 @@ void CSV::setSeparator(CSVChar oSeparator)
 CSVChar CSV::getSeparator(void) const
 {
 	return mSeparator;
+}
+
+void CSV::setBracket(CSVChar oOpen, CSVChar oClose)
+{
+	mOpener = oOpen;
+	mCloser = oClose;
+}
+
+CSVChar CSV::getBracket(CSVChar &oClose) const
+{
+	oClose = mCloser;
+	return mOpener;
 }
 
 bool CSV::isAutoSeparator(void) const
@@ -675,10 +690,12 @@ CSV::ErrorCode CSV::writeHeader(void)
 		return CSV::ErrorCode::NO_HEADER;
 
     CSVString h;
+    CSVChar sep = getSeparator();
 	for(CSVColumn *&c : mColumns)
 	{
-		h += '"'+c->getName();
-		h += "\";";
+		h += c->getName();
+		if(sep)
+			h += sep;
 	}
 
 	h = h.substr(0, h.length()-1);
@@ -701,6 +718,9 @@ CSV::ErrorCode CSV::write(std::vector<CSVString> const &oRow, std::vector<bool> 
 	CSVString s;
 	int n = oRow.size();
 	int i = -1;
+	CSVChar sep = getSeparator();
+	CSVChar closer;
+	CSVChar opener = getBracket(closer);
 	for(CSVColumn *&col : mColumns)
 	{
 		if(!col)
@@ -708,9 +728,18 @@ CSV::ErrorCode CSV::write(std::vector<CSVString> const &oRow, std::vector<bool> 
 
 		i++;
 		if(i < n && !oNull[i])
-			s += "\""+oRow[i]+"\"";
+		{
+			if(opener)
+				s += opener;
 
-		s += ";";
+			s += oRow[i];
+
+			if(closer)
+				s += closer;
+		}
+
+		if(sep)
+			s += sep;
 	}
 
 	s = s.substr(0, s.length()-1);
