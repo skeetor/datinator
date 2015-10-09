@@ -24,5 +24,5 @@ void ReaderListener::handleNotification(Dispatcher<QList<DatabaseColumn *> *> *o
 	if(oColumns == NULL)
 		oColumns = &ql;
 
-	getMainFrame()->setSourceColumns(reinterpret_cast<IDataContainer *>(oSource), *oColumns);
+	getMainFrame()->setSourceColumns(*oColumns);
 }

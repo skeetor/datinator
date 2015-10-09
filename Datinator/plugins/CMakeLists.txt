@@ -19,6 +19,13 @@ else (NOT STATIC_BUILD)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_PLUGINS_AS_DLL")
 endif()
 
+string(COMPARE EQUAL "${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG}" "" result)
+if(result)
+	set(PLUGIN_NAME_TAG "")
+else()
+	set(PLUGIN_NAME_TAG "_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG}")
+endif()
+
 include(${SUPPORT_LIBRARY_BASE_PATH}/cmake/generate_qt_sources.cmake)
 
 include_directories(${SOCI_LIBRARY_BASE_PATH}/core)

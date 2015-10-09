@@ -691,9 +691,17 @@ CSV::ErrorCode CSV::writeHeader(void)
 
     CSVString h;
     CSVChar sep = getSeparator();
+    CSVChar closer;
+    CSVChar opener = getBracket(closer);
+
 	for(CSVColumn *&c : mColumns)
 	{
+		if(opener)
+			h += opener;
+
 		h += c->getName();
+		if(closer)
+			h += closer;
 		if(sep)
 			h += sep;
 	}

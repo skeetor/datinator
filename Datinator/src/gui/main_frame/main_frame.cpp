@@ -318,8 +318,8 @@ void MainFrame::onReset(void)
 	if(!w || !r)
 		return;
 
-    setTargetColumns(w, w->getColumns());
-	setSourceColumns(r, r->getColumns());
+    setTargetColumns(w->getColumns());
+	setSourceColumns(r->getColumns());
 	mGUI->mMappingTableView->clearSelection();
 }
 
@@ -334,7 +334,7 @@ void MainFrame::onEdit(void)
 	mColumnEditor.setColumns(vl);
 	mColumnEditor.exec();
 	if(mColumnEditor.result() == QDialog::Accepted)
-		setTargetColumns(w, mColumnEditor.getColumns());
+		setTargetColumns(mColumnEditor.getColumns());
 }
 
 void MainFrame::onRemove(void)
@@ -470,7 +470,7 @@ void MainFrame::onSourceSelected(int nIndex)
 
 	Progress p("Source selected, updating Target ...", "Loading columns ...");
 	updateConfigPanel(s, mCurSourcePanel, mGUI->mSourcePanel);
-	setSourceColumns(s, s->getColumns());
+	setSourceColumns(s->getColumns());
 }
 
 void MainFrame::onTargetSelected(int nIndex)
@@ -496,7 +496,7 @@ void MainFrame::onTargetSelected(int nIndex)
 	else
 		mGUI->mAppendBtn->setChecked(true);
 
-    setTargetColumns(t, t->getColumns());
+    setTargetColumns(t->getColumns());
 }
 
 void MainFrame::updateConfigPanel(IDataContainer *oContainer, QWidget *&oCurrentPanel, QWidget *oMainPanel)
@@ -525,20 +525,14 @@ Quit:
 		old->hide();
 }
 
-void MainFrame::setSourceColumns(IDataContainer *oContainer, QList<DatabaseColumn *> const &oColumns)
+void MainFrame::setSourceColumns(QList<DatabaseColumn *> const &oColumns)
 {
-	IDataContainer *source = getCurrentSourceContainer();
-
-	if(source == oContainer)
-		mGUI->mMappingTableView->setSourceColumns(oColumns);
+	mGUI->mMappingTableView->setSourceColumns(oColumns);
 }
 
-void MainFrame::setTargetColumns(IDataContainer *oContainer, QList<DatabaseColumn *> const &oColumns)
+void MainFrame::setTargetColumns(QList<DatabaseColumn *> const &oColumns)
 {
-	IDataContainer *target = getCurrentTargetContainer();
-
-	if(target == oContainer)
-		mGUI->mMappingTableView->setTargetColumns(oColumns);
+	mGUI->mMappingTableView->setTargetColumns(oColumns);
 }
 
 QList<ColumnMappingItem> MainFrame::prepareItems(QList<ColumnMappingItem> const &oItems)

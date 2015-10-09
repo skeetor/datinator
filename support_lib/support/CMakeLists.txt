@@ -6,7 +6,7 @@
 # stand on it's own.
 #
 
-set(TARGET_LIBRARY support_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
+set(TARGET_LIBRARY support${PLUGIN_NAME_TAG})
 set(DEBUG_EXPORT_SYMBOLS OFF CACHE BOOL "Set debug mode for exported symbols")
 set(UI_INCLUDE_DIR "${SUPPORT_LIB_BINARY_DIR}/include")
 #message("Create directory ${UI_INCLUDE_DIR}")

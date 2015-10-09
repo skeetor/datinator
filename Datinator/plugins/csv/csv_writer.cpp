@@ -87,6 +87,9 @@ bool CSVWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 	CSVWriterConfigPanel *p = createContainerConfigPanel(NULL);
 	CSV &csv = getCSV();
 	csv.setSeparator(p->getSeparator());
+	StdChar closer;
+	StdChar opener = p->getBracket(closer);
+	csv.setBracket(opener, closer);
 
 	csv.clearColumns();
 	std::vector<CSVColumn *>columns;

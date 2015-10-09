@@ -14,7 +14,7 @@ set (ORACLE_LIBRARY_BASE_PATH "D:/opt/oracle" CACHE PATH "Path where the SQLite3
 
 set(ORACLE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/plugins/oracle")
 set(ORACLE_BINARY_DIR "${CMAKE_BINARY_DIR}/plugins/oracle")
-set(ORACLE_PLUGIN oracle_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
+set(ORACLE_PLUGIN oracle${PLUGIN_NAME_TAG})
 set(ORACLE_GEN_INCLUDE "${ORACLE_BINARY_DIR}")
 
 include_directories(${ORACLE_LIBRARY_BASE_PATH}/include)

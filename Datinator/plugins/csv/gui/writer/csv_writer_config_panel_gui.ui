@@ -298,9 +298,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>mCustomQuoteBtn</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mCustomQuoteTxt</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>113</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>391</x>
+     <y>201</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="mBracketGroup"/>
   <buttongroup name="mSeparatorGroup"/>
+  <buttongroup name="mBracketGroup"/>
  </buttongroups>
 </ui>

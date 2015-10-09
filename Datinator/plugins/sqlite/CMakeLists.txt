@@ -14,7 +14,7 @@ set (SQLITE3_LIBRARY_BASE_PATH "D:/opt/sqlite3" CACHE PATH "Path where the SQLit
 
 set(SQLITE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/plugins/sqlite")
 set(SQLITE_BINARY_DIR "${CMAKE_BINARY_DIR}/plugins/sqlite")
-set(SQLITE_PLUGIN sqlite_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
+set(SQLITE_PLUGIN sqlite${PLUGIN_NAME_TAG})
 set(SQLITE_GEN_INCLUDE "${SQLITE_BINARY_DIR}")
 
 include_directories(${SQLITE3_LIBRARY_BASE_PATH}/include/sqlite)

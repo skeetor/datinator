@@ -80,8 +80,16 @@ if (UNICODE_BUILD)
 	set (UNICODE_FLAG "u")		# UNICODE build
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE")
 else (NOT UNICODE_BUILD)
-	set (UNICODE_FLAG "a")		# ANSI build
+	set (UNICODE_FLAG "")		# ANSI build
 endif()
+
+string(COMPARE EQUAL "${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG}" "" result)
+if(result)
+	set(PLUGIN_NAME_TAG "")
+else()
+	set(PLUGIN_NAME_TAG "_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG}")
+endif()
+
 
 if(NOT ARCH)
     set(ARCH i386)

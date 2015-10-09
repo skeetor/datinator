@@ -55,7 +55,7 @@ StdChar CSVWriterConfigPanel::getSeparator(void)
 		}
 	}
 
-	return ';';
+	return 0;
 }
 
 void CSVWriterConfigPanel::setSeparator(StdChar oSeparator)
@@ -138,7 +138,7 @@ StdChar CSVWriterConfigPanel::getBracket(StdChar &oClose) const
 		}
 	}
 
-	return '"';
+	return 0;
 }
 
 void CSVWriterConfigPanel::setBracket(StdChar oOpen, StdChar oClose)

@@ -6,11 +6,11 @@
 
 include(${CMAKE_SOURCE_DIR}/cmake/generate_qt_sources.cmake)
 
-set(TARGET_LIBRARY support_qt_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
-set(SUPPORT_LIBRARY support_${UNICODE_FLAG}${STATIC_FLAG}${BUILD_TYPE_FLAG})
+set(TARGET_LIBRARY support_qt${PLUGIN_NAME_TAG})
+set(SUPPORT_LIBRARY support${PLUGIN_NAME_TAG})
 set(UI_INCLUDE_DIR "${SUPPORT_LIB_BINARY_DIR}/include")
 #message("Create directory ${UI_INCLUDE_DIR}")
-make_directory("${UI_INCLUDE_DIR}/support_qt")
+file(MAKE_DIRECTORY "${UI_INCLUDE_DIR}/support_qt")
 
 # Enable the build directory as an include path as well, required for
 # qt moc generated files.
