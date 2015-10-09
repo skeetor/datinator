@@ -16,8 +16,8 @@
  * to a CSV file may only handle one dataset,m which is the CSV file.
  ******************************************************************************/
 
-#ifndef IDATA_CONTAINER_H_INCLUDED
-#define IDATA_CONTAINER_H_INCLUDED
+#ifndef _IDATA_CONTAINER_H_INCLUDED
+#define _IDATA_CONTAINER_H_INCLUDED
 
 #include <QtCore/QList>
 #include <QtCore/QString>
@@ -36,6 +36,12 @@ class IDataContainer
 public:
 	IDataContainer(void) {};
 	virtual ~IDataContainer(void) {};
+
+	/**
+	 * Set the main window for the container. This can be used to
+	 * attach the indvidual configuration dialog.
+	 */
+	virtual void setMainWindow(QWidget *pMainWidget) = 0;
 
 	/**
 	 * The column listener will be notified whenever a container
@@ -77,7 +83,7 @@ public:
 	 * Return a panel which can be shown to the user for
 	 * configuration of the container.
 	 */
-	virtual QWidget *getConfigPanel(QWidget *oParentPanel) = 0;
+	virtual QWidget *getConfigPanel(void) = 0;
 
 	/**
 	 * Save the state of the container to the property file.
@@ -106,4 +112,4 @@ public:
 	virtual QString getConnectString(void) = 0;
 };
 
-#endif // IDATA_CONTAINER_H_INCLUDED
+#endif // _IDATA_CONTAINER_H_INCLUDED

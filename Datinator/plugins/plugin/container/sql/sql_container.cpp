@@ -29,12 +29,12 @@ void SQLContainer::restore(QSettings &oPropertyFile, QString const &oPrefix)
 	ContainerBase::restore(oPropertyFile, oPrefix);
 }
 
-QWidget *SQLContainer::getConfigPanel(QWidget *oParentPanel)
+QWidget *SQLContainer::getConfigPanel(void)
 {
 	if(mPanel == NULL)
 	{
 #warning ReloadTables implementieren
-		mPanel = new DBPanel(oParentPanel);
+		mPanel = new DBPanel(super::getMainWindow());
 		initPanel(mPanel);
 		mLoginPanel = createLoginPanel();
 		mConfigPanel = createConfigPanel();

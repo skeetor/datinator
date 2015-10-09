@@ -21,6 +21,11 @@ ContainerBase::~ContainerBase(void)
 {
 }
 
+void ContainerBase::setMainWindow(QWidget *pMainWidget)
+{
+	mMainWindow = pMainWidget;
+}
+
 TypeString const &ContainerBase::getDatatypeStrings(void)
 {
 	return TypeStringProvider;

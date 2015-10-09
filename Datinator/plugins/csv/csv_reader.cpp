@@ -39,9 +39,9 @@ bool CSVReader::isReader(void)
 	return true;
 }
 
-QWidget *CSVReader::getConfigPanel(QWidget *oParentPanel)
+QWidget *CSVReader::getConfigPanel(void)
 {
-	QWidget *w = FileContainerBase::getConfigPanel(oParentPanel);
+	QWidget *w = FileContainerBase::getConfigPanel();
 	enlargePanel();
 	return w;
 }
@@ -128,10 +128,10 @@ QList<DatabaseColumn *> CSVReader::loadColumns(void)
 	return ql;
 }
 
-CSVReaderConfigPanel *CSVReader::createContainerConfigPanel(QWidget *oParent)
+CSVReaderConfigPanel *CSVReader::createContainerConfigPanel(void)
 {
 	if(mConfigPanel == NULL)
-		mConfigPanel = new CSVReaderConfigPanel(this, oParent);
+		mConfigPanel = new CSVReaderConfigPanel(this, super::getMainWindow());
 
 	return mConfigPanel;
 }

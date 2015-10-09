@@ -22,7 +22,7 @@
 
 class PLUGIN_DLL_EXPORT ContainerBase
 	: public virtual IDataContainer,
-	  public Dispatcher<QList<DatabaseColumn *> *>,	// Columns changed
+	  public Dispatcher<QList<DatabaseColumn *> *>,									// Columns changed
 	  public Dispatcher<QString /* oConnectString */, QString /* oSelector */>		// Selector changed.
 {
 public:
@@ -31,6 +31,7 @@ public:
 
 	static PLUGIN_DLL_EXPORT TypeString const &getDatatypeStrings(void);
 
+	void setMainWindow(QWidget *pMainWidget) override;
 	QWidget *getMainWindow(void);
 
 public: // IDataContainer

@@ -36,19 +36,12 @@ FilePanel *FileContainerBase::getFilePanel(void)
 	return mFilePanel;
 }
 
-FilePanelConfigPanel *FileContainerBase::createContainerConfigPanel(QWidget *oParent)
-{
-	UNUSED(oParent);
-
-	return NULL;
-}
-
-QWidget *FileContainerBase::getConfigPanel(QWidget *oParentPanel)
+QWidget *FileContainerBase::getConfigPanel(void)
 {
 	if(mFilePanel == NULL)
 	{
-		FilePanelConfigPanel *cp = createContainerConfigPanel(NULL);
-		mFilePanel = new FilePanel(isReader(), cp, oParentPanel);
+		FilePanelConfigPanel *cp = createContainerConfigPanel();
+		mFilePanel = new FilePanel(isReader(), cp, super::getMainWindow());
 		mFilePanel->addPathListener(this);
 	}
 

@@ -37,7 +37,7 @@ public:
 	 * must add their individual configuration panel by overriding
 	 * createConfigPanel();
 	 */
-	QWidget *getConfigPanel(QWidget *oParentPanel) override;
+	QWidget *getConfigPanel(void) override;
 
 public:
 	virtual void setFilename(QString const &oFilename);
@@ -48,7 +48,7 @@ public:
 
 protected:
 	FilePanel *getFilePanel(void);
-	virtual FilePanelConfigPanel *createContainerConfigPanel(QWidget *oParent);
+	virtual FilePanelConfigPanel *createContainerConfigPanel(void) = 0;
 	virtual void enlargePanel(void);
 	virtual bool isReader(void) = 0;
 	void releaseColumns(void) override;

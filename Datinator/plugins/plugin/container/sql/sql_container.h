@@ -20,7 +20,7 @@ public:
 	SQLContainer(QWidget *oMainWindow);
 	virtual ~SQLContainer(void);
 
-	virtual QWidget *getConfigPanel(QWidget *oParentPanel) override;
+	virtual QWidget *getConfigPanel(void) override;
 
 	void setQuery(QString const &oQuery);
 

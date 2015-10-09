@@ -38,10 +38,13 @@ public: // IDataContainerWriter
 	void saveProfile(QSettings &oProfile, QString const &oKey) override;
 
 protected:
-	CSVWriterConfigPanel *createContainerConfigPanel(QWidget *oParent) override;
+	CSVWriterConfigPanel *createContainerConfigPanel(void) override;
 	QList<DatabaseColumn *> loadColumns(void) override;
 	bool isReader(void) override;
 	CSV::Openmode getOpenmode(void) override;
+
+private:
+	typedef CSVContainer super;
 
 private:
 	CSVWriterConfigPanel *mConfigPanel;

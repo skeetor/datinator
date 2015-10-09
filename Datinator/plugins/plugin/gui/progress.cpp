@@ -84,10 +84,9 @@ void Progress::showProgress(QString const &oText, QString const &oTitle)
 		supportlib::gui::center(getMainWindow(), gProgressDlg, false, true);
 		gProgressDlg->setWindowTitle(oTitle);
 		gProgressDlg->show();
-		qApp->processEvents();
-
         gProgressDlg->setMaximum(1);
         gProgressDlg->setValue(0);
+		qApp->processEvents();
 	}
 
 	gProgressDlg->setLabelText(oText);

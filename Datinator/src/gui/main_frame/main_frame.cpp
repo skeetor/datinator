@@ -504,7 +504,7 @@ void MainFrame::updateConfigPanel(IDataContainer *oContainer, QWidget *&oCurrent
 	QWidget *old = oCurrentPanel;
 	oCurrentPanel = NULL;
 
-	QWidget *cp = oContainer->getConfigPanel(oMainPanel);
+	QWidget *cp = oContainer->getConfigPanel();
 	if(cp == NULL)
 		goto Quit;
 

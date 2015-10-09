@@ -71,10 +71,10 @@ void CSVWriter::setFilename(QString const &oFilename)
 	mConfigPanel->reset();
 }
 
-CSVWriterConfigPanel *CSVWriter::createContainerConfigPanel(QWidget *oParent)
+CSVWriterConfigPanel *CSVWriter::createContainerConfigPanel(void)
 {
 	if(mConfigPanel == NULL)
-		mConfigPanel = new CSVWriterConfigPanel(this, oParent);
+		mConfigPanel = new CSVWriterConfigPanel(this, super::getMainWindow());
 
 	return mConfigPanel;
 }
@@ -84,7 +84,7 @@ bool CSVWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 	if(!truncateMode())
 		return true;
 
-	CSVWriterConfigPanel *p = createContainerConfigPanel(NULL);
+	CSVWriterConfigPanel *p = createContainerConfigPanel();
 	CSV &csv = getCSV();
 	csv.setSeparator(p->getSeparator());
 	StdChar closer;
@@ -160,7 +160,7 @@ bool CSVWriter::loadProfile(QSettings &oProfile, QString const &oKey)
 	if(!FileContainerBase::loadProfile(oProfile, oKey))
 		return false;
 
-	CSVWriterConfigPanel *p = createContainerConfigPanel(NULL);
+	CSVWriterConfigPanel *p = createContainerConfigPanel();
 	QString s = oProfile.value(oKey+"_separator", ";").toString();
 	StdChar c1 = ';';
 	if(s.length() > 0)
@@ -185,7 +185,7 @@ bool CSVWriter::loadProfile(QSettings &oProfile, QString const &oKey)
 void CSVWriter::saveProfile(QSettings &oProfile, QString const &oKey)
 {
 	FileContainerBase::saveProfile(oProfile, oKey);
-	CSVWriterConfigPanel *p = createContainerConfigPanel(NULL);
+	CSVWriterConfigPanel *p = createContainerConfigPanel();
 	StdChar c1 = p->getSeparator();
 	oProfile.setValue(oKey+"_separator", QString(c1));
 

@@ -28,14 +28,14 @@ public:
 	virtual ~CSVReader(void);
 
 public: // @IDataContainer
-	QWidget *getConfigPanel(QWidget *oParentPanel) override;
+	QWidget *getConfigPanel(void) override;
 
 	int read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow) override;
 	int count(void) override;
 
 protected:
 	QList<DatabaseColumn *> loadColumns(void) override;
-	CSVReaderConfigPanel *createContainerConfigPanel(QWidget *oParent) override;
+	CSVReaderConfigPanel *createContainerConfigPanel(void) override;
 	bool isReader(void) override;
 	virtual void updateSampleView(QList<DatabaseColumn *> const &oColumns);
 	CSV::Openmode getOpenmode(void) override;
