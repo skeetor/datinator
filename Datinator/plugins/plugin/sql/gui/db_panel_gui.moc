@@ -8,7 +8,9 @@
 #define DB_PANEL_H_INCLUDED
 
 #include <QtWidgets/QFrame>
+#include <vector>
 
+#include "datinator_types.h"
 #include "plugin/plugin_dll_api.h"
 #include "support/patterns/observer.h"
 #include "plugin/sql/gui/events.h"
@@ -21,7 +23,7 @@ class ContainerPanel;
 class PLUGIN_DLL_EXPORT DBPanel
 	:	public QFrame,
 		public Listener<SQLPreview::ActionEvent, QVariant, int>,	// Listener when changing to table select
-		public Dispatcher<QString>	// Table selected
+		public Dispatcher<StdString>	// Table selected
 {
 	Q_OBJECT
 
@@ -30,20 +32,20 @@ public:
 	virtual ~DBPanel(void);
 
 	void setRowStretch(int nRow, int nValue);
-	void setTables(QList<QString> const &oTables, QString const &oSelection = "", bool bNotify = true);
-	bool selectTable(QString const &oSelection, bool bNotify);
+	void setTables(std::vector<StdString> const &oTables, StdString const &oSelection = "", bool bNotify = true);
+	bool selectTable(StdString const &oSelection, bool bNotify);
 
-	inline void addTableSelectListener(Listener<QString> *oListener) { Dispatcher<QString>::addListener(oListener); };
-	inline void removeTableSelectListener(Listener<QString> *oListener) { Dispatcher<QString>::removeListener(oListener); };
+	inline void addTableSelectListener(Listener<StdString> *oListener) { Dispatcher<StdString>::addListener(oListener); };
+	inline void removeTableSelectListener(Listener<StdString> *oListener) { Dispatcher<StdString>::removeListener(oListener); };
 
 	void setLoginPanel(QWidget *oLoginPanel);
 	void setConfigPanel(QWidget *oConfigPanel);
 
-	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
-	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+	virtual bool loadProfile(QSettings &oProfile, StdString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, StdString const &oKey);
 
 protected:
-	inline void notifyTableSelectListeners(QString const &oTable) { Dispatcher<QString>::notify(oTable); };
+	inline void notifyTableSelectListeners(StdString const &oTable) { Dispatcher<StdString>::notify(oTable); };
 	void handleNotification(Dispatcher<SQLPreview::ActionEvent, QVariant, int> *oSource, SQLPreview::ActionEvent nEvent, QVariant oData, int nRowCount);
 
 protected slots:

@@ -5,7 +5,6 @@
  ******************************************************************************/
 
 #include <QtCore/QSettings>
-#include <QtCore/QString>
 
 #include <QtWidgets/QMessageBox>
 
@@ -26,12 +25,12 @@ CSVContainer::~CSVContainer(void)
 	getCSV().close();
 }
 
-void CSVContainer::store(QSettings &oPropertyFile, QString const &oPrefix)
+void CSVContainer::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	super::store(oPropertyFile, "csv/"+oPrefix);
 }
 
-void CSVContainer::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void CSVContainer::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	super::restore(oPropertyFile, "csv/"+oPrefix);
 }
@@ -60,9 +59,9 @@ void CSVContainer::end(void)
 	super::end();
 }
 
-bool CSVContainer::connect(QString const &oFilename)
+bool CSVContainer::connect(StdString const &oFilename)
 {
-	QString fn = oFilename;
+	StdString fn = oFilename;
 	if(fn.length() == 0)
 		fn = getConnectString();
 
@@ -78,11 +77,11 @@ bool CSVContainer::connect(QString const &oFilename)
 		CSV::ErrorCode rc;
 		disconnect();
 
-		csv.setFilename(supportlib::string::QtStringToStringT(fn));
+		csv.setFilename(fn);
 		CSV::Openmode md = getOpenmode();
 		if((rc = csv.open(md)) != CSV::ErrorCode::CSV_OK)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "CSV", "Unable to open "+fn);
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "CSV", "Unable to open "+fn);
 			csv.setFilename("");
 			return false;
 		}
@@ -95,7 +94,7 @@ bool CSVContainer::connect(QString const &oFilename)
 	return true;
 }
 
-bool CSVContainer::disconnect(QString const &oFilename)
+bool CSVContainer::disconnect(StdString const &oFilename)
 {
 	UNUSED(oFilename);
 

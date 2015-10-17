@@ -8,8 +8,8 @@
 #define TEXT_MANIPULATOR_PANEL_H_INCLUDED
 
 #include <QtWidgets/QFrame>
-#include <QtCore/QList>
-#include <QtCore/QPair>
+#include <vector>
+#include <utility>
 
 #include "manipulator/text/text_panel_gui.h"
 #include "manipulator/manipulator_panel_qt.moc"
@@ -17,8 +17,8 @@
 
 class TextManipulator;
 
-bool toPositionText(QList<QPair<int, int>> const &oPositionList, QString &oPositionText);
-bool toPositionList(QString const &oPositionString, QList<QPair<int, int>> &oPositionList);
+bool toPositionText(std::vector<std::pair<int, int>> const &oPositionList, StdString &oPositionText);
+bool toPositionList(StdString const &oPositionString, std::vector<std::pair<int, int>> &oPositionList);
 
 class TextManipulatorPanel
 	:	public ManipulatorPanel
@@ -60,29 +60,29 @@ public:
 	 * 3,-5,7-, ...		3:0, 0(or-1);5,7:-1
 	 * 5,3,1-7, ...		5:0, 3:0, 1:7, ...
 	 */
-	bool setPositions(QList<QPair<int, int>> const &oPositionList);
-	bool getPositions(QList<QPair<int, int>> &oPositionList) const;
+	bool setPositions(std::vector<std::pair<int, int>> const &oPositionList);
+	bool getPositions(std::vector<std::pair<int, int>> &oPositionList) const;
 
 	/**
 	 * Sets/gets the positionlist as a string.
 	 * if false is returned, the string doesn't contain a valid list.
 	 */
-	bool setPositionText(QString const &oPositionString);
-	QString getPositionText(void) const;
+	bool setPositionText(StdString const &oPositionString);
+	StdString getPositionText(void) const;
 
-	void setPattern(QString const &oPattern, bool bInvertSelection, bool bRegularExpression);
+	void setPattern(StdString const &oPattern, bool bInvertSelection, bool bRegularExpression);
 	bool getInvertSelection(void) const;
 	bool getRegularExpression(void) const;
-	QString getPattern(void) const;
+	StdString getPattern(void) const;
 
-	QString getText(void) const;
-	void setText(QString const &oText);
+	StdString getText(void) const;
+	void setText(StdString const &oText);
 
 protected:
 	void disableAll(void);
 
 protected slots:
-	void onTextChanged(QString oText);		// Any of the text fields changed
+	void onTextChanged(StdString oText);		// Any of the text fields changed
 	void onValueChanged(int);				// Any of the number fields or checkbox changed
 	void onAction(int);						// Combobox selection
 

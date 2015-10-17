@@ -13,17 +13,19 @@
 #include "support/unicode/unicode_types.h"
 #include "support/db/dbcolumn.h"
 
+#include "support/helper/string.h"
+
 ColumnManipulatorPanel::ColumnManipulatorPanel(ColumnManipulator *oOwner, QWidget *oParent)
 	: ManipulatorPanel(oOwner, oParent)
 {
 	mGUI = new Ui::ColumnManipulatorGUI();
 	mGUI->setupUi(this);
 	setButtons(mGUI->mPrependBtn, mGUI->mAppendBtn, mGUI->mReplaceBtn);
-	QList<DatabaseColumn *> cols = oOwner->getSourceColumns();
+	std::vector<DatabaseColumn *> cols = oOwner->getSourceColumns();
 	for(DatabaseColumn * const &col : cols)
 	{
 		if(col)
-			mGUI->mColumnBox->addItem(col->getName());
+			mGUI->mColumnBox->addItem(spt::string::toQt(col->getName()));
 	}
 
 	onColumnSelected(0);
@@ -40,12 +42,12 @@ void ColumnManipulatorPanel::onColumnSelected(int nColumn)
 	notifyOwner();
 }
 
-void ColumnManipulatorPanel::setColumn(int nColumnIndex)
+void ColumnManipulatorPanel::setColumn(ssize_t nColumnIndex)
 {
 	mGUI->mColumnBox->setCurrentIndex(nColumnIndex);
 }
 
-int ColumnManipulatorPanel::getColumn(void)
+ssize_t ColumnManipulatorPanel::getColumn(void)
 {
 	return mGUI->mColumnBox->currentIndex();
 }

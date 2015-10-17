@@ -4,15 +4,17 @@
  *
  ******************************************************************************/
 
-#ifndef DATINATOR_TYPES_H_INCLUDED
-#define DATINATOR_TYPES_H_INCLUDED
+#ifndef _DATINATOR_TYPES_H_INCLUDED
+#define _DATINATOR_TYPES_H_INCLUDED
 
-#include <QtCore/QString>
+#define USE_STD_LISTENER
+
 #include "support/db/dbcolumn.h"
 #include "support/unicode/unicode_types.h"
 
-typedef supportlib::db::DBColumn<QString, QString> DatabaseColumn;
-typedef supportlib::string::string_t StdString;
-typedef supportlib::string::char_t StdChar;
+typedef spt::string::string_t StdString;
+typedef spt::string::char_t StdChar;
 
-#endif // DATINATOR_TYPES_H_INCLUDED
+typedef spt::db::DBColumn<StdString, StdString> DatabaseColumn;
+
+#endif // _DATINATOR_TYPES_H_INCLUDED

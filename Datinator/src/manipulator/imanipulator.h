@@ -9,15 +9,14 @@
  *
  ******************************************************************************/
 
-#ifndef IMANIPULATOR_H_INCLUDED
-#define IMANIPULATOR_H_INCLUDED
+#ifndef _IMANIPULATOR_H_INCLUDED
+#define _IMANIPULATOR_H_INCLUDED
 
-#include <QtCore/QList>
+#include <vector>
 
 #include "datinator_types.h"
 #include "support/patterns/observer.h"
 
-class QString;
 class QWidget;
 class QSettings;
 
@@ -30,12 +29,12 @@ public:
 	/**
 	 * Return a unique Id identifying the manipulator type (not the instance).
 	 */
-	virtual QString getId(void) = 0;
+	virtual StdString getId(void) = 0;
 
 	/**
 	 * Create a string representation of the manipulator
 	 */
-	virtual QString toString(void) = 0;
+	virtual StdString toString(void) = 0;
 
 	/**
 	 * Returns true if the manipulator is properly configured.
@@ -46,13 +45,13 @@ public:
 	/**
 	 * The string which is displayed to the user in a selection.
 	 */
-	virtual QString getName(void) = 0;
+	virtual StdString getName(void) = 0;
 
 	/**
 	 * This string can be displayed as a helptext to explain the
 	 * function of the manipulator.
 	 */
-	virtual QString getDescription(void) = 0;
+	virtual StdString getDescription(void) = 0;
 
 	/**
 	 * Create an instance of the current manipulator
@@ -76,7 +75,7 @@ public:
 	 * after it is no longer needed. This function my return
 	 * NULL to indicate a NULL value, as opposed to an empty string.
 	 */
-	virtual QString *format(QString *oValue, bool bPreview = false) = 0;
+	virtual StdString *format(StdString *oValue, bool bPreview = false) = 0;
 
 	/**
 	 * Reset the configuration to it's default values which were specified
@@ -107,19 +106,19 @@ public:
 	 * If isValid() returned false, this should return a text explaining
 	 * the problem.
 	 */
-	virtual QString lastError(void) = 0;
+	virtual StdString lastError(void) = 0;
 
 	/**
 	 * The test value is a user defined value whcih can be set to allow preview
 	 * and testing of the effects of the manipulator
 	 */
-	virtual QString getTestValue(void) const = 0;
-	virtual void setTestValue(QString const &oValue) = 0;
+	virtual StdString getTestValue(void) const = 0;
+	virtual void setTestValue(StdString const &oValue) = 0;
 
-	virtual bool loadProfile(QSettings &oProfile, QString const &oKey) = 0;
-	virtual void saveProfile(QSettings &oProfile, QString const &oKey) = 0;
+	virtual bool loadProfile(QSettings &oProfile, StdString const &oKey) = 0;
+	virtual void saveProfile(QSettings &oProfile, StdString const &oKey) = 0;
 
-	virtual void setSourceColumns(QList<DatabaseColumn *> const &oColumns) = 0;
+	virtual void setSourceColumns(std::vector<DatabaseColumn *> const &oColumns) = 0;
 };
 
-#endif // IMANIPULATOR_H_INCLUDED
+#endif // _IMANIPULATOR_H_INCLUDED

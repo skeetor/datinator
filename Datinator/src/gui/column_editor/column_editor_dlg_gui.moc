@@ -4,10 +4,11 @@
  *
  *******************************************************************************/
 
-#ifndef COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED
-#define COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED
+#ifndef _COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED
+#define _COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED
 
-#include <QtCore/QList>
+#include <vector>
+
 #include <QtWidgets/QDialog>
 
 #include "gui/column_editor/column_editor_model.h"
@@ -24,8 +25,8 @@ public:
 	ColumnEditorDialogBox(QWidget *oParent = NULL);
 	virtual ~ColumnEditorDialogBox(void);
 
-	QList<DatabaseColumn *> getColumns(void);
-	void setColumns(QList<DatabaseColumn *> const &oColumns);
+	std::vector<DatabaseColumn *> getColumns(void);
+	void setColumns(std::vector<DatabaseColumn *> const &oColumns);
 
 	/**
 	 * The editor keeps track of the new columns it created,
@@ -43,9 +44,9 @@ protected slots:
 
 private:
 	Ui::ColumnEditorDlgGUI *mGUI;
-	DatatypeCombobox<supportlib::db::DataType> *mDatatypeDelegate;
+	DatatypeCombobox<spt::db::DataType> *mDatatypeDelegate;
 	ColumnEditorModel mModel;
-	QList<DatabaseColumn *> mOriginal;
+	std::vector<DatabaseColumn *> mOriginal;
 };
 
-#endif // COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED
+#endif // _COLUMN_EDITOR_DIALOG_BOX_GUI_H_INCLUDED

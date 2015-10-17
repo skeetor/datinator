@@ -6,44 +6,15 @@
 
 // The variadic template mechanism requires at least a C++11 compiler.
 
-/**
- * The listener can use a QList oder a std::vector for maintaining it's list.
- * To use one or the other, simply include the appropriate header before
- * including the listener file. To force a particular one you must define
- * which one it should be. If both lists are included (QList and vector)
- * QList will be used. If none are provided, std::vector is assumed.
- *
- * USE_QT_LISTENER
- * USE_STD_LISTENER
- */
 #ifndef OBSERVER_TEMPLATE_INCLUDED_H
 #define OBSERVER_TEMPLATE_INCLUDED_H
 
 #include "support/support_defs.h"
+#include <vector>
 
-#if !defined(USE_QT_LISTENER)
-#   if !defined(USE_STD_LISTENER)
-#      if defined(QLIST_H)
-#         define USE_QT_LISTENER
-#       endif // QLIST_H
-#   else
-#       define USE_STD_LISTENER      // default
-#   endif // USE_STD_LISTENER
-#endif // USE_QT_LISTENER
-
-#if !defined(USE_STD_LISTENER)
-#   if defined(_GLIBCXX_VECTOR)
-#      define USE_QT_LISTENER
-#    endif // _GLIBCXX_VECTOR
-#endif // USE_STD_LISTENER
-
-#if defined(USE_QT_LISTENER)
-#define ListenerList		QList
-#endif // QLIST_H
-
-#if defined(USE_STD_LISTENER)
+#ifndef ListenerList
 #define ListenerList		std::vector
-#endif // _GLIBCXX_VECTOR
+#endif
 
 #ifndef ListenerList
 #error No List class defined for the listener. Please either define USE_QT_LISTENER or USE_STD_LISTENER or include the appropriate header file before observer.h
@@ -147,7 +118,7 @@ public:
 	{
 		// The listener may have registered multiple times
 		// so we must remove all instances.
-		int i;
+		ssize_t i;
 		while((i = listenerIndex(oListener)) != -1)
 			mListeners.erase(mListeners.begin() + i);
 	}
@@ -158,9 +129,9 @@ protected:
 		return mListeners;
 	}
 
-	virtual int listenerIndex(Listener<T...> const *oListener) const
+	virtual ssize_t listenerIndex(Listener<T...> const *oListener) const
 	{
-		int i = -1;
+		ssize_t i = -1;
 		for(Listener<T...> * const &listener : mListeners)
 		{
 			i++;

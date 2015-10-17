@@ -25,11 +25,11 @@ public:
 	DateManipulatorPanel(DateManipulator *oOwner, QWidget *oParent = NULL);
 	virtual ~DateManipulatorPanel(void);
 
-	QString getInputFormat(void) const;
-	void setInputFormat(QString const &oFormat);
+	StdString getInputFormat(void) const;
+	void setInputFormat(StdString const &oFormat);
 
-	QString getOutputFormat(void) const;
-	void setOutputFormat(QString const &oFormat);
+	StdString getOutputFormat(void) const;
+	void setOutputFormat(StdString const &oFormat);
 
 	bool isSysdate(void) const;
 	void setSysdate(bool bSysdate = true);
@@ -38,14 +38,14 @@ public:
 	void setSysdateStart(bool bSysdateStart = true);
 
 protected slots:
-	void onTextChanged(QString oText);
+	void onTextChanged(StdString oText);
 	void onInputFormat(int nSelection);
 	void onOutputFormat(int nSelection);
 	void onSysdateStart(bool bSysdateStart);
 
 protected:
-	QString getFormat(QComboBox *oBox, QLineEdit *oCustomFormat) const;
-	void setFormat(QString const &oString, QComboBox *oBox, QLineEdit *oCustomFormat);
+	StdString getFormat(QComboBox *oBox, QLineEdit *oCustomFormat) const;
+	void setFormat(StdString const &oString, QComboBox *oBox, QLineEdit *oCustomFormat);
 	void formatChanged(QComboBox *oBox, QLineEdit *oCustomFormat, bool bInput);
 
 private:

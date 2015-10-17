@@ -4,8 +4,8 @@
  *
  *******************************************************************************/
 
-#ifndef COLUMN_MAPPING_VIEW_H_INCLUDED
-#define COLUMN_MAPPING_VIEW_H_INCLUDED
+#ifndef _COLUMN_MAPPING_VIEW_H_INCLUDED
+#define _COLUMN_MAPPING_VIEW_H_INCLUDED
 
 #include <QtWidgets/QTableView>
 
@@ -40,8 +40,8 @@ public:
 	inline void setReadOnly(bool bReadOnly = true) { mReadOnly = bReadOnly; }
 	inline bool isReadOnly(void) { return mReadOnly; }
 
-	void setSourceColumns(QList<DatabaseColumn *> const &oColumns);
-	QList<DatabaseColumn *> getSourceColumns(void);
+	void setSourceColumns(std::vector<DatabaseColumn *> const &oColumns);
+	std::vector<DatabaseColumn *> getSourceColumns(void);
 
 	/**
 	 * Set the target columns in the view. If the size of the target columns == 0, the
@@ -51,8 +51,8 @@ public:
 	 * not copied over from the source. This is required for containers, which can not create
 	 * non-existing columns.
 	 */
-	void setTargetColumns(QList<DatabaseColumn *> const &oColumns, bool bCopy = false);
-	QList<DatabaseColumn *> getTargetColumns(void);
+	void setTargetColumns(std::vector<DatabaseColumn *> const &oColumns, bool bCopy = false);
+	std::vector<DatabaseColumn *> getTargetColumns(void);
 
 	inline void addRowcountListener(Listener<int> *oListener)
 	{
@@ -71,8 +71,8 @@ public:
 
 	int rowCount(void);
 	ColumnMappingItem *rowItem(int nRow);
-	QList<ColumnMappingItem> rowItems(void);
-	QModelIndexList selectedRows(QList<ColumnMappingItem> *oItems = NULL);
+	std::vector<ColumnMappingItem> rowItems(void);
+	QModelIndexList selectedRows(std::vector<ColumnMappingItem> *oItems = NULL);
 
 	bool loadProfile(QSettings &oProfile);
 	void saveProfile(QSettings &oProfile);
@@ -87,7 +87,7 @@ protected:
 	 * When a new set of columns is loaded, the comboboxes should
 	 * automatically preselect the row value.
 	 */
-	void updateDefaultSelection(int nColumn, QList<DatabaseColumn *> const &oColumns);
+	void updateDefaultSelection(int nColumn, std::vector<DatabaseColumn *> const &oColumns);
 
 private:
 	bool mReadOnly;
@@ -95,7 +95,7 @@ private:
 	ColumnMappingModel mItemModel;
 	DBColumnObserver mSourceColumns;
 	DBColumnObserver mTargetColumns;
-	QList<IManipulator *> mManipulators;
+	std::vector<IManipulator *> mManipulators;
 };
 
-#endif // COLUMN_MAPPING_VIEW_H_INCLUDED
+#endif // _COLUMN_MAPPING_VIEW_H_INCLUDED

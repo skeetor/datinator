@@ -7,6 +7,7 @@
 #include "plugin/gui/datatype_string.h"
 #include "plugin/gui/sample_table/sample_item_model.h"
 #include "support/unicode/unicode_types.h"
+#include "support/helper/string.h"
 
 SampleItemModel::SampleItemModel(void)
 : QStandardItemModel()
@@ -45,7 +46,7 @@ Qt::ItemFlags SampleItemModel::flags(const QModelIndex &oIndex) const
 	return fl;
 }
 
-void SampleItemModel::setColumns(QList<DatabaseColumn *> const &oColumns)
+void SampleItemModel::setColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	clear();
 	mColumns = oColumns;
@@ -55,39 +56,39 @@ void SampleItemModel::setColumns(QList<DatabaseColumn *> const &oColumns)
 	insertColumns(0, n);
 	n = 0;
 	for(DatabaseColumn * const &col : mColumns)
-		setHeaderData(n++, Qt::Horizontal, col->getName());
+		setHeaderData(n++, Qt::Horizontal, spt::string::toQt(col->getName()));
 }
 
-void SampleItemModel::setRows(QList<QList<QString>> const &oSampleRows)
+void SampleItemModel::setRows(std::vector<std::vector<StdString>> const &oSampleRows)
 {
 	removeRows(0, rowCount());
 
 	int n = oSampleRows.size();
 	insertRows(0, n);
 
-	QList<QList<QString>> rows = oSampleRows;
+	std::vector<std::vector<StdString>> rows = oSampleRows;
 	if(mShowDatatypes)
 	{
-		QList<QString> sl;
+		std::vector<StdString> sl;
 		for(DatabaseColumn * const &col  : mColumns)
-			sl.append(TypeStringProvider.toString(col->getType()));
+			sl.push_back(TypeStringProvider.toString(col->getType()));
 
-		rows.append(sl);
+		rows.push_back(sl);
 	}
 
 	n = 0;
-	for(QList<QString> const &row : rows)
+	for(std::vector<StdString> const &row : rows)
 		setRow(n++, row);
 }
 
-void SampleItemModel::setRow(int nRow, QList<QString> const &oData)
+void SampleItemModel::setRow(int nRow, std::vector<StdString> const &oData)
 {
 	QStandardItem *item = NULL;
 
 	int i = 0;
-	for(QString const &col : oData)
+	for(StdString const &col : oData)
 	{
-		item = new QStandardItem(col);
+		item = new QStandardItem(spt::string::toQt(col));
 		setItem(nRow, i++, item);
 	}
 }

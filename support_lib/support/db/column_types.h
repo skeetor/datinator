@@ -7,7 +7,7 @@
 #ifndef COLUMN_TYPES_H
 #define COLUMN_TYPES_H
 
-namespace supportlib
+namespace spt
 {
 namespace db
 {
@@ -27,6 +27,6 @@ typedef enum
 } DataType;
 
 } // namespace db
-} // namespace supportlib
+} // namespace spt
 
 #endif // COLUMN_TYPES_H

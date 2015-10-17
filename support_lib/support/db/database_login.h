@@ -7,19 +7,17 @@
 #ifndef DATABASE_LOGIN_H
 #define DATABASE_LOGIN_H
 
-#include <string>
-
+#include "support/unicode/unicode_types.h"
 #include "support/support_dll_api.h"
 #include "support/patterns/serialize.h"
-#include "support/unicode/unicode_types.h"
 
-class SUPPORT_DLL_EXPORT DatabaseLogin : public Serialize<supportlib::string::string_t>
+class SUPPORT_DLL_EXPORT DatabaseLogin : public Serialize<spt::string::string_t>
 {
 public:
 	DatabaseLogin(void);
 	DatabaseLogin(DatabaseLogin const *oSource);
 	DatabaseLogin(DatabaseLogin const &oSource);
-	DatabaseLogin(supportlib::string::string_t const &oSerialized);
+	DatabaseLogin(spt::string::string_t const &oSerialized);
 	virtual ~DatabaseLogin(void);
 
 	virtual void clear(void);
@@ -32,17 +30,17 @@ public:
 	virtual void copy(DatabaseLogin const &oSource);
 	virtual void copy(DatabaseLogin const *oSource);
 
-	virtual supportlib::string::string_t getUser(void) const;
-	virtual void setUser(supportlib::string::string_t const &oUser);
+	virtual spt::string::string_t getUser(void) const;
+	virtual void setUser(spt::string::string_t const &oUser);
 
-	virtual supportlib::string::string_t getPassword(void) const;
-	virtual void setPassword(supportlib::string::string_t const &oPassword);
+	virtual spt::string::string_t getPassword(void) const;
+	virtual void setPassword(spt::string::string_t const &oPassword);
 
-	virtual supportlib::string::string_t getClearPassword(void) const;
-	virtual void setClearPassword(supportlib::string::string_t const &oPassword);
+	virtual spt::string::string_t getClearPassword(void) const;
+	virtual void setClearPassword(spt::string::string_t const &oPassword);
 
-	virtual supportlib::string::string_t getDatabase(void) const;
-	virtual void setDatabase(supportlib::string::string_t const &oDatabase);
+	virtual spt::string::string_t getDatabase(void) const;
+	virtual void setDatabase(spt::string::string_t const &oDatabase);
 
 	virtual bool requiresSaveHost(void) const;
 	virtual void saveHost(bool oSaveHost = true);
@@ -51,34 +49,34 @@ public:
 	 * getHost() returns the full hostname in the form
 	 * hostname:port
 	 */
-	virtual supportlib::string::string_t getHost(void) const;
-	virtual void setHost(supportlib::string::string_t const &oHost);
+	virtual spt::string::string_t getHost(void) const;
+	virtual void setHost(spt::string::string_t const &oHost);
 
 	/**
 	 * getHostname() returns only the hostname
 	 */
-	virtual supportlib::string::string_t getHostname(void) const;
-	virtual void setHostname(supportlib::string::string_t const &oHostname);
+	virtual spt::string::string_t getHostname(void) const;
+	virtual void setHostname(spt::string::string_t const &oHostname);
 	virtual int getPort(void) const;
 	virtual void setPort(int oHost);
 
 public: // @Serialize<T, S>
-	virtual supportlib::string::string_t serialize(void);
-	virtual bool deserialize(supportlib::string::string_t const &oList);
+	virtual spt::string::string_t serialize(void);
+	virtual bool deserialize(spt::string::string_t const &oList);
 
 protected:
 	void splitHost(void);
 
-	virtual supportlib::string::string_t encrypt(supportlib::string::string_t const &oPassword) const;
-	virtual supportlib::string::string_t decrypt(void) const;
+	virtual spt::string::string_t encrypt(spt::string::string_t const &oPassword) const;
+	virtual spt::string::string_t decrypt(void) const;
 
 private:
 	bool mSaveHost;
 	int mPort;
-	supportlib::string::string_t mHost;
-	supportlib::string::string_t mUser;
-	supportlib::string::string_t mPassword;
-	supportlib::string::string_t mDatabase;
+	spt::string::string_t mHost;
+	spt::string::string_t mUser;
+	spt::string::string_t mPassword;
+	spt::string::string_t mDatabase;
 
 };
 

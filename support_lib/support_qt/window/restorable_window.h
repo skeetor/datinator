@@ -16,9 +16,12 @@
 #ifndef RESTORABLE_WINDOW_H
 #define RESTORABLE_WINDOW_H
 
+#include "support/unicode/unicode_types.h"
+
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
-#include <QtCore/QPair>
+#include <utility>
+#include <vector>
 
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QSplitter>
@@ -55,27 +58,27 @@ public:
 	RestorableWindow(void);
 	virtual ~RestorableWindow(void);
 
-	virtual void store(QSettings &oPropertyFile, QString const &oPrefix);
-	virtual void restore(QSettings &oPropertyFile, QString const &oPrefix);
+	virtual void store(QSettings &oPropertyFile, spt::string::string_t const &oPrefix);
+	virtual void restore(QSettings &oPropertyFile, spt::string::string_t const &oPrefix);
 
-	virtual void addWidget(QString const &oPropertyName, QWidget *oWidget);
-	virtual void addSplitter(QString const &oPropertyName, QSplitter *oSplitter);
-	virtual void addTable(QString const &oPropertyName, QTableView *oTable);
+	virtual void addWidget(spt::string::string_t const &oPropertyName, QWidget *oWidget);
+	virtual void addSplitter(spt::string::string_t const &oPropertyName, QSplitter *oSplitter);
+	virtual void addTable(spt::string::string_t const &oPropertyName, QTableView *oTable);
 
 protected:
-	virtual void storeWidget(QSettings &oPropertyFile, QString const &oName, QWidget *oWidgets);
-	virtual void restoreWidget(QSettings &oPropertyFile, QString const &oName, QWidget *oWidgets);
+	virtual void storeWidget(QSettings &oPropertyFile, spt::string::string_t const &oName, QWidget *oWidgets);
+	virtual void restoreWidget(QSettings &oPropertyFile, spt::string::string_t const &oName, QWidget *oWidgets);
 
-	virtual void storeSplitter(QSettings &oPropertyFile, QString const &oName, QSplitter *oSplitter);
-	virtual void restoreSplitter(QSettings &oPropertyFile, QString const &oName, QSplitter *oSplitter);
+	virtual void storeSplitter(QSettings &oPropertyFile, spt::string::string_t const &oName, QSplitter *oSplitter);
+	virtual void restoreSplitter(QSettings &oPropertyFile, spt::string::string_t const &oName, QSplitter *oSplitter);
 
-	virtual void storeTable(QSettings &oPropertyFile, QString const &oName, QTableView *oTable);
-	virtual void restoreTable(QSettings &oPropertyFile, QString const &oName, QTableView *oTable);
+	virtual void storeTable(QSettings &oPropertyFile, spt::string::string_t const &oName, QTableView *oTable);
+	virtual void restoreTable(QSettings &oPropertyFile, spt::string::string_t const &oName, QTableView *oTable);
 
 private:
-	QList<QPair<QString, QWidget *>> mWidgets;
-	QList<QPair<QString, QSplitter *>> mSplitters;
-	QList<QPair<QString, QTableView *>> mTables;
+	std::vector<std::pair<spt::string::string_t, QWidget *>> mWidgets;
+	std::vector<std::pair<spt::string::string_t, QSplitter *>> mSplitters;
+	std::vector<std::pair<spt::string::string_t, QTableView *>> mTables;
 };
 
 #endif // RESTORABLE_WINDOW_H

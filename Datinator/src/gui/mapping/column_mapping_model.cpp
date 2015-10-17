@@ -10,6 +10,8 @@
 #include "support/db/dbcolumn.h"
 #include "manipulator/imanipulator.h"
 
+#include "support/helper/string.h"
+
 Q_DECLARE_METATYPE(DatabaseColumn *)
 Q_DECLARE_METATYPE(ColumnMappingItem *)
 Q_DECLARE_METATYPE(IManipulator *)
@@ -59,7 +61,7 @@ bool ColumnMappingModel::setData(QModelIndex const &oIndex, QVariant const &oVal
 	}
 	else if(c == Columns::MANIPULATOR)
 	{
-		QList<IManipulator *>ml = oValue.value<QList<IManipulator *>>();
+		std::vector<IManipulator *>ml = oValue.value<std::vector<IManipulator *>>();
 		setManipulators(r, ml);
 	}
 
@@ -164,7 +166,7 @@ void ColumnMappingModel::setSourceColumn(int nRow, DatabaseColumn *oColumn)
 	QStandardItem *it = item(nRow, Columns::SOURCE);
 	mi->setSourceColumn(oColumn);
 	if(oColumn)
-		s = oColumn->getName();
+		s = spt::string::toQt(oColumn->getName());
 	it->setText(s);
 	setItem(nRow, Columns::SOURCE, it);
 }
@@ -193,7 +195,7 @@ void ColumnMappingModel::setTargetColumn(int nRow, DatabaseColumn *oColumn)
 	QStandardItem *it = item(nRow, Columns::TARGET);
 	mi->setTargetColumn(oColumn);
 	if(oColumn)
-		s = oColumn->getName();
+		s = spt::string::toQt(oColumn->getName());
 	it->setText(s);
 	setItem(nRow, Columns::TARGET, it);
 }
@@ -215,7 +217,7 @@ void ColumnMappingModel::clearTargetColumns(void)
 		setTargetColumn(i, NULL);
 }
 
-void ColumnMappingModel::setManipulators(int nRow, QList<IManipulator *> const &oManipulators)
+void ColumnMappingModel::setManipulators(int nRow, std::vector<IManipulator *> const &oManipulators)
 {
 	ColumnMappingItem *mi = getRowItem(nRow);
 	QStandardItem *it = item(nRow, Columns::MANIPULATOR);
@@ -224,11 +226,11 @@ void ColumnMappingModel::setManipulators(int nRow, QList<IManipulator *> const &
 	if(oManipulators.size() > 0)
 	{
 		mi->prepare();
-		QString *s = new QString("*VALUE*");
+		StdString *s = new StdString("*VALUE*");
 		s = mi->format(s, true);
 		if(s)
 		{
-			it->setText(*s);
+			it->setText(spt::string::toQt(*s));
 			delete s;
 		}
 		else
@@ -240,7 +242,7 @@ void ColumnMappingModel::setManipulators(int nRow, QList<IManipulator *> const &
 	setItem(nRow, Columns::MANIPULATOR, it);
 }
 
-QList<IManipulator *> ColumnMappingModel::getManipulators(int nRow) const
+std::vector<IManipulator *> ColumnMappingModel::getManipulators(int nRow) const
 {
 	ColumnMappingItem *mi = getRowItem(nRow);
 	return mi->getManipulators();
@@ -250,7 +252,7 @@ void ColumnMappingModel::clearManipulators(void)
 {
 	int n = rowCount();
 
-	QList<IManipulator *>ml;
+	std::vector<IManipulator *>ml;
 	for(int i = 0; i < n; i++)
 		setManipulators(i, ml);
 }

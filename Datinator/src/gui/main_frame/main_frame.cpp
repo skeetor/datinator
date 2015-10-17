@@ -4,6 +4,8 @@
  *
  *******************************************************************************/
 
+#include <utility>
+
 #include <QtCore/QVariant>
 #include <QtCore/QModelIndex>
 
@@ -13,6 +15,8 @@
 #include <QtWidgets/QProgressDialog>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QComboBox>
+
+#include <support/helper/string.h>
 
 #include <support_qt/helper/signal_blocker.h>
 #include <support_qt/helper/gui_helper.h>
@@ -57,16 +61,16 @@ MainFrame::MainFrame(MostRecent *oRecentSource, MostRecent *oRecentTarget, MostR
 	mGUI->mColumnSpin->setKeyboardTracking(false);
 	mGUI->mMappingTableView->addRowcountListener(this);
 
-	QString p = QApplication::applicationDirPath();
+	StdString p = spt::string::fromQt(QApplication::applicationDirPath());
 	mPluginManager = new PluginManager();
 	mPluginManager->addPath(p);
 
-	supportlib::gui::setButtonIcon(supportlib::image::button_add, supportlib::image::button_add_length, mGUI->mInsertBtn, "Add row(s)");
-	supportlib::gui::setButtonIcon(supportlib::image::button_delete, supportlib::image::button_delete_length, mGUI->mRemoveBtn, "Remove row(s)");
-	supportlib::gui::setButtonIcon(supportlib::image::button_down, supportlib::image::button_down_length, mGUI->mDownBtn, "Move down");
-	supportlib::gui::setButtonIcon(supportlib::image::button_up, supportlib::image::button_up_length, mGUI->mUpBtn, "Move up");
-	supportlib::gui::setButtonIcon(p+"/res/Load.png", mGUI->mLoadBtn, "Load");
-	supportlib::gui::setButtonIcon(p+"/res/Save.png", mGUI->mSaveBtn, "Save");
+	spt::gui::setButtonIcon(spt::image::button_add, spt::image::button_add_length, mGUI->mInsertBtn, "Add row(s)");
+	spt::gui::setButtonIcon(spt::image::button_delete, spt::image::button_delete_length, mGUI->mRemoveBtn, "Remove row(s)");
+	spt::gui::setButtonIcon(spt::image::button_down, spt::image::button_down_length, mGUI->mDownBtn, "Move down");
+	spt::gui::setButtonIcon(spt::image::button_up, spt::image::button_up_length, mGUI->mUpBtn, "Move up");
+	spt::gui::setButtonIcon(p+"/res/Load.png", mGUI->mLoadBtn, "Load");
+	spt::gui::setButtonIcon(p+"/res/Save.png", mGUI->mSaveBtn, "Save");
 
 	QVBoxLayout *l = new QVBoxLayout(this);
 	l->setContentsMargins(0, 0, 0, 0);
@@ -107,15 +111,15 @@ void MainFrame::reloadPlugins(void)
 	onSourceSelected(0);
 	onTargetSelected(0);
 
-	QList<QPair<QString, QList<QPair<QString, QString>>>> duplicates = mPluginManager->findDuplicates();
-	for(QPair<QString, QList<QPair<QString, QString>>> const &duplicate : duplicates)
+	std::vector<std::pair<StdString, std::vector<std::pair<StdString, StdString>>>> duplicates = mPluginManager->findDuplicates();
+	for(std::pair<StdString, std::vector<std::pair<StdString, StdString>>> const &duplicate : duplicates)
 	{
-		QString uuid = duplicate.first;
-		QList<QPair<QString, QString>> dups = duplicate.second;
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Plugins", "The "+uuid+" has to be unique but exists in multiple plugins:");
-		for(QPair<QString, QString> const &plugin : dups)
+		StdString uuid = duplicate.first;
+		std::vector<std::pair<StdString, StdString>> dups = duplicate.second;
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Plugins", "The "+uuid+" has to be unique but exists in multiple plugins:");
+		for(std::pair<StdString, StdString> const &plugin : dups)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Plugins", "DLL: "+plugin.first+" Containername: "+plugin.second);
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Plugins", "DLL: "+plugin.first+" Containername: "+plugin.second);
 		}
 	}
 }
@@ -139,37 +143,37 @@ void MainFrame::updateGUIElements(void)
     mGUI->mAppendBtn->setEnabled(enable);
 }
 
-void MainFrame::writeMostRecentItems(QSettings &oPropertyfile, QString const &oUUID, MostRecent *oMostRecent)
+void MainFrame::writeMostRecentItems(QSettings &oPropertyfile, StdString const &oUUID, MostRecent *oMostRecent)
 {
 	int i = -1;
-	QString kv = "main/"+oUUID+"_";
-	QList<MostRecent::ActionItem> il = oMostRecent->getItems(oUUID);
+	auto kv = spt::string::toQt("main/"+oUUID+"_");
+	std::vector<MostRecent::ActionItem> il = oMostRecent->getItems(oUUID);
 
 	oPropertyfile.setValue(kv+"items", il.size());
 
 	for(MostRecent::ActionItem &ai : il)
 	{
 		i++;
-		QString k = kv+QString::number(i)+"_";
+		auto k = kv+spt::string::toQt(spt::string::toString(i))+"_";
 
-		oPropertyfile.setValue(k+"connect", ai.mConnectString);
-		oPropertyfile.setValue(k+"text", ai.mText);
+		oPropertyfile.setValue(k+"connect", spt::string::toQt(ai.mConnectString));
+		oPropertyfile.setValue(k+"text", spt::string::toQt(ai.mText));
 	}
 }
 
-void MainFrame::readMostRecentItems(QSettings &oPropertyfile, QString const &oUUID, MostRecent *oMostRecent)
+void MainFrame::readMostRecentItems(QSettings &oPropertyfile, StdString const &oUUID, MostRecent *oMostRecent)
 {
-	QString kv = "main/"+oUUID+"_";
+	auto kv = spt::string::toQt("main/"+oUUID+"_");
 	int n = oPropertyfile.value(kv+"items").toInt();
 
 	// The insertion into the most recent list, has to be reversed
 	// so that the most recent item is added last.
 	for(int i = n-1; i >= 0; i--)
 	{
-		QString k = kv+QString::number(i)+"_";
+		auto k = kv+spt::string::toQt(spt::string::toString(i))+"_";
 
-		QString con = oPropertyfile.value(k+"connect").toString();
-		QString txt = oPropertyfile.value(k+"text").toString();
+		StdString con = spt::string::fromQt(oPropertyfile.value(k+"connect").toString());
+		StdString txt = spt::string::fromQt(oPropertyfile.value(k+"text").toString());
 		oMostRecent->addItem(oUUID, con, txt);
 	}
 }
@@ -241,11 +245,11 @@ void MainFrame::initReaders(void)
 	QComboBox *box = getSourceBox();
 	box->clear();
 
-	QList<IDataContainerReader *> l = mPluginManager->getReaders(this);
+	std::vector<IDataContainerReader *> l = mPluginManager->getReaders(this);
 	for(IDataContainerReader *r : l)
 		initReaderContainerBox(box, r);
 
-	if(l.count() > 0)
+	if(l.size() > 0)
 		box->setCurrentIndex(0);
 }
 
@@ -254,11 +258,11 @@ void MainFrame::initWriters(void)
 	QComboBox *box = getTargetBox();
 	box->clear();
 
-	QList<IDataContainerWriter *> l = mPluginManager->getWriters(this);
+	std::vector<IDataContainerWriter *> l = mPluginManager->getWriters(this);
 	for(IDataContainerWriter *w : l)
 		initWriterContainerBox(box, w);
 
-	if(l.count() > 0)
+	if(l.size() > 0)
 		box->setCurrentIndex(0);
 }
 
@@ -266,7 +270,7 @@ void MainFrame::initReaderContainerBox(QComboBox *oBox, IDataContainerReader *oR
 {
 	QVariant v;
 	v.setValue(oReader);
-	oBox->addItem(oReader->getContainername(), v);
+	oBox->addItem(spt::string::toQt(oReader->getContainername()), v);
 	oReader->addColumnListener(&mReaderConfigListener);
 	oReader->addSelectorListener(&mReaderConfigListener);
 
@@ -277,7 +281,7 @@ void MainFrame::initWriterContainerBox(QComboBox *oBox, IDataContainerWriter *oW
 {
 	QVariant v;
 	v.setValue(oWriter);
-	oBox->addItem(oWriter->getContainername(), v);
+	oBox->addItem(spt::string::toQt(oWriter->getContainername()), v);
 	oWriter->addColumnListener(&mWriterConfigListener);
 	oWriter->addSelectorListener(&mWriterConfigListener);
 	mRecentTarget->addMenu(oWriter->getContainerUUID(), oWriter->getContainername());
@@ -330,7 +334,7 @@ void MainFrame::onEdit(void)
 		return;
 
 	ColumnMappingView *v = mGUI->mMappingTableView;
-	QList<DatabaseColumn *> vl = v->getTargetColumns();
+	std::vector<DatabaseColumn *> vl = v->getTargetColumns();
 	mColumnEditor.setColumns(vl);
 	mColumnEditor.exec();
 	if(mColumnEditor.result() == QDialog::Accepted)
@@ -366,7 +370,7 @@ void MainFrame::onSave(void)
 	saveProfile();
 }
 
-void MainFrame::handleNotification(Dispatcher<QString, QString, QString> *oSource, QString oContainerId, QString oConnectString, QString oSelectorId)
+void MainFrame::handleNotification(Dispatcher<StdString, StdString, StdString> *oSource, StdString oContainerId, StdString oConnectString, StdString oSelectorId)
 {
 	UNUSED(oSource);
 
@@ -436,7 +440,7 @@ IDataContainerWriter *MainFrame::getCurrentTargetContainer(void)
 	return v.value<IDataContainerWriter *>();
 }
 
-int MainFrame::findContainer(QComboBox *oBox, QString const &oUUID)
+int MainFrame::findContainer(QComboBox *oBox, StdString const &oUUID)
 {
 	int n = oBox->count();
 	for(int i = 0; i < n; i++)
@@ -525,26 +529,26 @@ Quit:
 		old->hide();
 }
 
-void MainFrame::setSourceColumns(QList<DatabaseColumn *> const &oColumns)
+void MainFrame::setSourceColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mGUI->mMappingTableView->setSourceColumns(oColumns);
 }
 
-void MainFrame::setTargetColumns(QList<DatabaseColumn *> const &oColumns)
+void MainFrame::setTargetColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mGUI->mMappingTableView->setTargetColumns(oColumns);
 }
 
-QList<ColumnMappingItem> MainFrame::prepareItems(QList<ColumnMappingItem> const &oItems)
+std::vector<ColumnMappingItem> MainFrame::prepareItems(std::vector<ColumnMappingItem> const &oItems)
 {
-	QList<ColumnMappingItem> mappings;
+	std::vector<ColumnMappingItem> mappings;
 
 	for(ColumnMappingItem const &mi : oItems)
 	{
 		if(mi.getTargetColumn() == NULL)
 			continue;
 
-		mappings.append(mi);
+		mappings.push_back(mi);
 	}
 
 	return mappings;
@@ -555,7 +559,7 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 	Progress prg("Copying ...", "Initializing...");
 	if(!oReader || !oWriter)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "No reader or writer selected!");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "No reader or writer selected!");
 		return false;
 	}
 
@@ -571,42 +575,42 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 
 		if(!oReader->connect())
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "Unable to connect to source.");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "Unable to connect to source.");
 			return false;
 		}
 
 		if(!oWriter->connect())
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "Unable to connect to target.");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "Unable to connect to target.");
 			return false;
 		}
 
-		QList<ColumnMappingItem> mappings = prepareItems(mGUI->mMappingTableView->rowItems());
+		std::vector<ColumnMappingItem> mappings = prepareItems(mGUI->mMappingTableView->rowItems());
 		if(mappings.size() == 0)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "No columns for output.");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "No columns for output.");
 			return false;
 		}
 
-		QList<DatabaseColumn *> srcColumns = oReader->getColumns();
-		QList<DatabaseColumn *> tgtColumns;
+		std::vector<DatabaseColumn *> srcColumns = oReader->getColumns();
+		std::vector<DatabaseColumn *> tgtColumns;
 		for(ColumnMappingItem &mi : mappings)
-			tgtColumns.append(mi.getTargetColumn());
+			tgtColumns.push_back(mi.getTargetColumn());
 
 		int szm = mappings.size();
 /*		for(int i = 0; i < srcColumns.size(); i++)
 			srcColumns[i]->setPosition(i);
 */
-		for(int i = 0; i < tgtColumns.size(); i++)
+		for(size_t i = 0; i < tgtColumns.size(); i++)
 			tgtColumns[i]->setPosition(i);
 
 		prg->setMaximum(prg->maximum()+4);
 		int max_rows = oReader->count();
-		QString max_row_string;
+		StdString max_row_string;
 		if(max_rows > 0)
 		{
 			prg->setMaximum(prg->maximum()+max_rows);
-			max_row_string = "/"+QString::number(max_rows);
+			max_row_string = "/"+spt::string::toString(max_rows);
 		}
 		prg->setValue(prg->value()+1);
 
@@ -614,7 +618,7 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 		prg->setValue(prg->value()+1);
 		if(rc == false)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "Unable to open source");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "Unable to open source");
 			return false;
 		}
 
@@ -622,7 +626,7 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 		prg->setValue(prg->value()+1);
 		if(rc == false)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "unable to prepare the columns for the target.");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "unable to prepare the columns for the target.");
 			oReader->end();
 			return false;
 		}
@@ -631,13 +635,13 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 		prg->setValue(prg->value()+1);
 		if(rc == false)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "unable to open target");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "unable to open target");
 			oReader->end();
 			return false;
 		}
 
-		QList<QString> inrow;
-		QList<QString> outrow;
+		std::vector<StdString> inrow;
+		std::vector<StdString> outrow;
 		if(max_rows == -1)
 		{
 			// Enable animated bar. ???
@@ -651,7 +655,7 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 			inrow.clear();
 			outrow.clear();
 
-			QString s = "Copying ... "+QString::number(n)+max_row_string;
+			auto s = "Copying ... "+spt::string::toQt(spt::string::toString(n)+max_row_string);
 			prg->setLabelText(s);
 			QApplication::processEvents();
 			if(prg->wasCanceled())
@@ -665,36 +669,36 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 			{
 				if(res < 0)
 				{
-					ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "Error while reading from target at record "+QString::number(n));
+					ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "Error while reading from target at record "+spt::string::toString(n));
 					ok = false;
 				}
 				break;
 			}
 
-			for(int i = 0; i < inrow.size(); i++)
+			for(size_t i = 0; i < inrow.size(); i++)
 				srcColumns.at(i)->setValue(inrow[i]);
 
 			// Convert the string to the output format
 			for(int i = 0; i < szm; i++)
 			{
 				ColumnMappingItem &mi = mappings[i];
-				QString *val = NULL;
+				StdString *val = NULL;
 				DatabaseColumn *src = mi.getSourceColumn();
 				DatabaseColumn *tgt = mi.getTargetColumn();
 				if(src && !src->isNull())
-					val = new QString(inrow[src->getPosition()]);
+					val = new StdString(inrow[src->getPosition()]);
 
 				val = mi.format(val);
 				if(val)
 				{
 					tgt->setNull(false);
-					outrow.append(*val);
+					outrow.push_back(*val);
 					delete val;
 				}
 				else
 				{
 					tgt->setNull(true);
-					outrow.append("");
+					outrow.push_back("");
 				}
 			}
 
@@ -704,7 +708,7 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 			{
 				if(res < 0)
 				{
-					ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "Error while writing to target at record "+QString::number(n));
+					ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "Error while writing to target at record "+spt::string::toString(n));
 					ok = false;
 				}
 				break;
@@ -724,8 +728,8 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 	}
 	catch(std::exception const &e)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", "Exception caught during copying.");
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "Copy", e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", "Exception caught during copying.");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "Copy", e.what());
 
 		if(oReader)
 			oReader->end();
@@ -743,15 +747,15 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 
 	if(!prg.hasMessages())
 	{
-		QString s;
+		StdString s;
 		if(ok)
-			s = "Copying done!\n\n" + QString::number(n)+" record(s) copied!";
+			s = "Copying done!\n\n" + spt::string::toString(n)+" record(s) copied!";
 		if(canceled)
 			s = "Copying canceled!\n\nWARNING! Partial data may have been written!";
 
 		QMessageBox msgBox;
 		msgBox.setText("");
-		msgBox.setInformativeText(s);
+		msgBox.setInformativeText(spt::string::toQt(s));
 		msgBox.setStandardButtons(QMessageBox::Ok);
 		msgBox.setDefaultButton(QMessageBox::Ok);
 		msgBox.exec();
@@ -760,7 +764,7 @@ bool MainFrame::performCopy(IDataContainerReader *oReader, IDataContainerWriter 
 	return true;
 }
 
-bool MainFrame::runProfile(QString const *oProfileName)
+bool MainFrame::runProfile(StdString const *oProfileName)
 {
 	if(!loadProfile(oProfileName))
 		return false;
@@ -770,17 +774,19 @@ bool MainFrame::runProfile(QString const *oProfileName)
 	return true;
 }
 
-bool MainFrame::loadProfile(QString const *oProfileName)
+bool MainFrame::loadProfile(StdString const *oProfileName)
 {
 	if(getTargetBox()->count() == 0 || getSourceBox()->count() == 0)
 		return false;
 
-	QString fn;
+	StdString fn;
 	if(oProfileName == NULL)
 	{
-		fn  = QFileDialog::getOpenFileName(this, tr("Open profile"), tr("."), tr("Datinator profile (*.datip);; All files (*.*)"));
-		if(fn.isNull())
+		auto fnl  = QFileDialog::getOpenFileName(this, tr("Open profile"), tr("."), tr("Datinator profile (*.datip);; All files (*.*)"));
+		if(fnl.isNull())
 			return false;
+
+		fn = spt::string::fromQt(fnl);
 	}
 	else
 		fn = *oProfileName;
@@ -789,31 +795,31 @@ bool MainFrame::loadProfile(QString const *oProfileName)
 
 	Progress prg("Loading profile", "Loading profile...");
 
-	QString uuid;
-	QScopedPointer<QSettings> prof(new QSettings(fn, QSettings::IniFormat));
+	StdString uuid;
+	QScopedPointer<QSettings> prof(new QSettings(spt::string::toQt(fn), QSettings::IniFormat));
 	prof->beginGroup("main");
 
-	uuid = prof->value("targetContainer").toString();
+	uuid = spt::string::fromQt(prof->value("targetContainer").toString());
 	int i = findContainer(getTargetBox(), uuid);
 	if(i == -1)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "LoadProfile", "The target container with the ID "+uuid+" doesn't exist");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "LoadProfile", "The target container with the ID "+uuid+" doesn't exist");
 		return false;
 	}
 	getTargetBox()->setCurrentIndex(i);
 	onTargetSelected(i);
 
-	uuid = prof->value("sourceContainer").toString();
+	uuid = spt::string::fromQt(prof->value("sourceContainer").toString());
 	i = findContainer(getSourceBox(), uuid);
 	if(i == -1)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "LoadProfile", "The source container with the ID "+uuid+" doesn't exist");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "LoadProfile", "The source container with the ID "+uuid+" doesn't exist");
 		return false;
 	}
 	getSourceBox()->setCurrentIndex(i);
 	onSourceSelected(i);
 
-	QString t = prof->value("modeTruncate", "T").toString();
+	StdString t = spt::string::fromQt(prof->value("modeTruncate", "T").toString());
 	if(t == "T")
 		mGUI->mTruncateBtn->setChecked(true);
 	else
@@ -824,12 +830,12 @@ bool MainFrame::loadProfile(QString const *oProfileName)
 	IDataContainerWriter *tc = getCurrentTargetContainer();
 
 	/**** Target group ****/
-	prof->beginGroup(tc->getContainerUUID());
+	prof->beginGroup(spt::string::toQt(tc->getContainerUUID()));
 		tc->loadProfile(*prof, "tgt");
 	prof->endGroup();
 
 	/**** Source group ****/
-	prof->beginGroup(sc->getContainerUUID());
+	prof->beginGroup(spt::string::toQt(sc->getContainerUUID()));
 		sc->loadProfile(*prof, "src");
 	prof->endGroup();
 
@@ -846,25 +852,27 @@ bool MainFrame::loadProfile(QString const *oProfileName)
 	return true;
 }
 
-bool MainFrame::saveProfile(QString const *oProfileName)
+bool MainFrame::saveProfile(StdString const *oProfileName)
 {
 	if(getTargetBox()->count() == 0 || getSourceBox()->count() == 0)
 		return false;
 
-	QString fn;
+	StdString fn;
 	if(oProfileName == NULL)
 	{
-		fn = QFileDialog::getSaveFileName(this, tr("Save profile"), tr("."), tr("Datinator profile (*.datip);; All files (*.*)"));
-		if(fn.isNull())
+		auto fnl = QFileDialog::getSaveFileName(this, tr("Save profile"), tr("."), tr("Datinator profile (*.datip);; All files (*.*)"));
+		if(fnl.isNull())
 			return false;
+
+		fn = spt::string::fromQt(fnl);
 	}
 	else
 		fn = *oProfileName;
 
 	mRecentProfile->addItem(mRecentProfileTag, "", fn);
 
-	QFile::remove(fn);
-	QScopedPointer<QSettings> prof(new QSettings(fn, QSettings::IniFormat));
+	QFile::remove(spt::string::toQt(fn));
+	QScopedPointer<QSettings> prof(new QSettings(spt::string::toQt(fn), QSettings::IniFormat));
 
 	IDataContainerReader *sc = getCurrentSourceContainer();
 	IDataContainerWriter *tc = getCurrentTargetContainer();
@@ -872,8 +880,8 @@ bool MainFrame::saveProfile(QString const *oProfileName)
 	/**** main group ****/
 	prof->beginGroup("main");
 
-		prof->setValue("sourceContainer", sc->getContainerUUID());
-		prof->setValue("targetContainer", tc->getContainerUUID());
+		prof->setValue("sourceContainer", spt::string::toQt(sc->getContainerUUID()));
+		prof->setValue("targetContainer", spt::string::toQt(tc->getContainerUUID()));
 		prof->setValue("rowCount", getRowcount());
 		if(mGUI->mTruncateBtn->isChecked())
 			prof->setValue("modeTruncate", "T");
@@ -888,12 +896,12 @@ bool MainFrame::saveProfile(QString const *oProfileName)
 	prof->endGroup();
 
 	/**** Source group ****/
-	prof->beginGroup(sc->getContainerUUID());
+	prof->beginGroup(spt::string::toQt(sc->getContainerUUID()));
 		sc->saveProfile(*prof, "src");
 	prof->endGroup();
 
 	/**** Target group ****/
-	prof->beginGroup(tc->getContainerUUID());
+	prof->beginGroup(spt::string::toQt(tc->getContainerUUID()));
 		tc->saveProfile(*prof, "tgt");
 	prof->endGroup();
 

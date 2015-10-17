@@ -13,12 +13,11 @@
 #ifndef PLUGIN_MANAGER_H_INCLUDED
 #define PLUGIN_MANAGER_H_INCLUDED
 
-#include <QtCore/QList>
-#include <QtCore/QString>
-#include <QtCore/QPair>
+#include <vector>
+#include <utility>
+#include "datinator_types.h"
 
 #include "plugin_dll_api.h"
-
 #include "plugin_info.h"
 
 class IDataContainerReader;
@@ -37,7 +36,7 @@ public:
 	bool reload(void);
 
 	void clearPaths(void);
-	void addPath(QString const &oPath);
+	void addPath(StdString const &oPath);
 
 	/**
 	 * true if an error exists.
@@ -47,20 +46,18 @@ public:
 	/**
 	 * If a function encounters an error, this will return a description.
 	 */
-	QList<QString> getErrorText(void);
+	std::vector<StdString> getErrorText(void);
 	void clearErrors(void);
 
-	QList<IDataContainerReader *> getReaders(QWidget *oMain);
-	QList<IDataContainerWriter *> getWriters(QWidget *oMain);
+	std::vector<IDataContainerReader *> getReaders(QWidget *oMain);
+	std::vector<IDataContainerWriter *> getWriters(QWidget *oMain);
 
 	/**
 	 * Check if there are plugins which have the same UUID.
 	 * Returns a list with two pairs which contains the UUID and
 	 * the name and path of the duplicate
 	 */
-
-	//           UUID                  DLL    Name
-	QList<QPair<QString, QList<QPair<QString, QString>>>> findDuplicates(void);
+	std::vector<std::pair<StdString, std::vector<std::pair<StdString, StdString>>>> findDuplicates(void);
 
 protected:
 	void clearReaders(void);
@@ -70,28 +67,28 @@ protected:
 	 * Load a DLL and check if it has a plugin interface. If yes, then
 	 * the DLL will be added to the plugin list.
 	 */
-	bool addDLL(QString const &oPath);
+	bool addDLL(StdString const &oPath);
 
 	/**
 	 * Scan all directories, including it's subdirectories from mPaths for
 	 * DLLs and return them as a list.
 	 */
-	bool findDLLs(QList<QString> &oDLLs, QString const &oPath);
+	bool findDLLs(std::vector<StdString> &oDLLs, StdString const &oPath);
 
 	/**
 	 * Returns number of readers/writers addeed to the list.
 	 */
-	int addReaders(QList<QFunctionPointer> const &oPluginPointers, QString const &oPath, QWidget *oParent);
-	int addWriters(QList<QFunctionPointer> const &oPluginPointers, QString const &oPath, QWidget *oParent);
+	int addReaders(std::vector<QFunctionPointer> const &oPluginPointers, StdString const &oPath, QWidget *oParent);
+	int addWriters(std::vector<QFunctionPointer> const &oPluginPointers, StdString const &oPath, QWidget *oParent);
 
 private:
-	QList<PluginInfoReader> mStaticReader;		// List of plugins registered via static call
-	QList<PluginInfoWriter> mStaticWriter;		// List of plugins registered via static call
-	QList<PluginInfoReader> mDynamicReader;		// List of plugins registered via shared libraries.
-	QList<PluginInfoWriter> mDynamicWriter;		// List of plugins registered via shared libraries.
+	std::vector<PluginInfoReader> mStaticReader;		// List of plugins registered via static call
+	std::vector<PluginInfoWriter> mStaticWriter;		// List of plugins registered via static call
+	std::vector<PluginInfoReader> mDynamicReader;		// List of plugins registered via shared libraries.
+	std::vector<PluginInfoWriter> mDynamicWriter;		// List of plugins registered via shared libraries.
 
-	QList<QString> mPaths;
-	QList<QString> mErrors;
+	std::vector<StdString> mPaths;
+	std::vector<StdString> mErrors;
 };
 
 #endif // PLUGIN_MANAGER_H_INCLUDED

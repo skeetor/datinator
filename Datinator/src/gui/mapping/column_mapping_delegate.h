@@ -4,10 +4,10 @@
  *
  *******************************************************************************/
 
-#ifndef COLUMN_MAPPING_DELEGATE_H
-#define COLUMN_MAPPING_DELEGATE_H
+#ifndef _COLUMN_MAPPING_DELEGATE_H
+#define _COLUMN_MAPPING_DELEGATE_H
 
-#include <QtCore/QList>
+#include <vector>
 #include <QtWidgets/QStyledItemDelegate>
 
 #include <support/patterns/observer.h>
@@ -23,7 +23,7 @@ class ColumnMappingDelegate
 	: public QStyledItemDelegate
 {
 public:
-	ColumnMappingDelegate(QList<IManipulator *> oManipulators, ColumnMappingModel *oModel, ColumnMappingView *oView, QObject *oParent = 0);
+	ColumnMappingDelegate(std::vector<IManipulator *> oManipulators, ColumnMappingModel *oModel, ColumnMappingView *oView, QObject *oParent = 0);
 	virtual ~ColumnMappingDelegate(void);
 
 	virtual QWidget *createEditor(QWidget *oParent, const QStyleOptionViewItem &oOption, const QModelIndex &oIndex) const;
@@ -31,18 +31,18 @@ public:
 	virtual void setModelData(QWidget *oEditor, QAbstractItemModel *oModel, const QModelIndex &oIndex) const;
 
 public:
-	void setSourceColumns(QList<DatabaseColumn *> const &oColumns);
-	void setTargetColumns(QList<DatabaseColumn *> const &oColumns);
-	void setDispatcher(Dispatcher<QList<DatabaseColumn *> *> *oSource, Dispatcher<QList<DatabaseColumn *> *> *oTarget);
+	void setSourceColumns(std::vector<DatabaseColumn *> const &oColumns);
+	void setTargetColumns(std::vector<DatabaseColumn *> const &oColumns);
+	void setDispatcher(Dispatcher<std::vector<DatabaseColumn *> *> *oSource, Dispatcher<std::vector<DatabaseColumn *> *> *oTarget);
 
 private:
 	ColumnMappingModel *mModel;
 	ColumnMappingView *mView;
-	Dispatcher<QList<DatabaseColumn *> *> *mSourceDispatcher;
-	Dispatcher<QList<DatabaseColumn *> *> *mTargetDispatcher;
-    QList<DatabaseColumn *> mSourceColumns;
-    QList<DatabaseColumn *> mTargetColumns;
-    QList<ColumnMappingButton *> *mButtonList;
+	Dispatcher<std::vector<DatabaseColumn *> *> *mSourceDispatcher;
+	Dispatcher<std::vector<DatabaseColumn *> *> *mTargetDispatcher;
+    std::vector<DatabaseColumn *> mSourceColumns;
+    std::vector<DatabaseColumn *> mTargetColumns;
+    std::vector<ColumnMappingButton *> *mButtonList;
 };
 
-#endif // COLUMN_MAPPING_DELEGATE_H
+#endif // _COLUMN_MAPPING_DELEGATE_H

@@ -5,8 +5,10 @@
  ******************************************************************************/
 
 #include <QtCore/QSettings>
+#include <QtCore/QString>
 
 #include "support/support_defs.h"
+#include "support/helper/string.h"
 
 #include "support_qt/helper/gui_helper.h"
 #include "support_qt/db/login_panel/database_login_panel_gui.moc"
@@ -31,10 +33,10 @@ DatabaseLoginPanel::DatabaseLoginPanel(bool bUseSharedModel, QWidget *oParent)
 
 	mGUI = new Ui::DatabaseLoginGUI();
 	mGUI->setupUi(this);
-	supportlib::gui::setButtonIcon(supportlib::image::button_add, supportlib::image::button_add_length, mGUI->mSaveBtn, "Save connection");
-	supportlib::gui::setButtonIcon(supportlib::image::button_delete, supportlib::image::button_delete_length, mGUI->mRemoveBtn, "Remove connection");
-	supportlib::gui::setButtonIcon(supportlib::image::button_up, supportlib::image::button_up_length, mGUI->mMoveUpBtn, "Move connection up");
-	supportlib::gui::setButtonIcon(supportlib::image::button_down, supportlib::image::button_down_length, mGUI->mMoveDownBtn, "Move connection down");
+	spt::gui::setButtonIcon(spt::image::button_add, spt::image::button_add_length, mGUI->mSaveBtn, "Save connection");
+	spt::gui::setButtonIcon(spt::image::button_delete, spt::image::button_delete_length, mGUI->mRemoveBtn, "Remove connection");
+	spt::gui::setButtonIcon(spt::image::button_up, spt::image::button_up_length, mGUI->mMoveUpBtn, "Move connection up");
+	spt::gui::setButtonIcon(spt::image::button_down, spt::image::button_down_length, mGUI->mMoveDownBtn, "Move connection down");
 
 	mGUI->mLoginListView->setModel(mModel);
 	mGUI->mLoginListView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -77,10 +79,10 @@ void DatabaseLoginPanel::clear(void)
 
 void DatabaseLoginPanel::setLogin(DatabaseLogin const &oLogin)
 {
-	mGUI->mUserTxt->setText(supportlib::string::StringTToQtString(oLogin.getUser()));
-	mGUI->mPasswordTxt->setText(supportlib::string::StringTToQtString(oLogin.getClearPassword()));
-	mGUI->mDatabaseTxt->setText(supportlib::string::StringTToQtString(oLogin.getDatabase()));
-	mGUI->mHostTxt->setText(supportlib::string::StringTToQtString(oLogin.getHost()));
+	mGUI->mUserTxt->setText(spt::string::toQt(oLogin.getUser()));
+	mGUI->mPasswordTxt->setText(spt::string::toQt(oLogin.getClearPassword()));
+	mGUI->mDatabaseTxt->setText(spt::string::toQt(oLogin.getDatabase()));
+	mGUI->mHostTxt->setText(spt::string::toQt(oLogin.getHost()));
 	if(oLogin.requiresSaveHost())
 		mGUI->mSaveHostBox->setCheckState(Qt::CheckState::Checked);
 	else
@@ -91,10 +93,10 @@ DatabaseLogin DatabaseLoginPanel::getLogin(void) const
 {
 	DatabaseLogin login;
 
-	login.setUser(supportlib::string::QtStringToStringT(mGUI->mUserTxt->text()));
-	login.setClearPassword(supportlib::string::QtStringToStringT(mGUI->mPasswordTxt->text()));
-	login.setDatabase(supportlib::string::QtStringToStringT(mGUI->mDatabaseTxt->text()));
-	login.setHost(supportlib::string::QtStringToStringT(mGUI->mHostTxt->text()));
+	login.setUser(spt::string::fromQt(mGUI->mUserTxt->text()));
+	login.setClearPassword(spt::string::fromQt(mGUI->mPasswordTxt->text()));
+	login.setDatabase(spt::string::fromQt(mGUI->mDatabaseTxt->text()));
+	login.setHost(spt::string::fromQt(mGUI->mHostTxt->text()));
 	if(mGUI->mSaveHostBox->checkState() == Qt::CheckState::Checked)
 		login.saveHost(true);
 	else
@@ -110,13 +112,13 @@ void DatabaseLoginPanel::setReadOnly(bool bReadOnly)
 	mGUI->mMoveUpBtn->setEnabled(!bReadOnly);
 	mGUI->mMoveDownBtn->setEnabled(!bReadOnly);
 	mGUI->mSaveHostBox->setEnabled(!bReadOnly);
-	supportlib::gui::setEditable(mGUI->mHostTxt, !bReadOnly);
-	supportlib::gui::setEditable(mGUI->mUserTxt, !bReadOnly);
-	supportlib::gui::setEditable(mGUI->mPasswordTxt, !bReadOnly);
-	supportlib::gui::setEditable(mGUI->mDatabaseTxt, !bReadOnly);
+	spt::gui::setEditable(mGUI->mHostTxt, !bReadOnly);
+	spt::gui::setEditable(mGUI->mUserTxt, !bReadOnly);
+	spt::gui::setEditable(mGUI->mPasswordTxt, !bReadOnly);
+	spt::gui::setEditable(mGUI->mDatabaseTxt, !bReadOnly);
 }
 
-bool DatabaseLoginPanel::validateUser(QString const &oUser) const
+bool DatabaseLoginPanel::validateUser(spt::string::string_t const &oUser) const
 {
 	if(oUser.length() == 0)
 		return false;
@@ -124,14 +126,14 @@ bool DatabaseLoginPanel::validateUser(QString const &oUser) const
 	return true;
 }
 
-bool DatabaseLoginPanel::validatePassword(QString const &oPassword) const
+bool DatabaseLoginPanel::validatePassword(spt::string::string_t const &oPassword) const
 {
 	UNUSED(oPassword);
 
 	return true;
 }
 
-bool DatabaseLoginPanel::validateDatabase(QString const &oDatabase) const
+bool DatabaseLoginPanel::validateDatabase(spt::string::string_t const &oDatabase) const
 {
 	if(oDatabase.length() == 0)
 		return false;
@@ -139,7 +141,7 @@ bool DatabaseLoginPanel::validateDatabase(QString const &oDatabase) const
 	return true;
 }
 
-bool DatabaseLoginPanel::validateHost(QString const &oHost) const
+bool DatabaseLoginPanel::validateHost(spt::string::string_t const &oHost) const
 {
 	if(oHost.length() == 0)
 		return false;
@@ -155,10 +157,6 @@ void DatabaseLoginPanel::addItem(DatabaseLogin const &oLogin, bool bNotify)
 	QVariant v;
 	v.setValue(oLogin);
 
-	QString t = supportlib::string::StringTToQtString(oLogin.getUser())
-		+ "@"+supportlib::string::StringTToQtString(oLogin.getDatabase())
-	;
-
 	if(i == -1)
 	{
 		item = new QStandardItem();
@@ -168,6 +166,7 @@ void DatabaseLoginPanel::addItem(DatabaseLogin const &oLogin, bool bNotify)
 	else
 		item = mModel->takeItem(i);
 
+	auto t = spt::string::toQt(oLogin.getUser()+ "@"+oLogin.getDatabase());
 	item->setText(t);
 	item->setData(v, Qt::UserRole);
 	mModel->setItem(i, 0, item);
@@ -269,18 +268,7 @@ int DatabaseLoginPanel::find(DatabaseLogin const &oLogin) const
 	return -1;
 }
 
-bool DatabaseLoginPanel::select(QString const &oDatabase, QString const &oUser, QString const &oHost, bool bNotify)
-{
-	DatabaseLogin l;
-
-	l.setDatabase(supportlib::string::QtStringToStringT(oDatabase));
-	l.setUser(supportlib::string::QtStringToStringT(oUser));
-	l.setHost(supportlib::string::QtStringToStringT(oHost));
-
-	return select(l, bNotify);
-}
-
-bool DatabaseLoginPanel::select(supportlib::string::string_t const &oDatabase, supportlib::string::string_t const &oUser, supportlib::string::string_t const &oHost, bool bNotify)
+bool DatabaseLoginPanel::select(spt::string::string_t const &oDatabase, spt::string::string_t const &oUser, spt::string::string_t const &oHost, bool bNotify)
 {
 	DatabaseLogin l;
 

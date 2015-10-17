@@ -9,12 +9,13 @@
 
 #include <QtGui/QStandardItemModel>
 
+#include "support/unicode/unicode_types.h"
 #include "support_qt/support_qt_dll_api.h"
 #include "support/patterns/serialize.h"
 
 class SUPPORT_QT_DLL_EXPORT LoginPanelModel
 	: public QStandardItemModel
-	, public Serialize<QList<QString>>
+	, public Serialize<std::vector<spt::string::string_t>>
 {
 public:
 	LoginPanelModel(void);
@@ -24,8 +25,8 @@ public: // @QStandardItemModel
 	Qt::ItemFlags flags(const QModelIndex &index) const;
 
 public: // @Serialize<T>
-	virtual QList<QString> serialize(void);
-	virtual bool deserialize(QList<QString> const &oList);
+	virtual std::vector<spt::string::string_t> serialize(void);
+	virtual bool deserialize(std::vector<spt::string::string_t> const &oList);
 };
 
 #endif // LOGIN_PANEL_MODEL_H_INCLUDED

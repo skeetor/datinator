@@ -7,7 +7,9 @@
 #ifndef DATATYPE_COMBOBOX_H
 #define DATATYPE_COMBOBOX_H
 
-#include <QtCore/QPair>
+#include <utility>
+#include <vector>
+
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QStyledItemDelegate>
 
@@ -23,25 +25,25 @@ template <typename T>
 class DatatypeCombobox : public QStyledItemDelegate
 {
 public:
-	DatatypeCombobox(int nRow, int nColumn, QList<QPair<T, QString>> const &oTypes, QObject *oParent = 0)
-	: QStyledItemDelegate(oParent)
+	DatatypeCombobox(int nRow, int nColumn, std::vector<std::pair<T, spt::string::string_t>> const &oTypes, QObject *oParent = 0)
+			: QStyledItemDelegate(oParent)
 	{
 		if(nRow != -1)
 		{
-			QList<int> l;
-			l.append(nRow);
+			std::vector<int> l;
+			l.push_back(nRow);
 			setRows(l);
 		}
 		if(nColumn != -1)
 		{
-			QList<int> l;
-			l.append(nColumn);
+			std::vector<int> l;
+			l.push_back(nColumn);
 			setColumns(l);
 		}
 		setTypeStrings(oTypes);
 	}
 
-	DatatypeCombobox(QList<int> const &oRows, QList<int> const &oColumns, QList<QPair<T, QString>> const &oTypes, QObject *oParent = 0)
+	DatatypeCombobox(std::vector<int> const &oRows, std::vector<int> const &oColumns, std::vector<std::pair<T, spt::string::string_t>> const &oTypes, QObject *oParent = 0)
 	: QStyledItemDelegate(oParent)
 	{
 		setRows(oRows);
@@ -57,8 +59,8 @@ public:
 		{
 			QComboBox *cb = new QComboBox(oParent);
 			cb->setAutoFillBackground(true);		// Required to show the comboboxes in the view correctly.
-			for(QPair<supportlib::db::DataType, QString> const &p : mTypeStrings)
-				cb->addItem(p.second);
+			for(std::pair<spt::db::DataType, spt::string::string_t> const &p : mTypeStrings)
+				cb->addItem(p.second.c_str());
 
 			return cb;
 		}
@@ -90,17 +92,17 @@ public:
 			QStyledItemDelegate::setModelData(oEditor, oModel, oIndex);
 	}
 
-	void setTypeStrings(QList<QPair<T, QString>> const &oTypeStrings)
+	void setTypeStrings(std::vector<std::pair<T, spt::string::string_t>> const &oTypeStrings)
 	{
 		mTypeStrings = oTypeStrings;
 	}
 
-	void setRows(QList<int> const &oRows)
+	void setRows(std::vector<int> const &oRows)
 	{
 		mRows = oRows;
 	}
 
-	void setColumns(QList<int> const &oColumns)
+	void setColumns(std::vector<int> const &oColumns)
 	{
 		mColumns = oColumns;
 	}
@@ -147,9 +149,9 @@ protected:
 	}
 
 private:
-	QList<QPair<T, QString>> mTypeStrings;
-	QList<int> mRows;
-	QList<int> mColumns;
+	std::vector<std::pair<T, spt::string::string_t>> mTypeStrings;
+	std::vector<int> mRows;
+	std::vector<int> mColumns;
 };
 
 #endif // DATATYPE_COMBOBOX_H

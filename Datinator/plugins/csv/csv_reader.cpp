@@ -4,11 +4,11 @@
  *
  ******************************************************************************/
 
-#include <QtCore/QString>
-
 #include "csv/csv_global.h"
 #include "csv/csv_reader.h"
 #include "plugin/gui/progress.h"
+
+#include <support/helper/string.h>
 
 #define MODULE_TXT "CSV"
 
@@ -46,7 +46,7 @@ QWidget *CSVReader::getConfigPanel(void)
 	return w;
 }
 
-void CSVReader::updateSampleView(QList<DatabaseColumn *> const &oColumns)
+void CSVReader::updateSampleView(std::vector<DatabaseColumn *> const &oColumns)
 {
 	if(!mConfigPanel)
 		return;
@@ -60,7 +60,7 @@ void CSVReader::updateSampleView(QList<DatabaseColumn *> const &oColumns)
 	// Load the preview from the file
 	int n = 0;
 	csv.rewind();
-	QList<QList<QString>> samples;
+	std::vector<std::vector<StdString>> samples;
 	for(int i = 0; i < mPreviewRowCount; i++)
 	{
 		std::vector<StdString> csv_row;
@@ -71,35 +71,35 @@ void CSVReader::updateSampleView(QList<DatabaseColumn *> const &oColumns)
 			if(rc == CSV::ErrorCode::CSV_EOF)
 				break;
 
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULE_TXT, "Error while reading "+getFilename()+ " at line "+QString::number(n) + " Code: "+QString::number(rc)+" "+csv.toErrorText(rc));
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULE_TXT, "Error while reading "+getFilename()+ " at line "+spt::string::toString(n) + " Code: "+spt::string::toString(rc)+" "+csv.toErrorText(rc));
 
 			if(rc == CSV::ErrorCode::DATA_COLUMN_MISSMATCH)
 			{
-				QString s = "Columns dont match with header! ";
+				StdString s = "Columns dont match with header! ";
 				s += csv.toErrorText(rc);
-				ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULE_TXT, s);
+				ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULE_TXT, s);
 			}
 
 			return;
 		}
 
-		QList<QString> row;
+		std::vector<StdString> row;
 //		for(DatabaseColumn * const &col : oColumns)
-//			row.append(supportlib::string::StringTToQtString(col->getValue()));
+//			row.append(spt::string::StringTToQtString(col->getValue()));
 		for(StdString &s :csv_row)
-			row.append(supportlib::string::StringTToQtString(s));
+			row.push_back(s);
 
-		samples.append(row);
+		samples.push_back(row);
 	}
 
 	mConfigPanel->setRows(samples);
 }
 
-QList<DatabaseColumn *> CSVReader::loadColumns(void)
+std::vector<DatabaseColumn *> CSVReader::loadColumns(void)
 {
 	releaseColumns();
 
-	QList<DatabaseColumn *> ql;
+	std::vector<DatabaseColumn *> ql;
 	CSV &csv = getCSV();
 	if(csv.isOpen())
 	{
@@ -109,9 +109,9 @@ QList<DatabaseColumn *> CSVReader::loadColumns(void)
 		for(CSVColumn * const &col : columns)
 		{
 			DatabaseColumn *dbcol = new DatabaseColumn();
-			dbcol->setName(supportlib::string::StringTToQtString(col->getName()));
-			dbcol->setValue(supportlib::string::StringTToQtString(col->getValue()));
-			dbcol->setNativeType(supportlib::string::StringTToQtString(col->getNativeType()));
+			dbcol->setName(col->getName());
+			dbcol->setValue(col->getValue());
+			dbcol->setNativeType(col->getNativeType());
 			dbcol->setType(col->getType());
 			dbcol->setPosition(col->getPosition());
 			dbcol->setSize(col->getSize());
@@ -119,7 +119,7 @@ QList<DatabaseColumn *> CSVReader::loadColumns(void)
 			dbcol->setNull(col->isNull());
 			dbcol->setNullable(col->isNullable());
 
-			ql.append(dbcol);
+			ql.push_back(dbcol);
 		}
 
 		updateSampleView(ql);
@@ -145,7 +145,7 @@ int CSVReader::count(void)
 	return n;
 }
 
-int CSVReader::read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow)
+int CSVReader::read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow)
 {
 	oRow.clear();
 
@@ -160,10 +160,10 @@ int CSVReader::read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow)
 		if(rc == CSV::ErrorCode::CSV_EOF)
 			return 0;
 
-		QString s = "CSV read error at line "+QString::number(getRownum())+" returned: "+QString::number(rc);
+		StdString s = "CSV read error at line "+spt::string::toString(getRownum())+" returned: "+spt::string::toString(rc);
 		s += " ";
 		s += csv.toErrorText(rc);
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULE_TXT, s);
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULE_TXT, s);
 		return -1;
 	}
 
@@ -174,14 +174,14 @@ int CSVReader::read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow)
 	{
 		i++;
 		col->setNull(false);
-		QString s;
+		StdString s;
 		if(i < n)
 		{
-			s = supportlib::string::StringTToQtString(row[i]);
+			s = row[i];
 			col->setNull(null[i]);
 		}
 
-		oRow.append(s);
+		oRow.push_back(s);
 	}
 
 	setRownum(getRownum()+1);

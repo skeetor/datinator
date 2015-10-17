@@ -35,22 +35,22 @@ void FilePanel::enlargePanel(void)
 	mGUI->mDummy->hide();
 }
 
-void FilePanel::addPathListener(Listener<QString> *oListener)
+void FilePanel::addPathListener(Listener<StdString> *oListener)
 {
-	Dispatcher<QString>::addListener(oListener);
+	Dispatcher<StdString>::addListener(oListener);
 }
 
-void FilePanel::removePathListener(Listener<QString> *oListener)
+void FilePanel::removePathListener(Listener<StdString> *oListener)
 {
-	Dispatcher<QString>::removeListener(oListener);
+	Dispatcher<StdString>::removeListener(oListener);
 }
 
-void FilePanel::notifyPathListeners(QString const &oPath)
+void FilePanel::notifyPathListeners(StdString const &oPath)
 {
-	Dispatcher<QString>::notify(oPath);
+	Dispatcher<StdString>::notify(oPath);
 }
 
-void FilePanel::handleNotification(Dispatcher<QString> *oSource, QString oPath)
+void FilePanel::handleNotification(Dispatcher<StdString> *oSource, StdString oPath)
 {
 	UNUSED(oSource);
 
@@ -60,12 +60,12 @@ void FilePanel::handleNotification(Dispatcher<QString> *oSource, QString oPath)
 	notifyPathListeners(oPath);
 }
 
-void FilePanel::setFilename(QString const &oFilename)
+void FilePanel::setFilename(StdString const &oFilename)
 {
 	mPathPanel->setPath(oFilename);
 }
 
-QString FilePanel::getFilename(void)
+StdString FilePanel::getFilename(void)
 {
 	return mPathPanel->getPath();
 }

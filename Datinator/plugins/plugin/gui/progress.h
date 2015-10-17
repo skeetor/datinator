@@ -4,9 +4,10 @@
  *
  ******************************************************************************/
 
-#ifndef PROGRESS_H_INCLUDED
-#define PROGRESS_H_INCLUDED
+#ifndef _PROGRESS_H_INCLUDED
+#define _PROGRESS_H_INCLUDED
 
+#include "datinator_types.h"
 #include "plugin/plugin_dll_api.h"
 #include <support/logging/logging.h>
 
@@ -17,14 +18,14 @@ class QProgressDialog;
 class PLUGIN_DLL_EXPORT Progress
 {
 public:
-	Progress(QString const &oText, QString const &oTitle = "");
+	Progress(StdString const &oText, StdString const &oTitle = "");
 	virtual ~Progress(void);
 	QProgressDialog *operator->(void);
 
-	void showProgress(QString const &oText, QString const &oTitle = "");
+	void showProgress(StdString const &oText, StdString const &oTitle = "");
 	void closeProgress(void);
 
-	static void PLUGIN_DLL_EXPORT addMessage(supportlib::logging::LoggingItem::LogType nType, QString const &oUnit, QString const &oMessage, unsigned int nTimestamp, QString const &oFile, int nLine, QString const &oMethod);
+	static void PLUGIN_DLL_EXPORT addMessage(spt::logging::LoggingItem::LogType nType, StdString const &oUnit, StdString const &oMessage, unsigned int nTimestamp, StdString const &oFile, int nLine, StdString const &oMethod);
 	void showMessages(void);
 	void clearMessages(void);
 	bool hasMessages(void);
@@ -35,4 +36,4 @@ protected:
 	QWidget *getMainWindow(void);
 };
 
-#endif // CONTAINER_BASE_H_INCLUDED
+#endif // _PROGRESS_H_INCLUDED

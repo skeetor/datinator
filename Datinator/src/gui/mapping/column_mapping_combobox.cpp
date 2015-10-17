@@ -5,10 +5,12 @@
  ******************************************************************************/
 
 #include <QtCore/QVariant>
+#include <QtCore/QString>
 
 #include "gui/mapping/column_mapping_combobox.h"
 #include "support/unicode/unicode_types.h"
 #include "support/db/dbcolumn.h"
+#include "support/helper/string.h"
 
 Q_DECLARE_METATYPE(DatabaseColumn *)
 
@@ -24,35 +26,35 @@ ColumnMappingCombobox::~ColumnMappingCombobox(void)
 		mDispatcher->removeListener(this);
 }
 
-void ColumnMappingCombobox::invalidateDispatcher(Dispatcher<QList<DatabaseColumn *> *> const *oDispatcher)
+void ColumnMappingCombobox::invalidateDispatcher(Dispatcher<std::vector<DatabaseColumn *> *> const *oDispatcher)
 {
 	UNUSED(oDispatcher);
 	mDispatcher = NULL;
 }
 
-void ColumnMappingCombobox::setDispatcher(Dispatcher<QList<DatabaseColumn *> *> *oDispatcher)
+void ColumnMappingCombobox::setDispatcher(Dispatcher<std::vector<DatabaseColumn *> *> *oDispatcher)
 {
 	mDispatcher = oDispatcher;
 	mDispatcher->addListener(this);
 }
 
-void ColumnMappingCombobox::handleNotification(Dispatcher<QList<DatabaseColumn *> *> *oSource, QList<DatabaseColumn *> *oColumns)
+void ColumnMappingCombobox::handleNotification(Dispatcher<std::vector<DatabaseColumn *> *> *oSource, std::vector<DatabaseColumn *> *oColumns)
 {
 	UNUSED(oSource);
 
-	QList<DatabaseColumn *> columns;
+	std::vector<DatabaseColumn *> columns;
 	if(oColumns == NULL)
 		oColumns = &columns;
 
 	updateColumns(*oColumns);
 }
 
-void ColumnMappingCombobox::setColumns(QList<DatabaseColumn *> const &oColumns)
+void ColumnMappingCombobox::setColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	updateColumns(oColumns);
 }
 
-void ColumnMappingCombobox::updateColumns(QList<DatabaseColumn *> const &oColumns)
+void ColumnMappingCombobox::updateColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	clear();
 	QVariant v;
@@ -62,7 +64,7 @@ void ColumnMappingCombobox::updateColumns(QList<DatabaseColumn *> const &oColumn
 	for(DatabaseColumn * const &col : oColumns)
 	{
 		v.setValue(col);
-		addItem(col->getName(), v);
+		addItem(spt::string::toQt(col->getName()), v);
 	}
 	setCurrentIndex(0);
 }

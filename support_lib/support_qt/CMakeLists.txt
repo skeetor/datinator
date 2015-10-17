@@ -12,6 +12,8 @@ set(UI_INCLUDE_DIR "${SUPPORT_LIB_BINARY_DIR}/include")
 #message("Create directory ${UI_INCLUDE_DIR}")
 file(MAKE_DIRECTORY "${UI_INCLUDE_DIR}/support_qt")
 
+set(SUPPORT_LIB_NAME support${BUILD_NAME_TAG})
+
 # Enable the build directory as an include path as well, required for
 # qt moc generated files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -19,7 +21,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
-
 
 include_directories(${Qt5Widgets_INCLUDES})
 include_directories(${CMAKE_BINARY_DIR})			# required for generated UI headers
@@ -42,6 +43,11 @@ if (UNICODE_BUILD)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNICODE")
 endif()
 
+find_library(SUPPORT_LIBRARY
+	NAMES "${SUPPORT_LIB_NAME}"
+	HINTS "${LIBRARY_OUTPUT_PATH}"
+)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -pedantic -Wextra")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
@@ -58,7 +64,6 @@ generate_qt_sources(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${UI_INCLUDE_DIR} GE
 
 add_library(${TARGET_LIBRARY} ${BUILD_TYPE} ${SUPPORT_SOURCE} ${GENERATED_SOURCES})
 target_link_libraries(${TARGET_LIBRARY} ${SUPPORT_LIBRARY} Qt5::Widgets)
-
 
 # The shared library versions need the option to export symbols
 #target_compile_definitions(support_${UNICODE_FLAG}${STATIC_FLAG} PRIVATE "-DBUILD_SUPPORT_DLL" )

@@ -4,8 +4,10 @@
  *
  *******************************************************************************/
 
-#ifndef SQL_CONTAINER_H_INCLUDED
-#define SQL_CONTAINER_H_INCLUDED
+#ifndef _SQL_CONTAINER_H_INCLUDED
+#define _SQL_CONTAINER_H_INCLUDED
+
+#include "datinator_types.h"
 
 #include "plugin/plugin_dll_api.h"
 #include "plugin/container/container_base.h"
@@ -22,16 +24,16 @@ public:
 
 	virtual QWidget *getConfigPanel(void) override;
 
-	void setQuery(QString const &oQuery);
+	void setQuery(StdString const &oQuery);
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 
-	virtual void refreshTables(QString const &oSelection = "", bool bNotify = true) = 0;
-	void selectTable(QString const &oSelection, bool bNotify);
+	virtual void refreshTables(StdString const &oSelection = "", bool bNotify = true) = 0;
+	void selectTable(StdString const &oSelection, bool bNotify);
 	void clearTables(void);
 
 protected:
@@ -39,7 +41,7 @@ protected:
 	virtual QWidget *createConfigPanel(void) = 0;
 	virtual void initPanel(DBPanel *oPanel) = 0;
 
-	void setTables(QList<QString> const &oTables, QString const &oSelection = "", bool bNotify = true);
+	void setTables(std::vector<StdString> const &oTables, StdString const &oSelection = "", bool bNotify = true);
 
 private:
 	typedef ContainerBase super;
@@ -49,4 +51,4 @@ private:
 	QWidget *mConfigPanel;
 };
 
-#endif // SQL_CONTAINER_H_INCLUDED
+#endif // _SQL_CONTAINER_H_INCLUDED

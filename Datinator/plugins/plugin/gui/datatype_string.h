@@ -7,10 +7,10 @@
 #ifndef DATATYPE_STRING_H_INCLUDED
 #define DATATYPE_STRING_H_INCLUDED
 
-#include <QtCore/QString>
-#include <QtCore/QList>
-#include <QtCore/QPair>
+#include <vector>
+#include <utility>
 
+#include "datinator_types.h"
 #include "plugin/plugin_dll_api.h"
 #include "support/db/dbcolumn.h"
 
@@ -20,21 +20,21 @@ public:
 	TypeString(void);
 	virtual ~TypeString(void);
 
-	QString toString(supportlib::db::DataType nDatatype) const;
-	supportlib::db::DataType toType(QString const &oTypename) const;
+	StdString toString(spt::db::DataType nDatatype) const;
+	spt::db::DataType toType(StdString const &oTypename) const;
 
-	QList<QPair<supportlib::db::DataType, QString>> items(void) const;
-	QList<QString> strings(void) const;
-	QList<supportlib::db::DataType> types(void) const;
+	std::vector<std::pair<spt::db::DataType, StdString>> items(void) const;
+	std::vector<StdString> strings(void) const;
+	std::vector<spt::db::DataType> types(void) const;
 
 protected:
 	void initTypes(void);
-	QPair<supportlib::db::DataType, QString> itemAt(int nIndex) const;
-	int typeIndex(supportlib::db::DataType nDatatype) const;
-	int stringIndex(QString const &oTypename) const;
+	std::pair<spt::db::DataType, StdString> itemAt(ssize_t nIndex) const;
+	ssize_t typeIndex(spt::db::DataType nDatatype) const;
+	ssize_t stringIndex(StdString const &oTypename) const;
 
 private:
-	QList<QPair<supportlib::db::DataType, QString>> mTypeStrings;
+	std::vector<std::pair<spt::db::DataType, StdString>> mTypeStrings;
 };
 
 extern TypeString PLUGIN_DLL_EXPORT TypeStringProvider;

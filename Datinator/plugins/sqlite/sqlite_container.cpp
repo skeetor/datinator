@@ -6,7 +6,7 @@
 
 #include <QtCore/QSettings>
 
-#include "support/unicode/unicode_types.h"
+#include "support/helper/string.h"
 
 #include "sqlite/sqlite_container.h"
 
@@ -30,16 +30,16 @@ SQLiteContainer::~SQLiteContainer(void)
 {
 }
 
-void SQLiteContainer::store(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLiteContainer::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	SociContainer::store(oPropertyFile, oPrefix);
-	oPropertyFile.setValue("sqlite3/"+oPrefix+"lastpath", getConnectString());
+	oPropertyFile.setValue(spt::string::toQt("sqlite3/"+oPrefix+"lastpath"), spt::string::toQt(getConnectString()));
 }
 
-void SQLiteContainer::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLiteContainer::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	SociContainer::restore(oPropertyFile, oPrefix);
-	setConnectString(oPropertyFile.value("sqlite3/"+oPrefix+"lastpath", "").toString());
+	setConnectString(spt::string::fromQt(oPropertyFile.value(spt::string::toQt("sqlite3/"+oPrefix+"lastpath"), "").toString()));
 }
 
 void SQLiteContainer::initPanel(DBPanel *oPanel)
@@ -67,33 +67,33 @@ soci::backend_factory const &SQLiteContainer::sociFactory(void)
 	return soci::sqlite3;
 }
 
-StdString SQLiteContainer::sociConnectString(QString const &oContainerConnectString)
+StdString SQLiteContainer::sociConnectString(StdString const &oContainerConnectString)
 {
-	return supportlib::string::QtStringToStringT(oContainerConnectString);
+	return oContainerConnectString;
 }
 
-QString SQLiteContainer::limitQuery(QString const &oQuery, int nLimit) const
+StdString SQLiteContainer::limitQuery(StdString const &oQuery, int nLimit) const
 {
 	if(nLimit <= 0)
 		return oQuery;
 
-	return "select * from ("+oQuery+") limit "+QString::number(nLimit);
+	return "select * from ("+oQuery+") limit "+spt::string::toString(nLimit);
 }
 
-bool SQLiteContainer::tableExists(QString oTablename)
+bool SQLiteContainer::tableExists(StdString oTablename)
 {
 	UNUSED(oTablename);
 
 	return false;
 }
 
-QList<DatabaseColumn *> SQLiteContainer::readColumnsFromTable(QString const &oTablename)
+std::vector<DatabaseColumn *> SQLiteContainer::readColumnsFromTable(StdString const &oTablename)
 {
-	QList<DatabaseColumn *> columns;
+	std::vector<DatabaseColumn *> columns;
 	if(oTablename.length() == 0 || !getSession())
 		return columns;
 
-	StdString query = "PRAGMA table_info(" +supportlib::string::QtStringToStringT(oTablename)+")";
+	StdString query = "PRAGMA table_info(" +oTablename+")";
 
 	try
 	{
@@ -109,36 +109,36 @@ QList<DatabaseColumn *> SQLiteContainer::readColumnsFromTable(QString const &oTa
 			if(null_t.length() > 0)
 				null = null_t[0] != '0';
 
-			supportlib::db::DataType type = supportlib::db::DataType::type_unknown;
+			spt::db::DataType type = spt::db::DataType::type_unknown;
 			if(type_t == "TEXT")
-				type = supportlib::db::DataType::type_string;
+				type = spt::db::DataType::type_string;
 			else if(type_t == "INTEGER")
-				type = supportlib::db::DataType::type_integer;
+				type = spt::db::DataType::type_integer;
 			else if(type_t == "NUMERIC")
-				type = supportlib::db::DataType::type_decimal;
+				type = spt::db::DataType::type_decimal;
 			else if(type_t == "REAL")
-				type = supportlib::db::DataType::type_decimal;
+				type = spt::db::DataType::type_decimal;
 
 			DatabaseColumn *col = new DatabaseColumn();
 			col->setPosition(++pos);
-			col->setName(supportlib::string::StringTToQtString(column));
+			col->setName(column);
 			col->setNullable(null);
 			col->setType(type);
-			columns.append(col);
+			columns.push_back(col);
 		}
 	}
 	catch(std::runtime_error const &e)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to load tables from ["+getConnectString()+"]");
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to load tables from ["+getConnectString()+"]");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 	}
 
 	return columns;
 }
 
-QList<QString> SQLiteContainer::loadTables(void)
+std::vector<StdString> SQLiteContainer::loadTables(void)
 {
-	QList<QString> tables;
+	std::vector<StdString> tables;
 
 	Progress prg("Loading tables ...");
 	prg->setLabelText("Fetching tables ...");
@@ -165,23 +165,25 @@ QList<QString> SQLiteContainer::loadTables(void)
 			if(!session.got_data())
 				continue;
 
-			QString tab = supportlib::string::StringTToQtString(row.get<StdString>(0));
-			tables.append(tab);
+			StdString tab = row.get<StdString>(0);
+			tables.push_back(tab);
 			prg->setValue(prg->value()+1);
 		}
 	}
 	catch(std::runtime_error const &e)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to load tables from ["+getConnectString()+"]");
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to load tables from ["+getConnectString()+"]");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 	}
 
 	return tables;
 }
 
-bool SQLiteContainer::loadProfile(QSettings &oProfile, QString const &oKey)
+bool SQLiteContainer::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
-	mLoginPanel->setPath(oProfile.value(oKey+"_db_file", "").toString());
+	auto key = spt::string::toQt(oKey);
+
+	mLoginPanel->setPath(spt::string::fromQt(oProfile.value(key+"_db_file", "").toString()));
 
 	if(!SociContainer::loadProfile(oProfile, oKey))
 		return false;
@@ -189,8 +191,10 @@ bool SQLiteContainer::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void SQLiteContainer::saveProfile(QSettings &oProfile, QString const &oKey)
+void SQLiteContainer::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
+	auto key = spt::string::toQt(oKey);
+
 	SociContainer::saveProfile(oProfile, oKey);
-	oProfile.setValue(oKey+"_db_file", mLoginPanel->getPath());
+	oProfile.setValue(key+"_db_file", spt::string::toQt(mLoginPanel->getPath()));
 }

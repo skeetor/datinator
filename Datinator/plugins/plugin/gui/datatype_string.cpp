@@ -19,65 +19,65 @@ TypeString::~TypeString(void)
 
 void TypeString::initTypes(void)
 {
-	QPair<supportlib::db::DataType, QString> p;
+	std::pair<spt::db::DataType, StdString> p;
 
-	p.first = supportlib::db::type_unknown;
+	p.first = spt::db::type_unknown;
 	p.second = "Undefined";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_string;
+	p.first = spt::db::type_string;
 	p.second = "String";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_date;
+	p.first = spt::db::type_date;
 	p.second = "Date";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_time;
+	p.first = spt::db::type_time;
 	p.second = "Time";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_time_long;
+	p.first = spt::db::type_time_long;
 	p.second = "Time with miliseconds";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_datetime;
+	p.first = spt::db::type_datetime;
 	p.second = "Datetime";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_datetime_long;
+	p.first = spt::db::type_datetime_long;
 	p.second = "Datetime with miliseconds";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_integer;
+	p.first = spt::db::type_integer;
 	p.second = "Integer";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_decimal;
+	p.first = spt::db::type_decimal;
 	p.second = "Decimal";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 
-	p.first = supportlib::db::type_ip;
+	p.first = spt::db::type_ip;
 	p.second = "IP adress";
-	mTypeStrings.append(p);
+	mTypeStrings.push_back(p);
 }
 
-QPair<supportlib::db::DataType, QString> TypeString::itemAt(int nIndex) const
+std::pair<spt::db::DataType, StdString> TypeString::itemAt(ssize_t nIndex) const
 {
-	QPair<supportlib::db::DataType, QString>p;
+	std::pair<spt::db::DataType, StdString>p;
 
-	if(nIndex == -1 || nIndex >= mTypeStrings.size())
-		nIndex = typeIndex(supportlib::db::DataType::type_unknown);
+	if(nIndex == -1 || nIndex >= (size_t)mTypeStrings.size())
+		nIndex = typeIndex(spt::db::DataType::type_unknown);
 
 	p = mTypeStrings.at(nIndex);
 
 	return p;
 }
 
-int TypeString::typeIndex(supportlib::db::DataType nDatatype) const
+ssize_t TypeString::typeIndex(spt::db::DataType nDatatype) const
 {
 	int i = 0;
-	for(QPair<supportlib::db::DataType, QString> const &p : mTypeStrings)
+	for(std::pair<spt::db::DataType, StdString> const &p : mTypeStrings)
 	{
 		if(p.first == nDatatype)
 			return i;
@@ -88,10 +88,10 @@ int TypeString::typeIndex(supportlib::db::DataType nDatatype) const
 	return -1;
 }
 
-int TypeString::stringIndex(QString const &oTypename) const
+ssize_t TypeString::stringIndex(StdString const &oTypename) const
 {
-	int i = 0;
-	for(QPair<supportlib::db::DataType, QString> const &p : mTypeStrings)
+	ssize_t i = 0;
+	for(std::pair<spt::db::DataType, StdString> const &p : mTypeStrings)
 	{
 		if(p.second == oTypename)
 			return i;
@@ -102,36 +102,36 @@ int TypeString::stringIndex(QString const &oTypename) const
 	return -1;
 }
 
-supportlib::db::DataType TypeString::toType(QString const &oTypename) const
+spt::db::DataType TypeString::toType(StdString const &oTypename) const
 {
 	return itemAt(stringIndex(oTypename)).first;
 }
 
 
-QString TypeString::toString(supportlib::db::DataType nDataType) const
+StdString TypeString::toString(spt::db::DataType nDataType) const
 {
 	return itemAt(typeIndex(nDataType)).second;
 }
 
-QList<QPair<supportlib::db::DataType, QString>> TypeString::items(void) const
+std::vector<std::pair<spt::db::DataType, StdString>> TypeString::items(void) const
 {
 	return mTypeStrings;
 }
 
-QList<QString> TypeString::strings(void) const
+std::vector<StdString> TypeString::strings(void) const
 {
-	QList<QString>l;
-	for(QPair<supportlib::db::DataType, QString> const &item : mTypeStrings)
-		l.append(item.second);
+	std::vector<StdString>l;
+	for(std::pair<spt::db::DataType, StdString> const &item : mTypeStrings)
+		l.push_back(item.second);
 
 	return l;
 }
 
-QList<supportlib::db::DataType> TypeString::types(void) const
+std::vector<spt::db::DataType> TypeString::types(void) const
 {
-	QList<supportlib::db::DataType>l;
-	for(QPair<supportlib::db::DataType, QString> const &item : mTypeStrings)
-		l.append(item.first);
+	std::vector<spt::db::DataType>l;
+	for(std::pair<spt::db::DataType, StdString> const &item : mTypeStrings)
+		l.push_back(item.first);
 
 	return l;
 }

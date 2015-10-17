@@ -5,13 +5,13 @@
  ******************************************************************************/
 
 #include <QtCore/QSettings>
-#include <QtCore/QString>
 
 #include <QtWidgets/QMessageBox>
 
 #include "csv/csv_global.h"
 #include "csv/csv_writer.h"
 #include "plugin/gui/progress.h"
+#include <support/helper/string.h>
 
 CSVWriter::CSVWriter(QWidget *oMainWindow)
 : CSVContainer(oMainWindow)
@@ -52,14 +52,14 @@ bool CSVWriter::canTruncate(void) const
 	return true;
 }
 
-QList<DatabaseColumn *> CSVWriter::loadColumns(void)
+std::vector<DatabaseColumn *> CSVWriter::loadColumns(void)
 {
-	QList<DatabaseColumn *> cols;
+	std::vector<DatabaseColumn *> cols;
 
 	return cols;
 }
 
-void CSVWriter::setFilename(QString const &oFilename)
+void CSVWriter::setFilename(StdString const &oFilename)
 {
 	CSVContainer::setFilename(oFilename);
 
@@ -79,7 +79,7 @@ CSVWriterConfigPanel *CSVWriter::createContainerConfigPanel(void)
 	return mConfigPanel;
 }
 
-bool CSVWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
+bool CSVWriter::prepareOpen(std::vector<DatabaseColumn *> const &oColumns)
 {
 	if(!truncateMode())
 		return true;
@@ -97,9 +97,9 @@ bool CSVWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 	{
 		CSVColumn *dbcol = new CSVColumn();
 
-		dbcol->setName(supportlib::string::QtStringToStringT(col->getName()));
-		dbcol->setValue(supportlib::string::QtStringToStringT(col->getValue()));
-		dbcol->setNativeType(supportlib::string::QtStringToStringT(col->getNativeType()));
+		dbcol->setName(col->getName());
+		dbcol->setValue(col->getValue());
+		dbcol->setNativeType(col->getNativeType());
 		dbcol->setType(col->getType());
 		dbcol->setPosition(col->getPosition());
 		dbcol->setSize(col->getSize());
@@ -117,9 +117,9 @@ bool CSVWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 	return true;
 }
 
-int CSVWriter::write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow)
+int CSVWriter::write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow)
 {
-	QString s;
+	StdString s;
 
 	int i = -1;
 	int n = oRow.size();
@@ -137,7 +137,7 @@ int CSVWriter::write(QList<DatabaseColumn *> const &oColumns, QList<QString> con
 		}
 		else
 		{
-			row.push_back(supportlib::string::QtStringToStringT(oRow[i]));
+			row.push_back(oRow[i]);
 			null.push_back(false);
 		}
 	}
@@ -146,35 +146,35 @@ int CSVWriter::write(QList<DatabaseColumn *> const &oColumns, QList<QString> con
 	CSV::ErrorCode rc;
 	if((rc = csv.write(row, null)) != CSV::ErrorCode::CSV_OK)
 	{
-		QString s = "Error while writing to target. Errorcode: ";
+		StdString s = "Error while writing to target. Errorcode: ";
 		s += csv.toErrorText(rc);
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "CSV", s);
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "CSV", s);
 		return -1;
 	}
 
 	return 1;
 }
 
-bool CSVWriter::loadProfile(QSettings &oProfile, QString const &oKey)
+bool CSVWriter::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!FileContainerBase::loadProfile(oProfile, oKey))
 		return false;
 
 	CSVWriterConfigPanel *p = createContainerConfigPanel();
-	QString s = oProfile.value(oKey+"_separator", ";").toString();
+	StdString s = spt::string::fromQt(oProfile.value(spt::string::toQt(oKey)+"_separator", ";").toString());
 	StdChar c1 = ';';
 	if(s.length() > 0)
-		c1 = s.at(0).toLatin1();
+		c1 = s[0];
 	p->setSeparator(c1);
 
-	s = oProfile.value(oKey+"_bracket", "\"").toString();
+	s = spt::string::fromQt(oProfile.value(spt::string::toQt(oKey)+"_bracket", "\"").toString());
 	StdChar c2 = 0;
 	c1 = '"';
 	if(s.length() > 0)
 	{
-		c1 = s.at(0).toLatin1();
+		c1 = s[0];
 		if(s.length() > 1)
-			c2 = s.at(1).toLatin1();
+			c2 = s[1];
 	}
 
 	p->setBracket(c1, c2);
@@ -182,18 +182,18 @@ bool CSVWriter::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void CSVWriter::saveProfile(QSettings &oProfile, QString const &oKey)
+void CSVWriter::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	FileContainerBase::saveProfile(oProfile, oKey);
 	CSVWriterConfigPanel *p = createContainerConfigPanel();
 	StdChar c1 = p->getSeparator();
-	oProfile.setValue(oKey+"_separator", QString(c1));
+	StdString s;
+	s = c1;
+	oProfile.setValue(spt::string::toQt(oKey)+"_separator", spt::string::toQt(s));
 
 	StdChar c2;
 	c1 = p->getBracket(c2);
-	QString s;
-	s += c1;
-	s += c2;
-	oProfile.setValue(oKey+"_bracket", s);
+	s = c1+c2;
+	oProfile.setValue(spt::string::toQt(oKey)+"_bracket", spt::string::toQt(s));
 }
 

@@ -9,6 +9,7 @@
 
 #include <QtWidgets/QFrame>
 
+#include "datinator_types.h"
 #include "plugin/plugin_dll_api.h"
 #include "support/patterns/observer.h"
 #include "plugin/container/gui/file_panel_gui.h"
@@ -20,8 +21,8 @@ class FilePanelConfigPanel;
 
 class PLUGIN_DLL_EXPORT FilePanel
     : public QFrame
-    , public Listener<QString /* FilePath */>
-    , public Dispatcher<QString /* FilePath */>
+    , public Listener<StdString /* FilePath */>
+    , public Dispatcher<StdString /* FilePath */>
 {
 	Q_OBJECT
 
@@ -31,15 +32,15 @@ public:
 
 	void enlargePanel(void);
 
-	virtual void setFilename(QString const &oFilename);
-	virtual QString getFilename(void);
+	virtual void setFilename(StdString const &oFilename);
+	virtual StdString getFilename(void);
 
-	virtual void addPathListener(Listener<QString> *oListener);
-	virtual void removePathListener(Listener<QString> *oListener);
+	virtual void addPathListener(Listener<StdString> *oListener);
+	virtual void removePathListener(Listener<StdString> *oListener);
 
 protected:
-	void handleNotification(Dispatcher<QString> *oSource, QString oPath) override;
-	virtual void notifyPathListeners(QString const &oPath);
+	void handleNotification(Dispatcher<StdString> *oSource, StdString oPath) override;
+	virtual void notifyPathListeners(StdString const &oPath);
 
 private:
 	Ui::FilePanelGUI *mGUI;

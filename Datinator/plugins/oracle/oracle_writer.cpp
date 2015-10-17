@@ -64,14 +64,14 @@ bool OracleWriter::defaultTruncate(void) const
 	return false;
 }
 
-void OracleWriter::store(QSettings &oPropertyFile, QString const &oPrefix)
+void OracleWriter::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	OracleContainer::store(oPropertyFile, oPrefix);
 	oPropertyFile.setValue("oracle/modify_columns", mAllowModifyColumns);
 	oPropertyFile.setValue("oracle/allow_truncate", mAllowTruncate);
 }
 
-void OracleWriter::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void OracleWriter::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	OracleContainer::restore(oPropertyFile, oPrefix);
 	mAllowModifyColumns = oPropertyFile.value("oracle/modify_columns", "false").toBool();
@@ -96,7 +96,7 @@ void OracleWriter::rollback(void)
 	SociContainer::rollback();
 }
 
-bool OracleWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
+bool OracleWriter::prepareOpen(std::vector<DatabaseColumn *> const &oColumns)
 {
 	setSQLLog(createConfigPanel()->getPath(), createConfigPanel()->getExportSQL(), createConfigPanel()->getExportSQLOnly());
 	if(!SociContainer::prepareOpen(oColumns))
@@ -105,16 +105,16 @@ bool OracleWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 	OracleWriterPanel *wp = createConfigPanel();
 	setAutocommit(wp->getAutoCommitCount());
 
-	QString table = getTablename();
+	StdString table = getTablename();
 	if(table.length() == 0)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "No target table selected!");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "No target table selected!");
 		return false;
 	}
 
 	if(getSession() == NULL)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Database session not initialized!");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Database session not initialized!");
 		return false;
 	}
 
@@ -131,9 +131,9 @@ bool OracleWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 	return true;
 }
 
-QString OracleWriter::getDateFormatString(QString const &oValue, bool bTimestamp) const
+StdString OracleWriter::getDateFormatString(StdString const &oValue, bool bTimestamp) const
 {
-	QString pattern = "0000-00-00 00:00:00";
+	StdString pattern = "0000-00-00 00:00:00";
 
 	if(oValue.length() == 10)
 		return "YYYY.MM.DD";
@@ -142,12 +142,11 @@ QString OracleWriter::getDateFormatString(QString const &oValue, bool bTimestamp
 		return "YYYY.MM.DD HH24:MI:SS";
 
 	pattern += ".";
-	QString format = "YYYY.MM.DD HH24:MI:SS.";
+	StdString format = "YYYY.MM.DD HH24:MI:SS.";
 
-	QString v = oValue.mid(pattern.length(), oValue.length());
-	for(int i = 0; i < v.length(); i++)
+	StdString v = oValue.substr(pattern.length(), oValue.length());
+	for(size_t i = 0; i < v.length(); i++)
 	{
-//		int c = v[i].toAscii();
 		if(v[i] >= '0' && v[i] <= '9')
 		{
 			format += 'F';
@@ -159,7 +158,7 @@ QString OracleWriter::getDateFormatString(QString const &oValue, bool bTimestamp
 	return format;
 }
 
-bool OracleWriter::prepareValue(DatabaseColumn *oColumn, QString const &oValue, StdString &oOutValue)
+bool OracleWriter::prepareValue(DatabaseColumn *oColumn, StdString const &oValue, StdString &oOutValue)
 {
 	oOutValue = "";
 	if(oColumn->isNull())
@@ -170,29 +169,29 @@ bool OracleWriter::prepareValue(DatabaseColumn *oColumn, QString const &oValue, 
 
 	switch(oColumn->getType())
 	{
-		case supportlib::db::type_datetime_long:
-		case supportlib::db::type_datetime:
-		case supportlib::db::type_date:
+		case spt::db::type_datetime_long:
+		case spt::db::type_datetime:
+		case spt::db::type_date:
 		{
 			bool timestamp = false;
-			QString dtfmt = "to_date";
+			StdString dtfmt = "to_date";
 			if(oColumn->getNativeType() == "TIMESTAMP")
 			{
 				timestamp = true;
 				dtfmt = "to_timestamp";
 			}
 
-			QString dformat = getDateFormatString(oValue, timestamp);
-			oOutValue = supportlib::string::QtStringToStringT(dtfmt+"('"+oValue+"', '"+dformat+"')");
+			StdString dformat = getDateFormatString(oValue, timestamp);
+			oOutValue = dtfmt+"('"+oValue+"', '"+dformat+"')";
 			return true;
 		}
 		break;
 
 		/*
-		case supportlib::db::type_decimal:
-		case supportlib::db::type_integer:
-		case supportlib::db::type_ip:
-		case supportlib::db::type_string:
+		case spt::db::type_decimal:
+		case spt::db::type_integer:
+		case spt::db::type_ip:
+		case spt::db::type_string:
 		*/
 		default:
 		break;
@@ -201,12 +200,12 @@ bool OracleWriter::prepareValue(DatabaseColumn *oColumn, QString const &oValue, 
 	return SociContainer::prepareValue(oColumn, oValue, oOutValue);
 }
 
-int OracleWriter::write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow)
+int OracleWriter::write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow)
 {
 	return SociContainer::write(oColumns, oRow);
 }
 
-bool OracleWriter::loadProfile(QSettings &oProfile, QString const &oKey)
+bool OracleWriter::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!OracleContainer::loadProfile(oProfile, oKey))
 		return false;
@@ -217,7 +216,7 @@ bool OracleWriter::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void OracleWriter::saveProfile(QSettings &oProfile, QString const &oKey)
+void OracleWriter::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	OracleContainer::saveProfile(oProfile, oKey);
 	mConfigPanel->saveProfile(oProfile, oKey);

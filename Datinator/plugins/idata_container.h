@@ -19,8 +19,7 @@
 #ifndef _IDATA_CONTAINER_H_INCLUDED
 #define _IDATA_CONTAINER_H_INCLUDED
 
-#include <QtCore/QList>
-#include <QtCore/QString>
+#include <vector>
 
 #include "datinator_types.h"
 
@@ -49,35 +48,35 @@ public:
 	 * must be updated. An example would be a database container
 	 * where the user chooses a new table.
 	 */
-	virtual void addColumnListener(Listener<QList<DatabaseColumn *> *> *oColumnListener) = 0;
-	virtual void removeColumnListener(Listener<QList<DatabaseColumn *> *> *oColumnListener) = 0;
+	virtual void addColumnListener(Listener<std::vector<DatabaseColumn *> *> *oColumnListener) = 0;
+	virtual void removeColumnListener(Listener<std::vector<DatabaseColumn *> *> *oColumnListener) = 0;
 
 	/**
 	 * The listener will be notified whenever the selector is changed.
 	 */
-	virtual void addSelectorListener(Listener<QString /* oConnectionString */, QString /* oSelectorId */> *oListener) = 0;
-	virtual void removeSelectorListener(Listener<QString, QString> *oListener) = 0;
+	virtual void addSelectorListener(Listener<StdString /* oConnectionString */, StdString /* oSelectorId */> *oListener) = 0;
+	virtual void removeSelectorListener(Listener<StdString, StdString> *oListener) = 0;
 
 	/**
 	 * Return a unique identifier for this container. Even though this
 	 * is currently a simple string, it should be a UUID for possible later
 	 * changes.
 	 */
-	virtual QString getContainerUUID(void) const = 0;
+	virtual StdString getContainerUUID(void) const = 0;
 
 	/**
 	 * Return the name of the container. This string should be
 	 * in a form that can be presented to the user in GUI so that
 	 * he can select the appropriate container.
 	 */
-	virtual QString getContainername(void) = 0;
+	virtual StdString getContainername(void) = 0;
 
 	/**
 	 * Set currently active selector. Whenever this changes, the
 	 * columns must be refreshed.
 	 */
-	virtual void setSelector(QString const &oId) = 0;
-	virtual QString getSelector(void) = 0;
+	virtual void setSelector(StdString const &oId) = 0;
+	virtual StdString getSelector(void) = 0;
 
 	/**
 	 * Return a panel which can be shown to the user for
@@ -88,16 +87,16 @@ public:
 	/**
 	 * Save the state of the container to the property file.
 	 */
-	virtual void store(QSettings &oPropertyFile, QString const &oPrefix) = 0;
-	virtual void restore(QSettings &oPropertyFile, QString const &oPrefix) = 0;
+	virtual void store(QSettings &oPropertyFile, StdString const &oPrefix) = 0;
+	virtual void restore(QSettings &oPropertyFile, StdString const &oPrefix) = 0;
 
-	virtual bool loadProfile(QSettings &oProfile, QString const &oKey) = 0;
-	virtual void saveProfile(QSettings &oProfile, QString const &oKey) = 0;
+	virtual bool loadProfile(QSettings &oProfile, StdString const &oKey) = 0;
+	virtual void saveProfile(QSettings &oProfile, StdString const &oKey) = 0;
 
-	virtual QList<DatabaseColumn *> getColumns(void) = 0;
+	virtual std::vector<DatabaseColumn *> getColumns(void) = 0;
 
-	virtual bool connect(QString const &oConnectString = "") = 0;
-	virtual bool disconnect(QString const &oConnectString = "") = 0;
+	virtual bool connect(StdString const &oConnectString = "") = 0;
+	virtual bool disconnect(StdString const &oConnectString = "") = 0;
 
 	/**
 	 * Called when the copying will start.
@@ -109,7 +108,7 @@ public:
 	 */
 	virtual void end(void) = 0;
 
-	virtual QString getConnectString(void) = 0;
+	virtual StdString getConnectString(void) = 0;
 };
 
 #endif // _IDATA_CONTAINER_H_INCLUDED

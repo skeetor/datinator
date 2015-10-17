@@ -4,11 +4,11 @@
  *
  ******************************************************************************/
 
-#include <QtCore/QDateTime>
+#include <ctime>
 
 #include "support/logging/logging.h"
 
-namespace supportlib
+namespace spt
 {
 namespace logging
 {
@@ -25,7 +25,7 @@ LoggingItem::LoggingItem(LoggingItem const &oSource)
 	copy(oSource);
 }
 
-LoggingItem::LoggingItem(QString const &oMessage, QString const &oUnit, LogType nType, unsigned int nTimestamp, QString const &oFile, int nLine, QString const &oMethod)
+LoggingItem::LoggingItem(spt::string::string_t const &oMessage, spt::string::string_t const &oUnit, LogType nType, unsigned int nTimestamp, spt::string::string_t const &oFile, int nLine, spt::string::string_t const &oMethod)
 {
 	setMessage(oMessage);
 	setUnit(oUnit);
@@ -58,15 +58,18 @@ LoggingItem &LoggingItem::operator=(LoggingItem const &oSource)
 	return *this;
 }
 
-void LoggingItem::setTimestamp(qint64 nTimestamp)
+void LoggingItem::setTimestamp(size_t nTimestamp)
 {
 	if(nTimestamp == 0)
-		nTimestamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
+	{
+		nTimestamp = time(0);
+		nTimestamp *= 1000;
+	}
 
 	mTimestamp = nTimestamp;
 }
 
-QString LoggingItem::getTypeText(void) const
+spt::string::string_t LoggingItem::getTypeText(void) const
 {
 	LogType t = getType();
 
@@ -96,7 +99,7 @@ Logging::~Logging(void)
 {
 }
 
-void Logging::addEntry(QString const &oMessage, QString const &oUnit, LoggingItem::LogType nType, unsigned int nTimestamp, QString const &oFile, int nLine, QString const &oMethod)
+void Logging::addEntry(spt::string::string_t const &oMessage, spt::string::string_t const &oUnit, LoggingItem::LogType nType, unsigned int nTimestamp, spt::string::string_t const &oFile, int nLine, spt::string::string_t const &oMethod)
 {
     addItem(LoggingItem(oMessage, oUnit, nType, nTimestamp, oFile, nLine, oMethod));
 }

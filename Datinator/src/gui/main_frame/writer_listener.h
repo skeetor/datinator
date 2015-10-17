@@ -19,7 +19,7 @@ public:
 	virtual ~WriterListener();
 
 public:
-	void handleNotification(Dispatcher<QList<DatabaseColumn *> *> *oSource, QList<DatabaseColumn *> *oEvent) override;
+	void handleNotification(Dispatcher<std::vector<DatabaseColumn *> *> *oSource, std::vector<DatabaseColumn *> *oEvent) override;
 };
 
 #endif // WRITER_LISTENER_H

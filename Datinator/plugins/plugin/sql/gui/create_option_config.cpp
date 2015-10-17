@@ -11,6 +11,7 @@
 #include <QtWidgets/QPushButton>
 
 #include <support/support_defs.h>
+#include "support/helper/string.h"
 
 #include "plugin/sql/gui/create_option_config_gui.moc"
 
@@ -25,34 +26,38 @@ CreateOptionConfig::~CreateOptionConfig(void)
 {
 }
 
-void CreateOptionConfig::store(QSettings &oPropertyFile, QString const &oPrefix)
+void CreateOptionConfig::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	UNUSED(oPropertyFile);
 	UNUSED(oPrefix);
 //	oPropertyFile.setValue("csv/"+oPrefix+"lastpath", getContainer()->getFilename());
 }
 
-void CreateOptionConfig::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void CreateOptionConfig::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	UNUSED(oPropertyFile);
 	UNUSED(oPrefix);
 //	getContainer()->setFilename(oPropertyFile.value("csv/"+oPrefix+"lastpath", "").toString());
 }
 
-bool CreateOptionConfig::loadProfile(QSettings &oProfile, QString const &oKey)
+bool CreateOptionConfig::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
-	setCreateTable(oProfile.value(oKey+"_create_table", "false").toBool());
-	setRecreateTable(oProfile.value(oKey+"_recreate_table", "false").toBool());
-	setCreateColumns(oProfile.value(oKey+"_create_columns", "false").toBool());
+	auto key = spt::string::toQt(oKey);
+
+	setCreateTable(oProfile.value(key+"_create_table", "false").toBool());
+	setRecreateTable(oProfile.value(key+"_recreate_table", "false").toBool());
+	setCreateColumns(oProfile.value(key+"_create_columns", "false").toBool());
 
 	return true;
 }
 
-void CreateOptionConfig::saveProfile(QSettings &oProfile, QString const &oKey)
+void CreateOptionConfig::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
-	oProfile.setValue(oKey+"_create_table", getCreateTable());
-	oProfile.setValue(oKey+"_recreate_table", getRecreateTable());
-	oProfile.setValue(oKey+"_create_columns", getCreateColumns());
+	auto key = spt::string::toQt(oKey);
+
+	oProfile.setValue(key+"_create_table", getCreateTable());
+	oProfile.setValue(key+"_recreate_table", getRecreateTable());
+	oProfile.setValue(key+"_create_columns", getCreateColumns());
 }
 
 bool CreateOptionConfig::getCreateTable(void)

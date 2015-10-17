@@ -4,10 +4,11 @@
  *
  *******************************************************************************/
 
-#include <QtCore/QString>
+
 #include <QtCore/QSettings>
 
 #include "manipulator/manipulator.h"
+#include "support/helper/string.h"
 
 Manipulator::Manipulator(void)
 {
@@ -54,12 +55,12 @@ void Manipulator::reset(void)
 	setMode(Manipulator::Mode::REPLACE);
 }
 
-QString Manipulator::lastError(void)
+StdString Manipulator::lastError(void)
 {
 	return mErrorText;
 }
 
-void Manipulator::setError(QString const &oText)
+void Manipulator::setError(StdString const &oText)
 {
 	mErrorText = oText;
 }
@@ -84,12 +85,12 @@ void Manipulator::setMode(Manipulator::Mode nMode)
 	mMode = nMode;
 }
 
-QString *Manipulator::applyMode(QString *oValue, QString const &oManipulatorString)
+StdString *Manipulator::applyMode(StdString *oValue, StdString const &oManipulatorString)
 {
-	QString *s = oValue;
+	StdString *s = oValue;
 
 	if(s == NULL)
-		s = new QString();
+		s = new StdString();
 
 	switch(getMode())
 	{
@@ -109,9 +110,10 @@ QString *Manipulator::applyMode(QString *oValue, QString const &oManipulatorStri
 	return s;
 }
 
-bool Manipulator::loadProfile(QSettings &oProfile, QString const &oKey)
+bool Manipulator::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
-	QString s = oProfile.value(oKey+"_mode", "R").toString();
+	auto s = oProfile.value(spt::string::toQt(oKey+"_mode"), "R").toString();
+
 	Manipulator::Mode m;
 	if(s == "P")
 		m = Manipulator::Mode::PREPEND;
@@ -123,14 +125,16 @@ bool Manipulator::loadProfile(QSettings &oProfile, QString const &oKey)
 		return false;
 
 	setMode(m);
-	setTestValue(oProfile.value(oKey+"_test_value").toString());
+	setTestValue(spt::string::fromQt(oProfile.value(spt::string::toQt(oKey+"_test_value")).toString()));
 
 	return true;
 }
 
-void Manipulator::saveProfile(QSettings &oProfile, QString const &oKey)
+void Manipulator::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
-	QString s;
+	StdString s;
+	auto key = spt::string::toQt(oKey);
+
 	switch(getMode())
 	{
 		case Manipulator::Mode::PREPEND:
@@ -145,8 +149,8 @@ void Manipulator::saveProfile(QSettings &oProfile, QString const &oKey)
 			s = "R";
 		break;
 	}
-	oProfile.setValue(oKey+"_mode", s);
-	oProfile.setValue(oKey+"_test_value", getTestValue());
+	oProfile.setValue(key+"_mode", spt::string::toQt(s));
+	oProfile.setValue(key+"_test_value", spt::string::toQt(getTestValue()));
 }
 
 void Manipulator::readValues(void)
@@ -157,22 +161,22 @@ void Manipulator::setValues(void)
 {
 }
 
-void Manipulator::setSourceColumns(QList<DatabaseColumn *> const &oColumns)
+void Manipulator::setSourceColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mColumns = oColumns;
 }
 
-QList<DatabaseColumn *> Manipulator::getSourceColumns(void) const
+std::vector<DatabaseColumn *> Manipulator::getSourceColumns(void) const
 {
 	return mColumns;
 }
 
-QString Manipulator::toString(void)
+StdString Manipulator::toString(void)
 {
 	readValues();
-	QString *v = new QString(getTestValue());
+	StdString *v = new StdString(getTestValue());
 	v = format(v, true);
-	QString s;
+	StdString s;
 	if(v)
 	{
 		s = *v;

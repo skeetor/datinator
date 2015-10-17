@@ -10,7 +10,11 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QKeySequence>
 
+#include "support/helper/string.h"
+
 #include "plugin/sql/gui/sql_preview_gui.moc"
+
+Q_DECLARE_METATYPE(StdString)
 
 SQLPreviewPanel::SQLPreviewPanel(QWidget *oParent)
 :	QFrame(oParent)
@@ -63,28 +67,28 @@ void SQLPreviewPanel::onExecute(void)
 {
 	// We also send an empty query, because the view may want to
 	// update to an empty display.
-	QString s = mGUI->mSQLTxt->toPlainText();
+	StdString s = spt::string::fromQt(mGUI->mSQLTxt->toPlainText());
 	if(mGUI->mSQLBox->isChecked())
 	{
 		int rows = mGUI->mPreviewSpin->value();
-		notifyActionListener(SQLPreview::ActionEvent::EVENT_SQL_EXECUTE, s, rows);
+		notifyActionListener(SQLPreview::ActionEvent::EVENT_SQL_EXECUTE, spt::string::toQt(s), rows);
 	}
 	else
 		notifyActionListener(SQLPreview::ActionEvent::EVENT_SQL_TOGGLE, mGUI->mSQLTxt->isEnabled());
 }
 
-QString SQLPreviewPanel::getQuery(void)
+StdString SQLPreviewPanel::getQuery(void)
 {
-	return mGUI->mSQLTxt->toPlainText();
+	return spt::string::fromQt(mGUI->mSQLTxt->toPlainText());
 }
 
-void SQLPreviewPanel::setQuery(QString const &oQuery, bool bNotify)
+void SQLPreviewPanel::setQuery(StdString const &oQuery, bool bNotify)
 {
-	mGUI->mSQLTxt->setText(oQuery);
+	mGUI->mSQLTxt->setText(spt::string::toQt(oQuery));
 	if(bNotify)
 	{
 		int rows = mGUI->mPreviewSpin->value();
-		notifyActionListener(SQLPreview::ActionEvent::EVENT_SQL_EXECUTE, oQuery, rows);
+		notifyActionListener(SQLPreview::ActionEvent::EVENT_SQL_EXECUTE, spt::string::toQt(oQuery), rows);
 	}
 }
 
@@ -98,27 +102,31 @@ int SQLPreviewPanel::getPreviewLimit(void)
 	return mGUI->mPreviewSpin->value();
 }
 
-void SQLPreviewPanel::setPreview(QList<DatabaseColumn *> const &oColumns, QList<QList<QString>> const &oRows)
+void SQLPreviewPanel::setPreview(std::vector<DatabaseColumn *> const &oColumns, std::vector<std::vector<StdString>> const &oRows)
 {
 	mGUI->mSQLView->setColumns(oColumns);
 	mGUI->mSQLView->setRows(oRows);
 }
 
-bool SQLPreviewPanel::loadProfile(QSettings &oProfile, QString const &oKey)
+bool SQLPreviewPanel::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
-	setPreviewLimit(oProfile.value(oKey+"_preview_rows", "10").toInt());
-	mGUI->mSQLBox->setChecked(oProfile.value(oKey+"_sql_state", "false").toBool());
+	auto k = spt::string::toQt(oKey);
+
+	setPreviewLimit(oProfile.value(k+"_preview_rows", "10").toInt());
+	mGUI->mSQLBox->setChecked(oProfile.value(k+"_sql_state", "false").toBool());
 	bool sql = mGUI->mSQLBox->isChecked();
 	bool notifyFlag = sql;
 	mGUI->mSQLTxt->setEnabled(sql);
-	setQuery(oProfile.value(oKey+"_sql", "").toString(), notifyFlag);
+	setQuery(spt::string::fromQt(oProfile.value(k+"_sql", "").toString()), notifyFlag);
 
 	return true;
 }
 
-void SQLPreviewPanel::saveProfile(QSettings &oProfile, QString const &oKey)
+void SQLPreviewPanel::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
-	oProfile.setValue(oKey+"_preview_rows", getPreviewLimit());
-	oProfile.setValue(oKey+"_sql_state", mGUI->mSQLBox->isChecked());
-	oProfile.setValue(oKey+"_sql", getQuery());
+	auto k = spt::string::toQt(oKey);
+
+	oProfile.setValue(k+"_preview_rows", getPreviewLimit());
+	oProfile.setValue(k+"_sql_state", mGUI->mSQLBox->isChecked());
+	oProfile.setValue(k+"_sql", spt::string::toQt(getQuery()));
 }

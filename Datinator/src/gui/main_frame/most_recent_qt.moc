@@ -4,13 +4,9 @@
  *
  ******************************************************************************/
 
-#ifndef MOST_RECENTQT_H_INCLUDED
-#define MOST_RECENTQT_H_INCLUDED
+#ifndef _MOST_RECENTQT_H_INCLUDED
+#define _MOST_RECENTQT_H_INCLUDED
 
-#include <QtCore/QSettings>
-#include <QtCore/QList>
-#include <QtCore/QString>
-#include <QtCore/QMap>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QAction>
 
@@ -33,4 +29,4 @@ protected slots:
 	virtual void onItemTriggered(QAction *oAction) { UNUSED(oAction); };
 };
 
-#endif // MOST_RECENTQT_H_INCLUDED
+#endif // _MOST_RECENTQT_H_INCLUDED

@@ -10,6 +10,8 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
 
+#include "support/helper/string.h"
+
 #include "plugin/sql/gui/commit_config_gui.moc"
 
 CommitConfig::CommitConfig(QWidget *oParent)
@@ -62,18 +64,22 @@ void CommitConfig::setAutoCommitCount(int nValue)
 	mGUI->mCommitCounterSpin->setValue(nValue);
 }
 
-bool CommitConfig::loadProfile(QSettings &oProfile, QString const &oKey)
+bool CommitConfig::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
-	mGUI->mCommitBox->setChecked(oProfile.value(oKey+"_commit", "false").toBool());
-	mGUI->mAutoCommitBox->setChecked(oProfile.value(oKey+"_auto_commit","true").toBool());
-	mGUI->mCommitCounterSpin->setValue(oProfile.value(oKey+"_auto_commit_count", "0").toInt());
+	auto key = spt::string::toQt(oKey);
+
+	mGUI->mCommitBox->setChecked(oProfile.value(key+"_commit", "false").toBool());
+	mGUI->mAutoCommitBox->setChecked(oProfile.value(key+"_auto_commit","true").toBool());
+	mGUI->mCommitCounterSpin->setValue(oProfile.value(key+"_auto_commit_count", "0").toInt());
 
 	return true;
 }
 
-void CommitConfig::saveProfile(QSettings &oProfile, QString const &oKey)
+void CommitConfig::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
-	oProfile.setValue(oKey+"_commit", mGUI->mCommitBox->isChecked());
-	oProfile.setValue(oKey+"_auto_commit", mGUI->mAutoCommitBox->isChecked());
-	oProfile.setValue(oKey+"_auto_commit_count", mGUI->mCommitCounterSpin->value());
+	auto key = spt::string::toQt(oKey);
+
+	oProfile.setValue(key+"_commit", mGUI->mCommitBox->isChecked());
+	oProfile.setValue(key+"_auto_commit", mGUI->mAutoCommitBox->isChecked());
+	oProfile.setValue(key+"_auto_commit_count", mGUI->mCommitCounterSpin->value());
 }

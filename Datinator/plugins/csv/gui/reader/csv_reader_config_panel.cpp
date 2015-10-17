@@ -4,7 +4,6 @@
  *
  *******************************************************************************/
 
-#include <QtCore/QSettings>
 #include <QtCore/QVariant>
 
 #include <QtWidgets/QMessageBox>
@@ -26,12 +25,12 @@ CSVReaderConfigPanel::~CSVReaderConfigPanel(void)
 {
 }
 
-void CSVReaderConfigPanel::setColumns(QList<DatabaseColumn *> const &oColumns)
+void CSVReaderConfigPanel::setColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mGUI->mCSVTableView->setColumns(oColumns);
 }
 
-void CSVReaderConfigPanel::setRows(QList<QList<QString>> const &oRows)
+void CSVReaderConfigPanel::setRows(std::vector<std::vector<StdString>> const &oRows)
 {
 	mGUI->mCSVTableView->setRows(oRows);
 }

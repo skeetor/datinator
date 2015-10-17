@@ -9,6 +9,7 @@
 
 #include <QtWidgets/QFrame>
 
+#include "datinator_types.h"
 #include "plugin/plugin_dll_api.h"
 #include "plugin/sql/gui/db_export_gui.h"
 
@@ -23,11 +24,11 @@ public:
 	DBExportPanel(QWidget *oParent = NULL);
 	virtual ~DBExportPanel(void);
 
-	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
-	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+	virtual bool loadProfile(QSettings &oProfile, StdString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, StdString const &oKey);
 
-	QString getPath(void);
-	void setPath(QString const &oPath);
+	StdString getPath(void);
+	void setPath(StdString const &oPath);
 
 	bool getExportSQL(void);
 	void setExportSQL(bool bExportSQL);

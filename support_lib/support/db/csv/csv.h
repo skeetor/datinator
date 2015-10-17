@@ -24,9 +24,9 @@
 
 #define DEFAULT_SAMPLE_ROWS  5
 
-typedef supportlib::string::char_t CSVChar;
-typedef supportlib::string::string_t CSVString;
-typedef supportlib::db::DBColumn<CSVString, CSVString> CSVColumn;
+typedef spt::string::char_t CSVChar;
+typedef spt::string::string_t CSVString;
+typedef spt::db::DBColumn<CSVString, CSVString> CSVColumn;
 
 class SUPPORT_DLL_EXPORT CSV
 {

@@ -12,6 +12,8 @@
 #include "gui/mapping/column_mapping_view_qt.moc"
 #include "manipulator/imanipulator.h"
 
+#include "support/helper/string.h"
+
 Q_DECLARE_METATYPE(IManipulator *)
 
 ColumnMappingView::ColumnMappingView(QWidget *oParent)
@@ -54,24 +56,24 @@ ColumnMappingItem *ColumnMappingView::rowItem(int nRow)
 	return mItemModel.getRowItem(nRow);
 }
 
-QList<ColumnMappingItem> ColumnMappingView::rowItems(void)
+std::vector<ColumnMappingItem> ColumnMappingView::rowItems(void)
 {
 	int rows = rowCount();
-	QList<ColumnMappingItem>l;
+	std::vector<ColumnMappingItem>l;
 	ColumnMappingItem m;
 	for(int i = 0; i < rows; i++)
 	{
 		ColumnMappingItem *mi = rowItem(i);
 		if(mi)
-			l.append(*mi);
+			l.push_back(*mi);
 		else
-			l.append(m);
+			l.push_back(m);
 	}
 
 	return l;
 }
 
-QModelIndexList ColumnMappingView::selectedRows(QList<ColumnMappingItem> *oItems)
+QModelIndexList ColumnMappingView::selectedRows(std::vector<ColumnMappingItem> *oItems)
 {
 	QModelIndexList il = selectionModel()->selectedRows();
 
@@ -82,9 +84,9 @@ QModelIndexList ColumnMappingView::selectedRows(QList<ColumnMappingItem> *oItems
 		{
 			ColumnMappingItem *mi = rowItem(i.row());
 			if(mi)
-				oItems->append(*mi);
+				oItems->push_back(*mi);
 			else
-				oItems->append(m);
+				oItems->push_back(m);
 		}
 	}
 
@@ -123,12 +125,12 @@ void ColumnMappingView::clearRows(void)
 //	mItemModel.clearRows();
 }
 
-QList<DatabaseColumn *> ColumnMappingView::getSourceColumns(void)
+std::vector<DatabaseColumn *> ColumnMappingView::getSourceColumns(void)
 {
 	return mSourceColumns.getColumns();
 }
 
-void ColumnMappingView::setSourceColumns(QList<DatabaseColumn *> const &oColumns)
+void ColumnMappingView::setSourceColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mItemModel.clearSourceColumns();
 
@@ -147,17 +149,17 @@ void ColumnMappingView::setSourceColumns(QList<DatabaseColumn *> const &oColumns
 	updateDefaultSelection(Columns::SOURCE, mSourceColumns);
 }
 
-QList<DatabaseColumn *> ColumnMappingView::getTargetColumns()
+std::vector<DatabaseColumn *> ColumnMappingView::getTargetColumns()
 {
 	return mTargetColumns.getColumns();
 }
 
-void ColumnMappingView::setTargetColumns(QList<DatabaseColumn *> const &oColumns, bool bDefault)
+void ColumnMappingView::setTargetColumns(std::vector<DatabaseColumn *> const &oColumns, bool bDefault)
 {
 	mItemModel.clearTargetColumns();
 	mItemModel.clearManipulators();
 
-	QList<DatabaseColumn *>l;
+	std::vector<DatabaseColumn *>l;
 
   	if(oColumns.size() == 0 || bDefault == true)
 	{
@@ -176,7 +178,7 @@ void ColumnMappingView::setTargetColumns(QList<DatabaseColumn *> const &oColumns
 	updateDefaultSelection(Columns::TARGET, mTargetColumns);
 }
 
-void ColumnMappingView::updateDefaultSelection(int nColumn, QList<DatabaseColumn *> const &oColumns)
+void ColumnMappingView::updateDefaultSelection(int nColumn, std::vector<DatabaseColumn *> const &oColumns)
 {
 	if(nColumn == Columns::SOURCE)
 		mItemModel.clearSourceColumns();
@@ -244,7 +246,7 @@ void ColumnMappingView::moveDown(int nCount)
 	QModelIndexList selected = sm->selectedRows();
 	int mx = selected.size();
 	int n = mItemModel.rowCount()-1;
-	QList<int> selection;
+	std::vector<int> selection;
 
 	for(int i = mx-1; i >= 0; i--)
 	{
@@ -258,7 +260,7 @@ void ColumnMappingView::moveDown(int nCount)
 		ColumnMappingItem new_row = *mItemModel.getRowItem(nr);
 		mItemModel.setRowItem(r, new_row);
 		mItemModel.setRowItem(nr, old_row);
-		selection.push_front(nr);
+		selection.insert(selection.begin(), nr);
 	}
 
 	// The selection range can not deal with ranges in a reversed order, so we have to
@@ -274,10 +276,10 @@ void ColumnMappingView::moveDown(int nCount)
 
 bool ColumnMappingView::loadProfile(QSettings &oProfile)
 {
-	QList<ColumnMappingItem> items;
-	QString const s = "item_";
+	std::vector<ColumnMappingItem> items;
+	StdString const s = "item_";
 	int n = rowCount();
-	QList<DatabaseColumn *> columns = getSourceColumns();
+	std::vector<DatabaseColumn *> columns = getSourceColumns();
 
 	/**
 	 * For each row that we loaded, we have to look it up in the current
@@ -288,7 +290,7 @@ bool ColumnMappingView::loadProfile(QSettings &oProfile)
 	for(int i = 0; i < n; i++)
 	{
 		ColumnMappingItem ni;
-		ni.loadProfile(oProfile, s+QString::number(i), columns);
+		ni.loadProfile(oProfile, s+spt::string::toString(i), columns);
 		DatabaseColumn *col = ni.getSourceColumn();
 		DatabaseColumn *rep = NULL;
 		int ind = -1;
@@ -331,7 +333,7 @@ bool ColumnMappingView::loadProfile(QSettings &oProfile)
 		}
 
 		ni.setTargetColumn(rep);
-		items.append(ni);
+		items.push_back(ni);
 	}
 
 	// Notify the comboboxes with the new set of columns (if any have been added)
@@ -356,9 +358,9 @@ bool ColumnMappingView::loadProfile(QSettings &oProfile)
 
 void ColumnMappingView::saveProfile(QSettings &oProfile)
 {
-	QList<ColumnMappingItem> items = rowItems();
+	std::vector<ColumnMappingItem> items = rowItems();
 	int i = -1;
-	QString const s = "item_";
+	StdString const s = "item_";
 	for(ColumnMappingItem const &mi : items)
-		mi.saveProfile(oProfile, s+QString::number(++i));
+		mi.saveProfile(oProfile, s+spt::string::toString(++i));
 }

@@ -33,13 +33,13 @@ public:
 	DateManipulator(DateManipulator const &oSource);
 	virtual ~DateManipulator(void);
 
-	QString getId(void) override;
-	QString getName(void) override;
-	QString getDescription(void) override;
+	StdString getId(void) override;
+	StdString getName(void) override;
+	StdString getDescription(void) override;
 	IManipulator *createInstance(void) override;
 	IManipulator *duplicate(void) override;
 	QWidget *getConfigurationPanel(QWidget *oParent = 0) override;
-	QString *format(QString *oValue, bool bPreview = false) override;
+	StdString *format(StdString *oValue, bool bPreview = false) override;
 	void reset(void) override;
 	void prepare(void) override;
 	bool isConfigured(void) override;
@@ -49,18 +49,18 @@ public:
 	 * Return the format of the specified type. This only returns valid
 	 * formats if it is not DT_SYSDATE or DT_CUSTOM.
 	 */
-	static QString getFormat(DateManipulator::DateFormat nFormat);
-	static QList<QString> const &getFormats(void);
-	static QList<QString> const &getFormatTexts(void);
+	static StdString getFormat(DateManipulator::DateFormat nFormat);
+	static std::vector<StdString> const &getFormats(void);
+	static std::vector<StdString> const &getFormatTexts(void);
 
 	virtual DateManipulator &operator=(DateManipulator const &oSource);
 	virtual void copy(DateManipulator const &oSource);
 
-	QString getInputFormat(void) const;
-	void setInputFormat(QString const &oFormat);
+	StdString getInputFormat(void) const;
+	void setInputFormat(StdString const &oFormat);
 
-	QString getOutputFormat(void) const;
-	void setOutputFormat(QString const &oFormat);
+	StdString getOutputFormat(void) const;
+	void setOutputFormat(StdString const &oFormat);
 
 	bool isSysdate(void) const;
 	void setSysdate(bool bSysdate = true);
@@ -68,8 +68,8 @@ public:
 	bool isSysdateStart(void) const;
 	void setSysdateStart(bool bSysdateStart = true);
 
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
 
 protected:
 	/**
@@ -77,14 +77,14 @@ protected:
 	 */
 	void readValues(void) override;
 	void setValues(void) override;
-	QString createString(QString const &oInputDate);
+	StdString createString(StdString const &oInputDate);
 
 private:
 	DateManipulatorPanel *mPanel;
 	bool mSysdate;
 	bool mSysdateStart;
-	QString mInputFormat;
-	QString mOutputFormat;
+	StdString mInputFormat;
+	StdString mOutputFormat;
 	QDateTime mDateTime;
 };
 

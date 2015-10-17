@@ -30,12 +30,16 @@ OracleWriterPanel::~OracleWriterPanel(void)
 {
 }
 
-void OracleWriterPanel::store(QSettings &oPropertyFile, QString const &oPrefix)
+void OracleWriterPanel::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
+	UNUSED(oPropertyFile);
+	UNUSED(oPrefix);
 }
 
-void OracleWriterPanel::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void OracleWriterPanel::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
+	UNUSED(oPropertyFile);
+	UNUSED(oPrefix);
 }
 
 int OracleWriterPanel::getAutoCommitCount(void)
@@ -48,7 +52,7 @@ void OracleWriterPanel::setAutoCommitCount(int nValue)
 	mCommitPanel->setAutoCommitCount(nValue);
 }
 
-bool OracleWriterPanel::loadProfile(QSettings &oProfile, QString const &oKey)
+bool OracleWriterPanel::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!mCommitPanel->loadProfile(oProfile, oKey))
 		return false;
@@ -59,18 +63,18 @@ bool OracleWriterPanel::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void OracleWriterPanel::saveProfile(QSettings &oProfile, QString const &oKey)
+void OracleWriterPanel::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	mCommitPanel->saveProfile(oProfile, oKey);
 	mExportPanel->saveProfile(oProfile, oKey);
 }
 
-QString OracleWriterPanel::getPath(void)
+StdString OracleWriterPanel::getPath(void)
 {
 	return mExportPanel->getPath();
 }
 
-void OracleWriterPanel::setPath(QString const &oPath)
+void OracleWriterPanel::setPath(StdString const &oPath)
 {
 	mExportPanel->setPath(oPath);
 }

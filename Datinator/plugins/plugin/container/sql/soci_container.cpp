@@ -6,15 +6,21 @@
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
+#include <QtCore/QString>
 
 #include <ctime>
+#include <algorithm>
+#include <sstream>
 
 #include "plugin/container/sql/soci_container.h"
 #include "plugin/sql/gui/db_panel_gui.moc"
 #include "plugin/gui/progress.h"
 #include "support/db/type_helper.h"
+#include "support/helper/string.h"
 
 #define MODULENAME "SOCI"
+
+Q_DECLARE_METATYPE(StdString)
 
 SociContainer::SociContainer(QWidget *oMainWindow)
 : SQLContainer(oMainWindow)
@@ -34,12 +40,12 @@ SociContainer::~SociContainer(void)
 	releaseColumns();
 }
 
-void SociContainer::store(QSettings &oPropertyFile, QString const &oPrefix)
+void SociContainer::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	SQLContainer::store(oPropertyFile, oPrefix);
 }
 
-void SociContainer::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void SociContainer::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	SQLContainer::restore(oPropertyFile, oPrefix);
 }
@@ -61,45 +67,47 @@ SQLPreviewPanel *SociContainer::getPreviewPanel(void)
 	return mPreviewPanel;
 }
 
-QString SociContainer::prepareTablename(QString const &oTablename)
+StdString SociContainer::prepareTablename(StdString const &oTablename)
 {
-	return oTablename.toUpper();
+	StdString s;
+	std::transform(oTablename.begin(), oTablename.end(), s.begin(), ::toupper);
+	return s;
 }
 
-void SociContainer::handleNotification(Dispatcher<QString> *oSource, QString oTable)
+void SociContainer::handleNotification(Dispatcher<StdString> *oSource, StdString oTable)
 {
 	UNUSED(oSource);
 	setTablename(prepareTablename(oTable));
 }
 
-QString SociContainer::getTablename(void) const
+StdString SociContainer::getTablename(void) const
 {
 	return mTablename;
 }
 
-void SociContainer::setTablename(QString const &oTablename)
+void SociContainer::setTablename(StdString const &oTablename)
 {
 	setSelector("{"+oTablename+"}");
 }
 
-QString SociContainer::getQuery(void) const
+StdString SociContainer::getQuery(void) const
 {
 	return mQuery;
 }
 
-void SociContainer::setQuery(QString const &oQuery)
+void SociContainer::setQuery(StdString const &oQuery)
 {
 	mQuery = oQuery;
 	setSelector(oQuery);
 }
 
-void SociContainer::setSelector(QString const &oId)
+void SociContainer::setSelector(StdString const &oId)
 {
 	Progress prg("Loading from Table ...");
 
 	if(oId.length() > 0 && oId[0] == '{') // If it is a table we select it
 	{
-		mTablename = oId.mid(1, oId.length()-2);
+		mTablename = oId.substr(1, oId.length()-2);
 		selectTable(mTablename, false);
 	}
 	else
@@ -109,21 +117,21 @@ void SociContainer::setSelector(QString const &oId)
 	refreshPreview(selectorToQuery(), mPreviewLimit);
 }
 
-QString SociContainer::selectorToQuery(void)
+StdString SociContainer::selectorToQuery(void)
 {
-	QString q = getSelector();
+	StdString q = getSelector();
 	if(q.length() == 0)
 		return q;
 
 	if(q[0] == '{' && q != "{}" && q.length() > 1)
-		q = "select * from "+ q.mid(1, q.length()-2);
+		q = "select * from "+ q.substr(1, q.length()-2);
 	else
 		q = mQuery;
 
 	return q;
 }
 
-void SociContainer::setSQLLog(QString const &oSQFilename, bool bSQLToFile, bool bFileOnly)
+void SociContainer::setSQLLog(StdString const &oSQFilename, bool bSQLToFile, bool bFileOnly)
 {
 	mSQLFilename = oSQFilename;
 	mSQLToFile = bSQLToFile;
@@ -142,13 +150,13 @@ bool SociContainer::validateOutput(void)
 
 	if(mFileOnly == true && mSQLToFile == false)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "No output is configured. Please specify either a SQL file or a database target.");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "No output is configured. Please specify either a SQL file or a database target.");
 		return false;
 	}
 
 	if(mSQLToFile == true && mSQLFilename.length() == 0)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "An SQL file is specified but no filename is given!");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "An SQL file is specified but no filename is given!");
 		return false;
 	}
 
@@ -159,7 +167,7 @@ int SociContainer::count(void)
 {
 	if(!getSession())
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to open database.");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to open database.");
 		return false;
 	}
 
@@ -167,7 +175,7 @@ int SociContainer::count(void)
 	{
 		soci::session &session = *getSession();
 		unsigned int rows = 0;
-		StdString query = "select count(1) from (" + supportlib::string::QtStringToStringT(selectorToQuery()) + ")";
+		StdString query = "select count(1) from (" + selectorToQuery() + ")";
 		session << query, soci::into(rows);
 		return rows;
 	}
@@ -186,7 +194,7 @@ bool SociContainer::begin(void)
 	if(!getSession())
 	{
 		prg->setValue(prg->value()+2);
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to open database.");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to open database.");
 		return false;
 	}
 	prg->setValue(prg->value()+1);
@@ -200,10 +208,10 @@ bool SociContainer::begin(void)
 
 	if(mSQLToFile)
 	{
-		mSQLFile.open(supportlib::string::QtStringToStringT(mSQLFilename), std::ios::out | std::ios::trunc);
+		mSQLFile.open(mSQLFilename, std::ios::out | std::ios::trunc);
 		if(!mSQLFile.is_open())
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to open the file: "+mSQLFilename);
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, StdString("Unable to open the file: ")+mSQLFilename);
 			return false;
 		}
 	}
@@ -232,15 +240,15 @@ soci::session *SociContainer::getSession(void)
 	return mSession;
 }
 
-void SociContainer::refreshTables(QString const &oSelection, bool bNotify)
+void SociContainer::refreshTables(StdString const &oSelection, bool bNotify)
 {
-	QList<QString> l = loadTables();
+	std::vector<StdString> l = loadTables();
 	setTables(l, oSelection, bNotify);
 }
 
-bool SociContainer::connect(QString const &oConnectString)
+bool SociContainer::connect(StdString const &oConnectString)
 {
-	QString con = getConnectString();
+	StdString con = getConnectString();
 
 	if(oConnectString.length() > 0)
 	{
@@ -269,14 +277,14 @@ bool SociContainer::connect(QString const &oConnectString)
 
 	try
 	{
-		mSession = new soci::session(sociFactory(), connectStr.c_str());
+		mSession = new soci::session(sociFactory(), connectStr);
 		mSociConnectString = connectStr;
 		refreshTables();
 	}
 	catch(std::runtime_error const &e)
 	{
 		mSociConnectString = "";
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 		rc = false;
 	}
 	prg->setValue(prg->value()+1);
@@ -284,7 +292,7 @@ bool SociContainer::connect(QString const &oConnectString)
 	return rc;
 }
 
-bool SociContainer::disconnect(QString const &oConnectString)
+bool SociContainer::disconnect(StdString const &oConnectString)
 {
 	UNUSED(oConnectString);
 
@@ -298,17 +306,17 @@ bool SociContainer::disconnect(QString const &oConnectString)
 	return true;
 }
 
-bool SociContainer::prepareStatement(QString const &oQuery)
+bool SociContainer::prepareStatement(StdString const &oQuery)
 {
 	try
 	{
-		mResultSet = new soci::rowset<soci::row>(mSession->prepare << supportlib::string::QtStringToStringT(oQuery));
+		mResultSet = new soci::rowset<soci::row>(mSession->prepare << oQuery);
 		mResultIterator = mResultSet->begin();
 	}
 	catch(std::runtime_error const &e)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to prepare resultset for query ["+oQuery+"]");
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to prepare resultset for query ["+oQuery+"]");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 		return false;
 	}
 	return true;
@@ -316,7 +324,7 @@ bool SociContainer::prepareStatement(QString const &oQuery)
 
 bool SociContainer::isTable(void)
 {
-	QString t = getSelector();
+	StdString t = getSelector();
 	if(t.length() == 0)
 		return true;
 
@@ -326,7 +334,7 @@ bool SociContainer::isTable(void)
 	return false;
 }
 
-QList<DatabaseColumn *> SociContainer::loadColumns(void)
+std::vector<DatabaseColumn *> SociContainer::loadColumns(void)
 {
 	// When we have an empty table, the query doesn't return any rows and we
 	// can't determine the columns from it. So if we have a tablename, we can
@@ -338,18 +346,18 @@ QList<DatabaseColumn *> SociContainer::loadColumns(void)
 	return readColumnsFromQuery(selectorToQuery(), true);
 }
 
-QList<DatabaseColumn *> SociContainer::readColumnsFromTable(QString const &oTablename)
+std::vector<DatabaseColumn *> SociContainer::readColumnsFromTable(StdString const &oTablename)
 {
 	if(oTablename.length() == 0)
-		return QList<DatabaseColumn *>();
+		return std::vector<DatabaseColumn *>();
 
 	return readColumnsFromQuery("select * from " +oTablename+" limit 1", false);
 }
 
-QList<DatabaseColumn *> SociContainer::readColumnsFromQuery(QString const &oQuery, bool bLimit)
+std::vector<DatabaseColumn *> SociContainer::readColumnsFromQuery(StdString const &oQuery, bool bLimit)
 {
-	QList<DatabaseColumn *> columns;
-	QString query = oQuery;
+	std::vector<DatabaseColumn *> columns;
+	StdString query = oQuery;
 
 	if(query.length() == 0)
 		return columns;
@@ -371,7 +379,7 @@ QList<DatabaseColumn *> SociContainer::readColumnsFromQuery(QString const &oQuer
 		if(bLimit)
 			query = limitQuery(query, 1);
 
-		std::string q = supportlib::string::QtStringToStringT(query);
+		std::string q = query;
 		soci::rowset<soci::row> rs = (session.prepare << q);
 		soci::rowset<soci::row>::const_iterator it = rs.begin();
 		if(it != rs.end())
@@ -382,35 +390,35 @@ QList<DatabaseColumn *> SociContainer::readColumnsFromQuery(QString const &oQuer
 				const soci::column_properties &props = row.get_properties(i);
 
 				DatabaseColumn *col = new DatabaseColumn();
-				col->setName(supportlib::string::StringTToQtString(props.get_name()));
+				col->setName(props.get_name());
 				col->setPosition(i);
-				columns.append(col);
+				columns.push_back(col);
 
 				switch(props.get_data_type())
 				{
 					case soci::dt_string:
-						col->setType(supportlib::db::DataType::type_string);
+						col->setType(spt::db::DataType::type_string);
 					break;
 
 					case soci::dt_double:
-						col->setType(supportlib::db::DataType::type_decimal);
+						col->setType(spt::db::DataType::type_decimal);
 					break;
 
 					case soci::dt_long_long:
 					case soci::dt_integer:
 					case soci::dt_unsigned_long_long:
-						col->setType(supportlib::db::DataType::type_integer);
+						col->setType(spt::db::DataType::type_integer);
 					break;
 
 					case soci::dt_date:
 					{
-						col->setType(supportlib::db::DataType::type_date);
+						col->setType(spt::db::DataType::type_date);
 					}
 					break;
 
 					default:
 					{
-						col->setType(supportlib::db::DataType::type_unknown);
+						col->setType(spt::db::DataType::type_unknown);
 					}
 				}
 			}
@@ -420,8 +428,8 @@ QList<DatabaseColumn *> SociContainer::readColumnsFromQuery(QString const &oQuer
 	{
 		if(isReader())
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to retrieve columns for query ["+query+"]");
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to retrieve columns for query ["+query+"]");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 		}
 	}
 
@@ -435,12 +443,12 @@ void SociContainer::handleNotification(Dispatcher<SQLPreview::ActionEvent, QVari
 	UNUSED(oSource);
 
 	Progress prg("Fetch columns...");
-	QString query;
+	StdString query;
 
 	if(nEvent == SQLPreview::ActionEvent::EVENT_SQL_EXECUTE)
 	{
 		setTablename("");
-		query = oData.value<QString>();
+		query = oData.value<StdString>();
 		mPreviewLimit = nRows;
 		setQuery(query);
 		refreshPreview(query, mPreviewLimit);
@@ -459,7 +467,7 @@ void SociContainer::handleNotification(Dispatcher<SQLPreview::ActionEvent, QVari
 	}
 }
 
-void SociContainer::refreshPreview(QString const &oQuery, int nLimit)
+void SociContainer::refreshPreview(StdString const &oQuery, int nLimit)
 {
 	if(!mPreviewPanel)
 		return;
@@ -467,17 +475,17 @@ void SociContainer::refreshPreview(QString const &oQuery, int nLimit)
 	Progress prg("Updating preview...");
 	prg->setLabelText("Updating preview...");
 
-	QList<DatabaseColumn *>columns = getColumns();
+	std::vector<DatabaseColumn *>columns = getColumns();
 	bool ex;
-	QList<QList<QString>> rows = fetchRows(columns, oQuery, ex, nLimit);
+	std::vector<std::vector<StdString>> rows = fetchRows(columns, oQuery, ex, nLimit);
 	mPreviewPanel->setPreview(columns, rows);
 }
 
-QList<QList<QString>> SociContainer::fetchRows(QList<DatabaseColumn *> &oColumns, QString const &oQuery, bool &bException, int nCount)
+std::vector<std::vector<StdString>> SociContainer::fetchRows(std::vector<DatabaseColumn *> &oColumns, StdString const &oQuery, bool &bException, int nCount)
 {
-	QString t;
-	QString sql;
-	QList<QList<QString>> rows;
+	StdString t;
+	StdString sql;
+	std::vector<std::vector<StdString>> rows;
 	bException = false;
 
 	if(oQuery.length() == 0)
@@ -490,7 +498,7 @@ QList<QList<QString>> SociContainer::fetchRows(QList<DatabaseColumn *> &oColumns
 		connect();
 		if(mSession == NULL)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to connect to "+getConnectString());
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to connect to "+getConnectString());
 			return rows;
 		}
 	}
@@ -509,7 +517,7 @@ QList<QList<QString>> SociContainer::fetchRows(QList<DatabaseColumn *> &oColumns
 
 	try
 	{
-		soci::rowset<soci::row> rs = (mSession->prepare << supportlib::string::QtStringToStringT(sql));
+		soci::rowset<soci::row> rs = (mSession->prepare << sql);
 		for(soci::row const &row : rs)
 		{
 			QApplication::processEvents();
@@ -517,13 +525,14 @@ QList<QList<QString>> SociContainer::fetchRows(QList<DatabaseColumn *> &oColumns
 				break;
 
 			n++;
+			std::stringstream ss;
+			ss << "Row "<< n << " ...";
 
-			t = "Row "+ QString::number(n) + " ...";
-			prg->setLabelText(t);
+			prg->setLabelText(spt::string::toQt(ss.str()));
 			if(nCount)
 				prg->setValue(prg->value()+1);
 
-			rows.append(fromRow(oColumns, row));
+			rows.push_back(fromRow(oColumns, row));
 
 			if(n >= nCount)
 				break;
@@ -532,8 +541,8 @@ QList<QList<QString>> SociContainer::fetchRows(QList<DatabaseColumn *> &oColumns
 	catch(std::exception &e)
 	{
 		bException = true;
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, sql);
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, sql);
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 	}
 	n -= nCount;
 	prg->setValue(prg->value()+1+n);
@@ -541,10 +550,10 @@ QList<QList<QString>> SociContainer::fetchRows(QList<DatabaseColumn *> &oColumns
 	return rows;
 }
 
-QList<QString> SociContainer::fromRow(QList<DatabaseColumn *> &oColumns, soci::row const &oRow)
+std::vector<StdString> SociContainer::fromRow(std::vector<DatabaseColumn *> &oColumns, soci::row const &oRow)
 {
-	QList<QString> row;
-	QString name;
+	std::vector<StdString> row;
+	StdString name;
 
 	if(oColumns.size() == 0)
 		return row;
@@ -554,33 +563,55 @@ QList<QString> SociContainer::fromRow(QList<DatabaseColumn *> &oColumns, soci::r
 		for(std::size_t i = 0; i != oRow.size(); ++i)
 		{
 			const soci::column_properties &props = oRow.get_properties(i);
-			name = supportlib::string::StringTToQtString(props.get_name());
-			QString v;
+			name = props.get_name();
+			StdString v;
 			DatabaseColumn *col = oColumns[i];
 
 			if(oRow.get_indicator(i) != soci::indicator::i_null)
 			{
+				std::stringstream ss;
+
 				col->setNull(false);
 				switch(props.get_data_type())
 				{
 					case soci::dt_string:
-						v = supportlib::string::StringTToQtString(oRow.get<StdString>(i));
+						v = oRow.get<StdString>(i);
 					break;
 
 					case soci::dt_double:
-						v = QString::number(oRow.get<double>(i));
+					{
+						double n;
+						ss << oRow.get<double>(i);
+						ss >> n;
+						v = n;
+					}
 					break;
 
 					case soci::dt_integer:
-						v = QString::number(oRow.get<int>(i));
+					{
+						int n;
+						ss << oRow.get<double>(i);
+						ss >> n;
+						v = n;
+					}
 					break;
 
 					case soci::dt_long_long:
-						v = QString::number(oRow.get<long long>(i));
+					{
+						long long n;
+						ss << oRow.get<double>(i);
+						ss >> n;
+						v = n;
+					}
 					break;
 
 					case soci::dt_unsigned_long_long:
-						v = QString::number(oRow.get<unsigned long long>(i));
+					{
+						unsigned long long n;
+						ss << oRow.get<double>(i);
+						ss >> n;
+						v = n;
+					}
 					break;
 
 					case soci::dt_date:
@@ -601,13 +632,13 @@ QList<QString> SociContainer::fromRow(QList<DatabaseColumn *> &oColumns, soci::r
 			else
 				col->setNull(true);
 
-			row.append(v);
+			row.push_back(v);
 		}
 	}
 	catch(std::runtime_error const &e)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Error when converting column ["+name+"]");
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Error when converting column ["+name+"]");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 	}
 
 	return row;
@@ -620,8 +651,7 @@ bool SociContainer::commit(void)
 	{
 		QMessageBox msgBox;
 		msgBox.setText("Commit?");
-		QString s = "Commit values to database? Press OK to commit, or Cancel to rollback.";
-		msgBox.setInformativeText(s);
+		msgBox.setInformativeText("Commit values to database? Press OK to commit, or Cancel to rollback.");
 		msgBox.setStandardButtons(QMessageBox::Ok|QMessageBox::Cancel);
 		msgBox.setDefaultButton(QMessageBox::Ok);
 		msgBox.exec();
@@ -635,7 +665,7 @@ bool SociContainer::commit(void)
 	soci::session *s = getSession();
 	if(s)
 	{
-		QString action;
+		StdString action;
 		try
 		{
 			if(commit_flag)
@@ -651,8 +681,8 @@ bool SociContainer::commit(void)
 		}
 		catch(std::runtime_error const &e)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, action+" failed.");
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, action+" failed.");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 			return false;
 		}
 	}
@@ -672,8 +702,8 @@ bool SociContainer::rollback(void)
 		}
 		catch(std::runtime_error const &e)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Rollback failed.");
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Rollback failed.");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 			return false;
 		}
 	}
@@ -706,7 +736,7 @@ bool SociContainer::commit(bool bForceCommit)
 	return false;
 }
 
-int SociContainer::read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow)
+int SociContainer::read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow)
 {
 	try
 	{
@@ -721,13 +751,13 @@ int SociContainer::read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow)
 	}
 	catch(std::exception &e)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 	}
 
 	return -1;
 }
 
-bool SociContainer::loadProfile(QSettings &oProfile, QString const &oKey)
+bool SociContainer::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!SQLContainer::loadProfile(oProfile, oKey))
 		return false;
@@ -738,13 +768,13 @@ bool SociContainer::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void SociContainer::saveProfile(QSettings &oProfile, QString const &oKey)
+void SociContainer::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	SQLContainer::saveProfile(oProfile, oKey);
 	getPreviewPanel()->saveProfile(oProfile, oKey);
 }
 
-bool SociContainer::prepareOpen(QList<DatabaseColumn *> const &oColumns)
+bool SociContainer::prepareOpen(std::vector<DatabaseColumn *> const &oColumns)
 {
 	if(!validateOutput())
 		return false;
@@ -755,15 +785,15 @@ bool SociContainer::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 		mInsert += mp->getName();
 		mInsert += ", ";
 	}
-	mInsert = mInsert.mid(0, mInsert.length()-2) + " )\n values ( ";
+	mInsert = mInsert.substr(0, mInsert.length()-2) + " )\n values ( ";
 
 	return true;
 }
-bool SociContainer::prepareValue(DatabaseColumn *oColumn, QString const &oValue, StdString &oResult)
+bool SociContainer::prepareValue(DatabaseColumn *oColumn, StdString const &oValue, StdString &oResult)
 {
 	UNUSED(oColumn);
 
-	StdString s = supportlib::string::QtStringToStringT(oValue);
+	StdString s = oValue;
 	size_t n = std::count(s.begin(), s.end(), '\'')+1;
 	oResult.reserve(oValue.length()+2*n);
 	oResult = "";
@@ -781,11 +811,11 @@ bool SociContainer::prepareValue(DatabaseColumn *oColumn, QString const &oValue,
 	return true;
 }
 
-int SociContainer::write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow)
+int SociContainer::write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow)
 {
-	QString values;
+	StdString values;
 	int i = -1;
-	StdString query = supportlib::string::QtStringToStringT(mInsert);
+	StdString query = mInsert;
 	StdString vals;
 
 	if(getSession())
@@ -803,7 +833,7 @@ int SociContainer::write(QList<DatabaseColumn *> const &oColumns, QList<QString>
 				{
 					if(!prepareValue(col, oRow[i], rv))
 					{
-						ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Error converting value for insert:"+oRow[i]);
+						ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Error converting value for insert:"+oRow[i]);
 						return -1;
 					}
 				}
@@ -821,17 +851,17 @@ int SociContainer::write(QList<DatabaseColumn *> const &oColumns, QList<QString>
 		}
 		catch(std::runtime_error const &e)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Error while inserting into "+getTablename());
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, supportlib::string::StringTToQtString(query));
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Error while inserting into "+getTablename());
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, query);
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 			try
 			{
 				session.rollback();
 			}
 			catch(std::runtime_error const &e)
 			{
-				ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Rollback failed!");
-				ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+				ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Rollback failed!");
+				ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 			}
 			return -1;
 		}
@@ -843,7 +873,7 @@ int SociContainer::write(QList<DatabaseColumn *> const &oColumns, QList<QString>
 	return 1;
 }
 
-QString SociContainer::createColumnStatement(DatabaseColumn *oColumn)
+StdString SociContainer::createColumnStatement(DatabaseColumn *oColumn)
 {
 	UNUSED(oColumn);
 	return "";

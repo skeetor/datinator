@@ -7,6 +7,8 @@
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
 
+#include "support/helper/string.h"
+
 #include "plugin/sql/gui/db_export_gui.moc"
 #include "support_qt/file/path_panel/path_panel_gui.moc"
 
@@ -24,21 +26,26 @@ DBExportPanel::~DBExportPanel(void)
 {
 }
 
-bool DBExportPanel::loadProfile(QSettings &oProfile, QString const &oKey)
+bool DBExportPanel::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
-	setPath(oProfile.value(oKey+"_export_sql_file_name", "").toString());
-	setExportSQL(oProfile.value(oKey+"_export_sql_file", "false").toBool());
-	setExportSQLOnly(oProfile.value(oKey+"_export_sql_file_only", "false").toBool());
+	auto key = spt::string::toQt(oKey);
+
+	setPath(spt::string::fromQt(oProfile.value(key+"_export_sql_file_name", "").toString()));
+	setExportSQL(oProfile.value(key+"_export_sql_file", "false").toBool());
+	setExportSQLOnly(oProfile.value(key+"_export_sql_file_only", "false").toBool());
+
 	mGUI->mExportSQLOnlyBox->setEnabled(getExportSQL());
 
 	return true;
 }
 
-void DBExportPanel::saveProfile(QSettings &oProfile, QString const &oKey)
+void DBExportPanel::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
-	oProfile.setValue(oKey+"_export_sql_file_name", getPath());
-	oProfile.setValue(oKey+"_export_sql_file", getExportSQL());
-	oProfile.setValue(oKey+"_export_sql_file_only", getExportSQLOnly());
+	auto key = spt::string::toQt(oKey);
+
+	oProfile.setValue(key+"_export_sql_file_name", spt::string::toQt(getPath()));
+	oProfile.setValue(key+"_export_sql_file", getExportSQL());
+	oProfile.setValue(key+"_export_sql_file_only", getExportSQLOnly());
 }
 
 void DBExportPanel::onExportSQL(bool bExportSQL)
@@ -47,12 +54,12 @@ void DBExportPanel::onExportSQL(bool bExportSQL)
 	mGUI->mExportSQLOnlyBox->setEnabled(bExportSQL);
 }
 
-QString DBExportPanel::getPath(void)
+StdString DBExportPanel::getPath(void)
 {
 	return mPathPanel->getPath();
 }
 
-void DBExportPanel::setPath(QString const &oPath)
+void DBExportPanel::setPath(StdString const &oPath)
 {
 	mPathPanel->setPath(oPath);
 }

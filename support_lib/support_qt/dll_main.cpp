@@ -7,7 +7,7 @@
 #include "support/support_defs.h"
 #include "support_qt_dll_api.h"
 
-#ifdef _WIN32
+#ifdef _WINDOWS
 
 extern "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {

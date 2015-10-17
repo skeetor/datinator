@@ -8,7 +8,7 @@
 #define MAIN_FRAME_H_INCLUDED
 
 #include <QtCore/QSettings>
-#include <QtCore/QList>
+#include <vector>
 
 #include "plugins/datinator_types.h"
 #include <support/patterns/observer.h>
@@ -32,7 +32,7 @@ class PluginManager;
 class MainFrame
 	: public QFrame,
 	public Listener<int>,
-	public Listener<QString /* oContainerId */, QString /* oConnectString*/, QString /* oText*/>	// MostRecent Listener
+	public Listener<StdString /* oContainerId */, StdString /* oConnectString*/, StdString /* oText*/>	// MostRecent Listener
 {
 	Q_OBJECT
 
@@ -40,8 +40,8 @@ public:
 	MainFrame(MostRecent *oRecentSource, MostRecent *oRecentTarget, MostRecent *oRecentProfile, QWidget *oParent = NULL);
 	~MainFrame(void);
 
-	void setSourceColumns(QList<DatabaseColumn *> const &oColumns);
-	void setTargetColumns(QList<DatabaseColumn *> const &oColumns);
+	void setSourceColumns(std::vector<DatabaseColumn *> const &oColumns);
+	void setTargetColumns(std::vector<DatabaseColumn *> const &oColumns);
 
 	/**
 	 * In the INI file, the componets will store only properties that are usefull
@@ -54,9 +54,9 @@ public:
 	 *
 	 * If the profile name is NULL, a file selection dialog is presented.
 	 */
-	bool runProfile(QString const *oProfileName = NULL);
-	bool loadProfile(QString const *oProfileName = NULL);
-	bool saveProfile(QString const *oProfileName = NULL);
+	bool runProfile(StdString const *oProfileName = NULL);
+	bool loadProfile(StdString const *oProfileName = NULL);
+	bool saveProfile(StdString const *oProfileName = NULL);
 
 	void store(QSettings &oPropertyfile);
 	void restore(QSettings &oPropertyfile);
@@ -67,7 +67,7 @@ protected: // Listener<T>
 	// Listener for rowcount changed.
 	virtual void handleNotification(Dispatcher<int> *oSource, int nRows);
 	//Listener when an item from the most recent list is selected
-	virtual void handleNotification(Dispatcher<QString, QString, QString> *oSource, QString oContainerId, QString oConnectString, QString oSelectorId);
+	virtual void handleNotification(Dispatcher<StdString, StdString, StdString> *oSource, StdString oContainerId, StdString oConnectString, StdString oSelectorId);
 
 protected:
 	friend ProgressPtr;
@@ -82,7 +82,7 @@ protected:
 
 	void setRowcount(int nRows);
 	int getRowcount(void);
-	void setButtonIcon(QString const &oIconPathm, QPushButton *oButton, QString const &oToolTip);
+	void setButtonIcon(StdString const &oIconPathm, QPushButton *oButton, StdString const &oToolTip);
 
 	/**
 	 * Update the source or target configuration view, when the user selects a new
@@ -91,10 +91,10 @@ protected:
 	void updateConfigPanel(IDataContainer *oContainer, QWidget *&oCurrentPanel, QWidget *oMainPanel);
 
 	bool performCopy(IDataContainerReader *oReader, IDataContainerWriter *oWriter);
-	void writeMostRecentItems(QSettings &oPropertyfile, QString const &oUUID, MostRecent *oMostRecent);
-	void readMostRecentItems(QSettings &oPropertyfile, QString const &oUUID, MostRecent *oMostRecent);
+	void writeMostRecentItems(QSettings &oPropertyfile, StdString const &oUUID, MostRecent *oMostRecent);
+	void readMostRecentItems(QSettings &oPropertyfile, StdString const &oUUID, MostRecent *oMostRecent);
 
-	int findContainer(QComboBox *oBox, QString const &oUUID);
+	int findContainer(QComboBox *oBox, StdString const &oUUID);
 
 	/**
 	 * Update the clickable elements to enabled if a source and a target plugin is loaded.
@@ -126,7 +126,7 @@ private:
 	/**
 	 * Clean up the input mapping by throwing away items which are not used (Target = NULL).
 	 */
-	QList<ColumnMappingItem> prepareItems(QList<ColumnMappingItem> const &oItems);
+	std::vector<ColumnMappingItem> prepareItems(std::vector<ColumnMappingItem> const &oItems);
 
 private:
 	Ui::MainFrameGUI *mGUI;
@@ -143,7 +143,7 @@ private:
 	ReaderListener mReaderConfigListener;
 	WriterListener mWriterConfigListener;
 	ColumnEditorDialogBox mColumnEditor;
-	QString mRecentProfileTag;
+	StdString mRecentProfileTag;
 };
 
 #endif // MAIN_FRAME_H_INCLUDED

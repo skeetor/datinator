@@ -5,8 +5,6 @@
 # of the being added to the workspace when using Visual Studio
 
 set(SUPPORT_SOURCE ${SUPPORT_SOURCE}
-	${CMAKE_CURRENT_SOURCE_DIR}/logging.h
-	${CMAKE_CURRENT_SOURCE_DIR}/logging.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/logging_item_model.h
 	${CMAKE_CURRENT_SOURCE_DIR}/logging_item_model.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/logging_dialog_box.cpp

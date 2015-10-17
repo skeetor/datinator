@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED
-#define LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED
+#ifndef _LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED
+#define _LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED
 
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QFrame>
@@ -23,7 +23,7 @@ public:
 	LoggingDialogBox(QWidget *oParent = NULL);
 	virtual ~LoggingDialogBox(void);
 
-	void setLog(supportlib::logging::Logging const &oLog);
+	void setLog(spt::logging::Logging const &oLog);
 
 private:
 	Ui::LoggingDialogGUI *mGUI;
@@ -32,4 +32,4 @@ private:
 	bool mOK;
 };
 
-#endif // LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED
+#endif // _LOGGING_DIALO_BOX_PANEL_GUI_H_INCLUDED

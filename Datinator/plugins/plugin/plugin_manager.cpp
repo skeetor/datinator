@@ -12,12 +12,12 @@
 
 #include <iostream>		// For debug output to console
 
-#include <QtCore/QList>
-#include <QtCore/QString>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
 #include <QtCore/QLibrary>
+
+#include "support/helper/string.h"
 
 #include "plugins/plugins_dll_api.h"
 #include "plugins/idata_container_reader.h"
@@ -36,18 +36,18 @@ PluginManager::PluginManager(void)
 
 	for(int i = 0; i < gStaticPluginsCounter; i++)
 	{
-		QList<PluginInfo> l = gStaticPlugins[i]();
+		std::vector<PluginInfo> l = gStaticPlugins[i]();
 		for(PluginInfo const &info : l)
 		{
 			if(info.isReader())
 			{
 				PluginInfoReader r = info;
-				mStaticReader.append(r);
+				mStaticReader.push_back(r);
 			}
 			else
 			{
 				PluginInfoWriter r = info;
-				mStaticWriter.append(r);
+				mStaticWriter.push_back(r);
 			}
 		}
 	}
@@ -62,17 +62,17 @@ void PluginManager::clearPaths(void)
 	mPaths.clear();
 }
 
-void PluginManager::addPath(QString const &oPath)
+void PluginManager::addPath(StdString const &oPath)
 {
-	mPaths.append(oPath);
+	mPaths.push_back(oPath);
 }
 
 bool PluginManager::hasErrors(void)
 {
-	return (mErrors.count() > 0);
+	return (mErrors.size() > 0);
 }
 
-QList<QString> PluginManager::getErrorText(void)
+std::vector<StdString> PluginManager::getErrorText(void)
 {
 	return mErrors;
 }
@@ -82,16 +82,16 @@ void PluginManager::clearErrors(void)
 	mErrors.clear();
 }
 
-QList<IDataContainerReader *> PluginManager::getReaders(QWidget *oMain)
+std::vector<IDataContainerReader *> PluginManager::getReaders(QWidget *oMain)
 {
-	QList<IDataContainerReader *> l;
+	std::vector<IDataContainerReader *> l;
 	for(PluginInfoReader &info : mStaticReader)
 	{
 		IDataContainerReader *p = info.getContainer();
 		if(!p)
 			p = info.getCreatePtr()(info.getUUID(), oMain);
 		if(p)
-			l.append(p);
+			l.push_back(p);
 	}
 	for(PluginInfoReader &info : mDynamicReader)
 	{
@@ -99,15 +99,15 @@ QList<IDataContainerReader *> PluginManager::getReaders(QWidget *oMain)
 		if(!p)
 			p = info.getCreatePtr()(info.getUUID(), oMain);
 		if(p)
-			l.append(p);
+			l.push_back(p);
 	}
 
 	return l;
 }
 
-QList<IDataContainerWriter *> PluginManager::getWriters(QWidget *oMain)
+std::vector<IDataContainerWriter *> PluginManager::getWriters(QWidget *oMain)
 {
-	QList<IDataContainerWriter *> l;
+	std::vector<IDataContainerWriter *> l;
 	for(PluginInfoWriter &info : mStaticWriter)
 	{
 		IDataContainerWriter *p = info.getContainer();
@@ -115,7 +115,7 @@ QList<IDataContainerWriter *> PluginManager::getWriters(QWidget *oMain)
 			p = info.getCreatePtr()(info.getUUID(), oMain);
 
 		if(p)
-			l.append(p);
+			l.push_back(p);
 	}
 	for(PluginInfoWriter &info : mDynamicWriter)
 	{
@@ -123,7 +123,7 @@ QList<IDataContainerWriter *> PluginManager::getWriters(QWidget *oMain)
 		if(!p)
 			p = info.getCreatePtr()(info.getUUID(), oMain);
 		if(p)
-			l.append(p);
+			l.push_back(p);
 	}
 
 	return l;
@@ -144,22 +144,23 @@ bool PluginManager::reload(void)
 	clearReaders();
 	clearWriters();
 
-	QList<QString> dlls;
-	for(QString const &path : mPaths)
+	std::vector<StdString> dlls;
+	for(StdString const &path : mPaths)
 		findDLLs(dlls, path);
 
 	std::cout << "DLLs: "<< dlls.size() << "\n" << std::endl;
 
-	for(QString const &path : dlls)
+	for(StdString const &path : dlls)
 		addDLL(path);
 
 	return true;
 }
 
-bool PluginManager::addDLL(QString const &oPath)
+bool PluginManager::addDLL(StdString const &oPath)
 {
-	std::cout << "Add shared library: "<< oPath.toStdString() << std::endl;
-	QLibrary lib(oPath);
+	std::cout << "Add shared library: "<< oPath << std::endl;
+
+	QLibrary lib(spt::string::toQt(oPath));
 	lib.load();
 	if(!lib.isLoaded())
 	{
@@ -172,7 +173,7 @@ bool PluginManager::addDLL(QString const &oPath)
 	std::cout << "   " << getPluginListFktExport << " ... " << std::hex << getPluginList << std::endl;
 	if(getPluginList)
 	{
-		QList<PluginInfo> infos = getPluginList();
+		std::vector<PluginInfo> infos = getPluginList();
 		if(infos.size() > 0)
 		{
 			for(PluginInfo const &info : infos)
@@ -180,12 +181,12 @@ bool PluginManager::addDLL(QString const &oPath)
 				if(info.isReader())
 				{
 					PluginInfoReader r = info;
-					mDynamicReader.append(r);
+					mDynamicReader.push_back(r);
 				}
 				else
 				{
 					PluginInfoWriter r = info;
-					mDynamicWriter.append(r);
+					mDynamicWriter.push_back(r);
 				}
 			}
 
@@ -204,59 +205,21 @@ bool PluginManager::addDLL(QString const &oPath)
 	return true;
 }
 
-/*int PluginManager::addWriters(QList<QFunctionPointer> const &oPluginPointers, QString const &oPath, QWidget *oParent)
+bool PluginManager::findDLLs(std::vector<StdString> &oDLLs, StdString const &oPath)
 {
-	int added = 0;
+	std::cout << "Scanning: " << oPath << std::endl;
 
-	// All three pointers have to be present
-	if(oPluginPointers[PluginFunctionIndex::GetWriterListIndex]
-		&& oPluginPointers[PluginFunctionIndex::CreateWriterIndex]
-		&& oPluginPointers[PluginFunctionIndex::FreeWriterIndex]
-	)
-	{
-		PluginInfo info;
-		PluginGetReaderList getWriterList = reinterpret_cast<PluginGetWriterList>(oPluginPointers[PluginFunctionIndex::GetWriterListIndex]);
-		PluginCreateWriter createWriter = reinterpret_cast<PluginCreateWriter>(oPluginPointers[PluginFunctionIndex::CreateWriterIndex]);
-
-		info.setPath(oPath);
-		info.setCreatePtr(oPluginPointers[PluginFunctionIndex::CreateWriterIndex]);
-		info.setFreePtr(oPluginPointers[PluginFunctionIndex::FreeWriterIndex]);
-		const char **uuids = getWriterList();
-		if(uuids)
-		{
-			while(*uuids)
-			{
-				const char *uuid = *uuids;
-				IDataContainerWriter *r = createWriter(uuid, oParent);
-				if(r)
-				{
-					std::cout << "   Writer ... " << uuid << std::endl;
-					info.setContainer(r);
-					mWriters.append(info);
-					added++;
-				}
-				uuids++;
-			}
-		}
-	}
-
-	return added;
-}*/
-
-bool PluginManager::findDLLs(QList<QString> &oDLLs, QString const &oPath)
-{
-	std::cout << "Scanning: " << oPath.toStdString() << std::endl;
-	QDir dir(oPath);
+	QDir dir(spt::string::toQt(oPath));
 	QFileInfoList entries = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Files, QDir::DirsFirst);
 	for(QFileInfo &info : entries)
 	{
-		QString p = info.canonicalFilePath();
+		auto p = info.canonicalFilePath();
 
 		if(info.isDir())
-			findDLLs(oDLLs, p);
+			findDLLs(oDLLs, spt::string::fromQt(p));
 		else if(info.isFile())
 		{
-			QString ext = info.suffix();
+			auto ext = info.suffix();
 			#ifdef _WIN32
 			if(ext.toUpper() != "DLL")
 				continue;
@@ -267,32 +230,33 @@ bool PluginManager::findDLLs(QList<QString> &oDLLs, QString const &oPath)
 				continue;
             #endif // LINUX
 
-			oDLLs.append(p);
-			std::cout << "Found shared library: "<< p.toStdString() << std::endl;
+			StdString ps = spt::string::fromQt(p);
+			oDLLs.push_back(ps);
+			std::cout << "Found shared library: "<< ps << std::endl;
 		}
 	}
 
 	return true;
 }
 
-QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplicates(void)
+std::vector<std::pair<StdString, std::vector<std::pair<StdString, StdString>>>> PluginManager::findDuplicates(void)
 {
-	QList<QPair<QString, QList<QPair<QString, QString>>>> duplist;
-	QList<PluginInfo> l;
+	std::vector<std::pair<StdString, std::vector<std::pair<StdString, StdString>>>> duplist;
+	std::vector<PluginInfo> l;
 
 	for(PluginInfoReader const &info : mStaticReader)
 	{
 		PluginInfo i;
 		i.setUUID(info.getUUID());
 		i.setPath(info.getPath());
-		l += i;
+		l.push_back(i);
 	}
 	for(PluginInfoReader const &info : mDynamicReader)
 	{
 		PluginInfo i;
 		i.setUUID(info.getUUID());
 		i.setPath(info.getPath());
-		l += i;
+		l.push_back(i);
 	}
 
 	for(PluginInfoWriter const &info : mStaticWriter)
@@ -300,28 +264,27 @@ QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplica
 		PluginInfo i;
 		i.setUUID(info.getUUID());
 		i.setPath(info.getPath());
-		l += i;
+		l.push_back(i);
 	}
 	for(PluginInfoReader const &info : mDynamicWriter)
 	{
 		PluginInfo i;
 		i.setUUID(info.getUUID());
 		i.setPath(info.getPath());
-		l += i;
+		l.push_back(i);
 	}
 
-	for(int i0 = 0; i0 < l.count(); i0++)
+	for(size_t i0 = 0; i0 < l.size(); i0++)
 	{
 		PluginInfo &info = l[i0];
-		QString uuid = info.getUUID();
+		StdString uuid = info.getUUID();
 
-		QList<QPair<QString, QString>> dups;
-		QPair<QString, QString> dup;
+		std::vector<std::pair<StdString, StdString>> dups;
+		std::pair<StdString, StdString> dup;
 		dup.first = info.getPath();
-		//dup.second = info.getContainer()->getContainername();
-		dups.append(dup);
+		dups.push_back(dup);
 
-		for(int i1 = 0; i1 < l.count(); i1++)
+		for(size_t i1 = 0; i1 < l.size(); i1++)
 		{
 			if(i0 == i1)
 				continue;
@@ -330,17 +293,16 @@ QList<QPair<QString, QList<QPair<QString, QString>>>> PluginManager::findDuplica
 			if(uuid == cmp.getUUID())
 			{
 				dup.first = cmp.getPath();
-				//dup.second = cmp.getContainer()->getContainername();
-				dups.append(dup);
+				dups.push_back(dup);
 			}
 		}
 
 		if(dups.size() > 1)
 		{
-			QPair<QString, QList<QPair<QString, QString>>> duplicates;
+			std::pair<StdString, std::vector<std::pair<StdString, StdString>>> duplicates;
 			duplicates.first = uuid;
 			duplicates.second = dups;
-			duplist.append(duplicates);
+			duplist.push_back(duplicates);
 		}
 	}
 

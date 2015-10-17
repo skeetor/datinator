@@ -4,12 +4,12 @@
  *
  *******************************************************************************/
 
-#include <QtCore/QString>
 #include <QtCore/QSettings>
 
 #include "support/unicode/unicode_types.h"
 #include "support/db/dbcolumn.h"
 #include "manipulator/column/column.h"
+#include "support/helper/string.h"
 
 ColumnManipulator::ColumnManipulator(void)
 {
@@ -35,7 +35,7 @@ bool ColumnManipulator::isConfigured(void)
 	return true;
 }
 
-QString ColumnManipulator::getId(void)
+StdString ColumnManipulator::getId(void)
 {
 	return "BBEF3EA0-FFC0-11E3-9191-0800200C9A67";
 }
@@ -65,12 +65,12 @@ void ColumnManipulator::copy(ColumnManipulator const &oSource)
 	setValues();
 }
 
-QString ColumnManipulator::getName(void)
+StdString ColumnManipulator::getName(void)
 {
 	return "Column value";
 }
 
-QString ColumnManipulator::getDescription(void)
+StdString ColumnManipulator::getDescription(void)
 {
 	return "Returns the value from a different column";
 }
@@ -113,17 +113,17 @@ QWidget *ColumnManipulator::getConfigurationPanel(QWidget *oParent)
 	return mPanel;
 }
 
-QString *ColumnManipulator::format(QString *oValue, bool bPreview)
+StdString *ColumnManipulator::format(StdString *oValue, bool bPreview)
 {
-	QString s;
-	QString v;
+	StdString s;
+	StdString v;
 
 	if(oValue)
 		v = *oValue;
 
-	int i = getColumn();
-	QList<DatabaseColumn *> columns = getSourceColumns();
-	if(i < columns.size())
+	ssize_t i = getColumn();
+	std::vector<DatabaseColumn *> columns = getSourceColumns();
+	if(i < (ssize_t)columns.size())
 	{
 		DatabaseColumn *col = columns[i];
 		if(col)
@@ -138,24 +138,24 @@ QString *ColumnManipulator::format(QString *oValue, bool bPreview)
 	return applyMode(oValue, s);
 }
 
-bool ColumnManipulator::loadProfile(QSettings &oProfile, QString const &oKey)
+bool ColumnManipulator::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!Manipulator::loadProfile(oProfile, oKey))
 		return false;
 
 	getConfigurationPanel(NULL);
-	setColumn(oProfile.value(oKey+"_column_index").toInt());
+	setColumn(oProfile.value(spt::string::toQt(oKey+"_column_index")).toInt());
 
 	setValues();
 	return true;
 }
 
-void ColumnManipulator::saveProfile(QSettings &oProfile, QString const &oKey)
+void ColumnManipulator::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	Manipulator::saveProfile(oProfile, oKey);
 
 	readValues();
-	oProfile.setValue(oKey+"_column_index", getColumn());
+	oProfile.setValue(spt::string::toQt(oKey+"_column_index"), getColumn());
 }
 
 void ColumnManipulator::prepare(void)
@@ -164,12 +164,12 @@ void ColumnManipulator::prepare(void)
 	readValues();
 }
 
-void ColumnManipulator::setColumn(int nColumnIndex)
+void ColumnManipulator::setColumn(ssize_t nColumnIndex)
 {
 	mColumnIndex = nColumnIndex;
 }
 
-int ColumnManipulator::getColumn(void) const
+ssize_t ColumnManipulator::getColumn(void) const
 {
 	return mColumnIndex;
 }

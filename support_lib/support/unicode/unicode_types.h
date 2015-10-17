@@ -22,7 +22,7 @@
 #include <wchar.h>
 #endif // _UNICODE
 
-namespace supportlib
+namespace spt
 {
 	namespace string
 	{
@@ -35,53 +35,18 @@ namespace supportlib
 	template <typename T>
 	inline size_t strlen_t(T str)
 	{
-		return supportlib::string::strlen(str);
+		return spt::string::strlen(str);
 	}
 
 	template <typename T>
 	inline size_t strnlen_t(T str, size_t n)
 	{
-		return supportlib::string::strnlen(str, n);
+		return spt::string::strnlen(str, n);
 	}
-
-	/**
-	 * If Qt is available these are some helpers to convert QStrings
-	 * from and to std strings.
-	 */
-
-	#ifdef QSTRING_H
-	inline std::wstring QtStringToWString(QString const &oString)
-	{
-		return (wchar_t *)oString.unicode();
-	}
-
-	inline QString WStringToQtString(std::wstring const &oString)
-	{
-		return QString::fromWCharArray(oString.c_str());
-	}
-
-	inline std::string QtStringToString(QString const &oString)
-	{
-		//return oString.toUtf8().constData();
-		return oString.toLocal8Bit().constData();
-	}
-
-	inline QString StringToQtString(std::string const &oString)
-	{
-		// Note that this may cause problems if the string contains emmbedded 0 bytes.
-		// So it only works reliably with standard C strings.
-		return QString::fromLocal8Bit(oString.c_str());
-	}
-	#endif // QSTRING_H
 
 	#ifdef _UNICODE
 
-	#ifdef QSTRING_H
-
-	inline std::wstring QtStringToStringT(QString const &s) { return QtStringToWString(s); }
-	inline QString StringTToQtString(std::wstring const &s)	{ return WStringToQtString(s); }
-
-	#endif // QSTRING_H
+	#define _str(x)					L##x
 
 	typedef wchar_t char_t;
 	typedef std::wstring string_t;
@@ -107,12 +72,7 @@ namespace supportlib
 
 	#else // _UNICODE
 
-	#ifdef QSTRING_H
-
-	inline std::string QtStringToStringT(QString const &s) { return QtStringToString(s); }
-	inline QString StringTToQtString(std::string const &s)	{ return StringToQtString(s); }
-
-	#endif // QSTRING_H
+	#define _str(x)			x
 
 	typedef char char_t;
 	typedef std::string string_t;
@@ -139,6 +99,6 @@ namespace supportlib
 	#endif
 
 	} // namespace string
-} // namespace supportlib
+} // namespace spt
 
 #endif /* SUPPORTTYPES_H_ */

@@ -4,13 +4,14 @@
  *
  ******************************************************************************/
 
-#ifndef DATABASE_LOGIN_PANEL_GUI_H_INCLUDED
-#define DATABASE_LOGIN_PANEL_GUI_H_INCLUDED
+#ifndef _DATABASE_LOGIN_PANEL_GUI_H_INCLUDED
+#define _DATABASE_LOGIN_PANEL_GUI_H_INCLUDED
 
 #include <QtWidgets/QFrame>
 #include <QtGui/QStandardItem>
 #include <QtGui/QStandardItemModel>
 
+#include "support/unicode/unicode_types.h"
 #include "support_qt/support_qt_dll_api.h"
 #include "support/patterns/observer.h"
 #include "support_qt/db/login_panel/database_login_panel_gui.h"
@@ -35,25 +36,24 @@ public:
 	virtual void addLoginListener(Listener<LoginEvent> *oListener);
 	virtual void removeLoginListener(Listener<LoginEvent> *oListener);
 
-	bool select(QString const &oDatabase, QString const &oUser, QString const &oHost, bool bNotify = true);
-	bool select(supportlib::string::string_t const &oDatabase, supportlib::string::string_t const &oUser, supportlib::string::string_t const &oHost, bool bNotify = true);
+	bool select(spt::string::string_t const &oDatabase, spt::string::string_t const &oUser, spt::string::string_t const &oHost, bool bNotify = true);
 	bool select(DatabaseLogin const &oLogin, bool bNotify = true);
 
 	virtual int find(DatabaseLogin const &oLogin) const;
 	DatabaseLogin getLogin(int nIndex);
 
 private:
-	void setButtonIcon(unsigned char const *&oImageData, QPushButton *oButton, QString const &oToolTip);
+	void setButtonIcon(unsigned char const *&oImageData, QPushButton *oButton, spt::string::string_t const &oToolTip);
 
 protected:
 	virtual void notifyLoginListeners(LoginEvent const &oLoginEvent);
 	virtual void clear(void);
 
 	// The validators are called before a configuration is saved internally.
-	virtual bool validateUser(QString const &oUser) const;
-	virtual bool validatePassword(QString const &oPassword) const;
-	virtual bool validateDatabase(QString const &oDatabase) const;
-	virtual bool validateHost(QString const &oHost) const;
+	virtual bool validateUser(spt::string::string_t const &oUser) const;
+	virtual bool validatePassword(spt::string::string_t const &oPassword) const;
+	virtual bool validateDatabase(spt::string::string_t const &oDatabase) const;
+	virtual bool validateHost(spt::string::string_t const &oHost) const;
 
 	virtual void setLogin(DatabaseLogin const &oLogin);
 	virtual DatabaseLogin getLogin(void) const;
@@ -73,4 +73,4 @@ private:
 	LoginPanelModel *mModel;
 };
 
-#endif // DATABASE_LOGIN_PANEL_GUI_H_INCLUDED
+#endif // _DATABASE_LOGIN_PANEL_GUI_H_INCLUDED

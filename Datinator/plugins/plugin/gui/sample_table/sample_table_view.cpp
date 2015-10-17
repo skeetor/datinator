@@ -32,7 +32,7 @@ void SampleTableView::enableDatatypes(bool bEnableDatatypes)
 		if(!mDatatypeBox)
 		{
 			mItemModel.showDatatypes(true);
-			mDatatypeBox = new DatatypeCombobox<supportlib::db::DataType>(5, -1, TypeStringProvider.items(), this);
+			mDatatypeBox = new DatatypeCombobox<spt::db::DataType>(5, -1, TypeStringProvider.items(), this);
 			setItemDelegate(mDatatypeBox);
 			clearRows();
 		}
@@ -76,12 +76,12 @@ void SampleTableView::updateWidgetView(void)
 	}
 }
 
-void SampleTableView::setColumns(QList<DatabaseColumn *> const &oColumns)
+void SampleTableView::setColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mItemModel.setColumns(oColumns);
 }
 
-void SampleTableView::setRows(QList<QList<QString>> const &oSampleRows)
+void SampleTableView::setRows(std::vector<std::vector<StdString>> const &oSampleRows)
 {
 	mItemModel.setRows(oSampleRows);
 	updateWidgetView();

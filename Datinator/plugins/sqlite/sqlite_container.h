@@ -4,10 +4,10 @@
  *
  *******************************************************************************/
 
-#ifndef SQLITE_CONTAINER_H_INCLUDED
-#define SQLITE_CONTAINER_H_INCLUDED
+#ifndef _SQLITE_CONTAINER_H_INCLUDED
+#define _SQLITE_CONTAINER_H_INCLUDED
 
-#include <QtCore/QString>
+#define USE_STD_LISTENER
 
 #include "sqlite/sqlite_dll_api.h"
 #include "plugin/container/sql/soci_container.h"
@@ -27,30 +27,30 @@ public:
 	SQLiteContainer(QWidget *oMainWindow);
 	virtual ~SQLiteContainer(void);
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 
-	virtual QList<QString> loadTables(void) override;
+	virtual std::vector<StdString> loadTables(void) override;
 
 protected:
-	bool tableExists(QString oTablename);
-	QString limitQuery(QString const &oQuery, int nLimit) const override;
+	bool tableExists(StdString oTablename);
+	StdString limitQuery(StdString const &oQuery, int nLimit) const override;
 
 	PathSelectPanel *createLoginPanel(void) override;
 	void initPanel(DBPanel *oPanel) override;
 
-	QList<DatabaseColumn *> readColumnsFromTable(QString const &oTablename) override;
-	StdString sociConnectString(QString const &oContainerConnectString) override;
+	std::vector<DatabaseColumn *> readColumnsFromTable(StdString const &oTablename) override;
+	StdString sociConnectString(StdString const &oContainerConnectString) override;
 	soci::backend_factory const &sociFactory(void) override;
 
-	class PathListener :  public Listener<QString>
+	class PathListener :  public Listener<StdString>
 	{
 		public:
 			PathListener(SQLiteContainer *oContainer) { mContainer = oContainer; }
-			void handleNotification(Dispatcher<QString> *oSource, QString oPath)
+			void handleNotification(Dispatcher<StdString> *oSource, StdString oPath)
 			{
 				UNUSED(oSource);
 

@@ -4,6 +4,8 @@
  *
  ******************************************************************************/
 
+#include <vector>
+
 #include "../plugins_dll_api.h"
 
 #include "csv/csv_global.h"
@@ -21,7 +23,7 @@ static IDataContainerWriter * APIENTRY CreateWriter(const char *oUUID, QWidget *
 static void APIENTRY FreeWriter(IDataContainerWriter *oWriter);
 
 #ifdef BUILD_CSV_STATIC
-static QList<PluginInfo> APIENTRY getPluginInfoFkt(void);
+static std::vector<PluginInfo> APIENTRY getPluginInfoFkt(void);
 
 static bool registerPlugins(void)
 {
@@ -68,24 +70,24 @@ extern "C" CSV_DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwRea
 
 
 #ifdef BUILD_CSV_STATIC
-static QList<PluginInfo> APIENTRY getPluginInfoFkt(void)
+static std::vector<PluginInfo> APIENTRY getPluginInfoFkt(void)
 #else
-extern "C" CSV_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfoFkt(void)
+extern "C" CSV_DLL_EXPORT std::vector<PluginInfo> APIENTRY getPluginInfoFkt(void)
 #endif
 {
-	QList<PluginInfo> infos;
+	std::vector<PluginInfo> infos;
 
 	PluginInfoReader r;
 	r.setUUID(CSV_READER_ID);
 	r.setCreatePtr(&CreateReader);
 	r.setFreePtr(FreeReader);
-	infos.append(r);
+	infos.push_back(r);
 
 	PluginInfoWriter w;
 	w.setUUID(CSV_WRITER_ID);
 	w.setCreatePtr(&CreateWriter);
 	w.setFreePtr(FreeWriter);
-	infos.append(w);
+	infos.push_back(w);
 
 	return infos;
 }

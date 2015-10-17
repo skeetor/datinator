@@ -9,11 +9,13 @@
 #include <QtCore/QDateTime>
 
 #include "support/db/dbcolumn.h"
+#include "support/helper/string.h"
 
 #include "plugin/gui/datatype_string.h"
 #include "gui/column_editor/column_editor_model.h"
 
 Q_DECLARE_METATYPE(DatabaseColumn *)
+Q_DECLARE_METATYPE(StdString)
 
 typedef enum
 {
@@ -25,8 +27,8 @@ typedef enum
 ColumnEditorModel::ColumnEditorModel(QObject *oParent)
 : QStandardItemModel(oParent)
 {
-	setHorizontalHeaderItem(COL_NAME, new QStandardItem(QString("Name")));
-	setHorizontalHeaderItem(COL_DATATYPE, new QStandardItem(QString("Datatype")));
+	setHorizontalHeaderItem(COL_NAME, new QStandardItem(spt::string::toQt("Name")));
+	setHorizontalHeaderItem(COL_DATATYPE, new QStandardItem(spt::string::toQt("Datatype")));
 	insertRow(0);
 }
 
@@ -103,13 +105,13 @@ bool ColumnEditorModel::removeRow(int row, const QModelIndex &parent)
 	return rc;
 }
 
-void ColumnEditorModel::setColumns(QList<DatabaseColumn *> const &oColumns)
+void ColumnEditorModel::setColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	clear();
 	insertRows(0, oColumns.size()+1);
-	QList<DatabaseColumn *> cols;
+	std::vector<DatabaseColumn *> cols;
 	for(DatabaseColumn * const col : cols)
-		cols.append(col->duplicate());
+		cols.push_back(col->duplicate());
 
 	int i = 0;
 	for(DatabaseColumn * const &col : oColumns)
@@ -125,7 +127,7 @@ void ColumnEditorModel::putItem(int nRow, DatabaseColumn *oColumn)
 	if(it == NULL)
 		it = new QStandardItem();
 
-	it->setText(oColumn->getName());
+	it->setText(spt::string::toQt(oColumn->getName()));
 	QVariant v;
 	v.setValue(oColumn);
 	it->setData(v);
@@ -134,17 +136,17 @@ void ColumnEditorModel::putItem(int nRow, DatabaseColumn *oColumn)
 	it = item(nRow, 1);
 	if(it == NULL)
 		it = new QStandardItem();
-	it->setText(TypeStringProvider.toString(oColumn->getType()));
+	it->setText(spt::string::toQt(TypeStringProvider.toString(oColumn->getType())));
 	setItem(nRow, 1, it);
 }
 
-void ColumnEditorModel::updateName(int nRow, QString const &oName)
+void ColumnEditorModel::updateName(int nRow, StdString const &oName)
 {
 	QStandardItem *it = item(nRow, 0);
 	if(it == NULL)
 		it = new QStandardItem();
 
-	it->setText(oName);
+	it->setText(spt::string::toQt(oName));
 	DatabaseColumn *col = columnItem(nRow);
 	if(col == NULL)
 		col = new DatabaseColumn();
@@ -156,13 +158,13 @@ void ColumnEditorModel::updateName(int nRow, QString const &oName)
 	setItem(nRow, 0, it);
 }
 
-void ColumnEditorModel::updateType(int nRow, QString const &oType)
+void ColumnEditorModel::updateType(int nRow, StdString const &oType)
 {
 	QStandardItem *it = item(nRow, 0);
 	if(it == NULL)
 		return;
 
-	it->setText(oType);
+	it->setText(spt::string::toQt(oType));
 	DatabaseColumn *col = columnItem(nRow);
 	if(col == NULL)
 		return;
@@ -200,7 +202,7 @@ bool ColumnEditorModel::setData(QModelIndex const &oIndex, QVariant const &oValu
 	if(!oIndex.isValid())
 		return QStandardItemModel::setData(oIndex, oValue, nRole);
 
-	QString s = oValue.value<QString>();
+	StdString s = oValue.value<StdString>();
 	bool rc;
 	bool update = true;
 

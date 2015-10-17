@@ -29,8 +29,8 @@ public:
 	DatabaseColumn *getTargetColumn(int nRow) const;
 	void clearTargetColumns(void);
 
-	void setManipulators(int nRow, QList<IManipulator *> const &oManipulators);
-	QList<IManipulator *> getManipulators(int nRow) const;
+	void setManipulators(int nRow, std::vector<IManipulator *> const &oManipulators);
+	std::vector<IManipulator *> getManipulators(int nRow) const;
 	void clearManipulators(void);
 
 	Qt::ItemFlags flags(const QModelIndex &index) const override;

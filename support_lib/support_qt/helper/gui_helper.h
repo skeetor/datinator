@@ -9,14 +9,14 @@
 
 #include <QtCore/QRect>
 
+#include "support/unicode/unicode_types.h"
 #include "support_qt/support_qt_dll_api.h"
 
-class QString;
 class QPushButton;
 class QLineEdit;
 class QWidget;
 
-namespace supportlib
+namespace spt
 {
 	namespace image
 	{
@@ -32,8 +32,8 @@ namespace supportlib
 
 	namespace gui
 	{
-		SUPPORT_QT_DLL_EXPORT void setButtonIcon(unsigned char const *oImageData, int nBufferLen, QPushButton *oButton, QString const &oToolTip);
-		SUPPORT_QT_DLL_EXPORT void setButtonIcon(QString const &oImageData, QPushButton *oButton, QString const &oToolTip);
+		SUPPORT_QT_DLL_EXPORT void setButtonIcon(unsigned char const *oImageData, int nBufferLen, QPushButton *oButton, spt::string::string_t const &oToolTip);
+		SUPPORT_QT_DLL_EXPORT void setButtonIcon(spt::string::string_t const &oImageData, QPushButton *oButton, spt::string::string_t const &oToolTip);
 
 		SUPPORT_QT_DLL_EXPORT void setEditable(QLineEdit *oEdit, bool bEditable);
 		SUPPORT_QT_DLL_EXPORT void center(QWidget *oParent, QWidget *oChild, bool bKeepWidth = false, bool bKeepHeight = false);

@@ -4,11 +4,12 @@
  *
  ******************************************************************************/
 
-#ifndef PATH_SELECT_PANEL_GUI_H_INCLUDED
-#define PATH_SELECT_PANEL_GUI_H_INCLUDED
+#ifndef _PATH_SELECT_PANEL_GUI_H_INCLUDED
+#define _PATH_SELECT_PANEL_GUI_H_INCLUDED
 
 #include <QtWidgets/QFrame>
 
+#include "support/unicode/unicode_types.h"
 #include "support_qt/support_qt_dll_api.h"
 #include "support_qt/file/path_panel/path_panel_gui.h"
 #include "support/patterns/observer.h"
@@ -18,7 +19,7 @@
  * button and a label. If the browse button is used and a new path
  * is selected, the listeners will be notified about it.
  */
-class SUPPORT_QT_DLL_EXPORT PathSelectPanel : public QFrame, protected Dispatcher<QString>
+class SUPPORT_QT_DLL_EXPORT PathSelectPanel : public QFrame, protected Dispatcher<spt::string::string_t>
 {
 	Q_OBJECT
 
@@ -29,23 +30,23 @@ public:
 	PathSelectPanel(bool bOpenMode = true, bool bDirectoryMode = false, QWidget *oParent = NULL);
 	virtual ~PathSelectPanel(void);
 
-	QString getPath(void);
-	void setPath(QString const &oPath);
+	spt::string::string_t getPath(void);
+	void setPath(spt::string::string_t const &oPath);
 
 	/**
 	 * setPathNotify() sets the path and additionally notifies
 	 * the listeners about the change, as if the browse button
 	 * had been used.
 	 */
-	void setPathNotify(QString const &oPath);
+	void setPathNotify(spt::string::string_t const &oPath);
 
 	void setEditable(bool bEditable = true);
 	bool isEditable(void);
 
-	void addPathListener(Listener<QString> *oListener);
-	void removePathListener(Listener<QString> *oListener);
+	void addPathListener(Listener<spt::string::string_t> *oListener);
+	void removePathListener(Listener<spt::string::string_t> *oListener);
 
-	void notifyPathListeners(QString const &oPath);
+	void notifyPathListeners(spt::string::string_t const &oPath);
 
 	/**
 	 * If openMode == true the browse dialog will look for
@@ -67,4 +68,4 @@ private:
 	bool mDirectoryMode;
 };
 
-#endif // PATH_SELECT_PANEL_GUI_H_INCLUDED
+#endif // _PATH_SELECT_PANEL_GUI_H_INCLUDED

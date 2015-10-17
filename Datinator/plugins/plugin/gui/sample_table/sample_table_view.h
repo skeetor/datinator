@@ -7,7 +7,7 @@
 #ifndef SAMPLE_TABLE_VIEW_H_INCLUDED
 #define SAMPLE_TABLE_VIEW_H_INCLUDED
 
-#include <QtCore/QList>
+#include <vector>
 #include <QtWidgets/QTableView>
 
 #include "plugin/plugin_dll_api.h"
@@ -23,9 +23,9 @@ public:
 	virtual ~SampleTableView(void);
 
 	void setContainer(ContainerBase *oContainer);
-	void setColumns(QList<DatabaseColumn *> const &oColumns);
+	void setColumns(std::vector<DatabaseColumn *> const &oColumns);
 	void clearRows(void);
-	void setRows(QList<QList<QString>> const &oSampleRows);
+	void setRows(std::vector<std::vector<StdString>> const &oSampleRows);
 	void enableDatatypes(bool benableDatatypes = true);
 
 protected:
@@ -36,7 +36,7 @@ private:
 
 private:
 	ContainerBase *mContainer;
-	DatatypeCombobox<supportlib::db::DataType> *mDatatypeBox;
+	DatatypeCombobox<spt::db::DataType> *mDatatypeBox;
 	bool mShowDatatypes;
 	SampleItemModel mItemModel;
 };

@@ -15,28 +15,29 @@
 #include "manipulator/column/column.h"
 #include "manipulator/autonumber/autonumber.h"
 
+#include "support/helper/string.h"
 #include "support_qt/helper/gui_helper.h"
 
 const char *gPropertyName = "Manipulator";
 
 Q_DECLARE_METATYPE(IManipulator *)
 
-QList<IManipulator *> initManipulators(void)
+std::vector<IManipulator *> initManipulators(void)
 {
-	QList<IManipulator *> l;
+	std::vector<IManipulator *> l;
 
-	l.append(new NullManipulator());
-	l.append(new TextManipulator());
-	l.append(new AutoNumberManipulator());
-	l.append(new DateManipulator());
-	l.append(new ColumnManipulator());
+	l.push_back(new NullManipulator());
+	l.push_back(new TextManipulator());
+	l.push_back(new AutoNumberManipulator());
+	l.push_back(new DateManipulator());
+	l.push_back(new ColumnManipulator());
 
 	return l;
 }
-QList<IManipulator *> gReferences = initManipulators();
+std::vector<IManipulator *> gReferences = initManipulators();
 
 
-ManipulatorEditorDialogBox::ManipulatorEditorDialogBox(QList<IManipulator *> const &oManipulators, QList<DatabaseColumn *> const &oColumns, QWidget *oParent)
+ManipulatorEditorDialogBox::ManipulatorEditorDialogBox(std::vector<IManipulator *> const &oManipulators, std::vector<DatabaseColumn *> const &oColumns, QWidget *oParent)
 : QDialog(oParent)
 {
 	mClear = true;
@@ -49,10 +50,10 @@ ManipulatorEditorDialogBox::ManipulatorEditorDialogBox(QList<IManipulator *> con
 	mPlaceholder = new QLabel("", this);
 	l->addWidget(mPlaceholder);
 
-	supportlib::gui::setButtonIcon(supportlib::image::button_add, supportlib::image::button_add_length, mGUI->mAssignBtn, "Assign");
-	supportlib::gui::setButtonIcon(supportlib::image::button_delete, supportlib::image::button_delete_length, mGUI->mRemoveBtn, "Remove");
-	supportlib::gui::setButtonIcon(supportlib::image::button_down, supportlib::image::button_down_length, mGUI->mDownBtn, "Move down");
-	supportlib::gui::setButtonIcon(supportlib::image::button_up, supportlib::image::button_up_length, mGUI->mUpBtn, "Move up");
+	spt::gui::setButtonIcon(spt::image::button_add, spt::image::button_add_length, mGUI->mAssignBtn, "Assign");
+	spt::gui::setButtonIcon(spt::image::button_delete, spt::image::button_delete_length, mGUI->mRemoveBtn, "Remove");
+	spt::gui::setButtonIcon(spt::image::button_down, spt::image::button_down_length, mGUI->mDownBtn, "Move down");
+	spt::gui::setButtonIcon(spt::image::button_up, spt::image::button_up_length, mGUI->mUpBtn, "Move up");
 
 	mGUI->mReferenceList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	mGUI->mAssignedList->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -80,14 +81,14 @@ ManipulatorEditorDialogBox::ManipulatorEditorDialogBox(QList<IManipulator *> con
 		addItem(mGUI->mAssignedList, mp->duplicate());
 	}
 
-	QString tst;
+	StdString tst;
 	IManipulator *mp = itemAt(mGUI->mAssignedList, 0);
 	if(mp)
 		tst = mp->getTestValue();
 	else
 		tst = "*VALUE*";
 
-	mGUI->mTestValueTxt->setText(tst);
+	mGUI->mTestValueTxt->setText(spt::string::toQt(tst));
 	updateSample();
 }
 
@@ -95,7 +96,7 @@ ManipulatorEditorDialogBox::~ManipulatorEditorDialogBox(void)
 {
 }
 
-QList<IManipulator *> ManipulatorEditorDialogBox::getManipulators(void)
+std::vector<IManipulator *> ManipulatorEditorDialogBox::getManipulators(void)
 {
 	return mManipulators;
 }
@@ -132,10 +133,10 @@ void ManipulatorEditorDialogBox::accept(void)
 		{
 			QMessageBox msgBox;
 			msgBox.setText("Configuration missing!");
-			QString s = "The manipulator ["+mp->getName()+"] at line "+QString::number(i)+" is not configured!\n";
+			StdString s = "The manipulator ["+mp->getName()+"] at line "+spt::string::toString(i)+" is not configured!\n";
 			s += "Please configure all items before closing this dialog.\n\n";
 			s += "Error message:"+mp->lastError();
-			msgBox.setInformativeText(s);
+			msgBox.setInformativeText(spt::string::toQt(s));
 			msgBox.setStandardButtons(QMessageBox::Ok);
 			msgBox.setDefaultButton(QMessageBox::Ok);
 			msgBox.exec();
@@ -153,7 +154,7 @@ void ManipulatorEditorDialogBox::accept(void)
 	while((mp = removeItem(0)) != NULL)
 	{
 		mp->removeConfigChangeListener(this);
-		mManipulators.append(mp);
+		mManipulators.push_back(mp);
 	}
 	QDialog::accept();
 }
@@ -204,9 +205,9 @@ void ManipulatorEditorDialogBox::onDown(void)
 	QListWidget *l = mGUI->mAssignedList;
 	QModelIndexList selected = l->selectionModel()->selectedRows();
 	int rows = l->count()-1;
-	QList<QModelIndex> ml;
+	std::vector<QModelIndex> ml;
 	for(QModelIndex const &index : selected)
-		ml.insert(0, index);
+		ml.insert(ml.begin(), index);
 
 	for(QModelIndex const &index : ml)
 	{
@@ -344,15 +345,15 @@ IManipulator *ManipulatorEditorDialogBox::itemAt(QListWidget *oListView, int nRo
 void ManipulatorEditorDialogBox::addItem(QListWidget *oListView, IManipulator *oManipulator, bool bReference)
 {
 	QListWidgetItem *it = new QListWidgetItem();
-	QString s;
+	StdString s;
 	if(bReference)
 		s = oManipulator->getName();
 	else
 		s = oManipulator->toString();
 
 	QVariant v;
-	it->setText(s);
-	it->setToolTip(oManipulator->getDescription());
+	it->setText(spt::string::toQt(s));
+	it->setToolTip(spt::string::toQt(oManipulator->getDescription()));
 	v.setValue(oManipulator);
 	it->setData(Qt::UserRole, v);
 	oListView->addItem(it);
@@ -383,7 +384,7 @@ void ManipulatorEditorDialogBox::updateItem(int nRow, IManipulator *oManipulator
 		oManipulator = v.value<IManipulator *>();
 	}
 
-	it->setText(oManipulator->toString());
+	it->setText(spt::string::toQt(oManipulator->toString()));
 	l->itemChanged(it);
 }
 
@@ -394,7 +395,7 @@ void ManipulatorEditorDialogBox::handleNotification(Dispatcher<IManipulator *> *
 	updateSample(oSource);
 }
 
-void ManipulatorEditorDialogBox::onTestValueChanged(QString oValue)
+void ManipulatorEditorDialogBox::onTestValueChanged(StdString oValue)
 {
 	UNUSED(oValue);
 
@@ -408,13 +409,13 @@ void ManipulatorEditorDialogBox::onTestValueChanged(QString oValue)
 void ManipulatorEditorDialogBox::updateSample(IManipulator *oSource)
 {
 	QListWidget *l = mGUI->mAssignedList;
-	int rows = l->count();
-	QString t;
-	QString tst = mGUI->mTestValueTxt->text();
-	QString *s = new QString(tst);
-	QString *del = NULL;
+	size_t rows = l->count();
+	StdString t;
+	StdString tst = spt::string::fromQt(mGUI->mTestValueTxt->text());
+	StdString *s = new StdString(tst);
+	StdString *del = NULL;
 
-	for(int i = 0; i < rows; i++)
+	for(size_t i = 0; i < rows; i++)
 	{
 		IManipulator *mp = itemAt(l, i);
 		if(i == 0)
@@ -431,7 +432,7 @@ void ManipulatorEditorDialogBox::updateSample(IManipulator *oSource)
 	del = s;
 
 	// Reset to the original state, so the configuration doesn't get messed up.
-	for(int i = 0; i < rows; i++)
+	for(size_t i = 0; i < rows; i++)
 	{
 		IManipulator *mp = itemAt(l, i);
 		mp->prepare();
@@ -443,7 +444,7 @@ void ManipulatorEditorDialogBox::updateSample(IManipulator *oSource)
 		s = &t;
 	}
 
-	mGUI->mSampleTxt->setText(*s);
+	mGUI->mSampleTxt->setText(spt::string::toQt(*s));
 	if(del)
 		delete del;
 }

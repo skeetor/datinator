@@ -31,17 +31,17 @@ void SQLiteReader::initPanel(DBPanel *oPanel)
 	createConfigPanel()->addActionListener(oPanel);
 }
 
-void SQLiteReader::store(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLiteReader::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	SQLiteContainer::store(oPropertyFile, oPrefix);
 }
 
-void SQLiteReader::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLiteReader::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	SQLiteContainer::restore(oPropertyFile, oPrefix);
 }
 
-int SQLiteReader::read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow)
+int SQLiteReader::read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow)
 {
 	return SociContainer::read(oColumns, oRow);
 }

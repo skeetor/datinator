@@ -7,6 +7,8 @@
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
 
+#include <support/helper/string.h>
+
 #include "csv/csv_writer.h"
 #include "csv/gui/writer/csv_writer_config_panel_gui.moc"
 
@@ -47,15 +49,12 @@ StdChar CSVWriterConfigPanel::getSeparator(void)
 
 	if(mGUI->mSeparatorCustomBtn->isChecked())
 	{
-		QString s = mGUI->mSeparatorCustomTxt->text();
+		StdString s = spt::string::fromQt(mGUI->mSeparatorCustomTxt->text());
 		if(s.length() > 0)
-		{
-			StdString ns = supportlib::string::QtStringToStringT(s);
-			return ns[0];
-		}
+			return s[0];
 	}
 
-	return 0;
+	return ';';
 }
 
 void CSVWriterConfigPanel::setSeparator(StdChar oSeparator)
@@ -91,7 +90,9 @@ void CSVWriterConfigPanel::setSeparator(StdChar oSeparator)
 	}
 
 	mGUI->mSeparatorCustomBtn->setChecked(true);
-	mGUI->mSeparatorCustomTxt->setText(QString(oSeparator));
+	StdString s;
+	s = oSeparator;
+	mGUI->mSeparatorCustomTxt->setText(spt::string::toQt(s));
 }
 
 StdChar CSVWriterConfigPanel::getBracket(StdChar &oClose) const
@@ -99,7 +100,10 @@ StdChar CSVWriterConfigPanel::getBracket(StdChar &oClose) const
 	oClose = 0;
 
 	if(mGUI->mQuoteBtn->isChecked())
+	{
+		oClose = '"';
 		return '"';
+	}
 
 	if(mGUI->mParenthesisBtn->isChecked())
 	{
@@ -127,14 +131,13 @@ StdChar CSVWriterConfigPanel::getBracket(StdChar &oClose) const
 
 	if(mGUI->mCustomQuoteBtn->isChecked())
 	{
-		QString s = mGUI->mSeparatorCustomTxt->text();
+		StdString s = spt::string::fromQt(mGUI->mSeparatorCustomTxt->text());
 		if(s.length() > 0)
 		{
-			StdString ns = supportlib::string::QtStringToStringT(s);
 			if(s.length() > 1)
-				oClose = ns[1];
+				oClose = s[1];
 
-			return ns[0];
+			return s[0];
 		}
 	}
 

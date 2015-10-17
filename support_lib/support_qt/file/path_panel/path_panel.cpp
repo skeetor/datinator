@@ -5,9 +5,12 @@
  ******************************************************************************/
 
 #include <QtWidgets/QFileDialog>
+#include <QtCore/QString>
 
 #include "support_qt/helper/gui_helper.h"
 #include "support_qt/file/path_panel/path_panel_gui.moc"
+
+#include "support/helper/string.h"
 
 PathSelectPanel::PathSelectPanel(bool bOpenMode, bool bDirectoryMode, QWidget *oParent)
 : QFrame(oParent)
@@ -53,55 +56,55 @@ void PathSelectPanel::onBrowse(void)
 	if(isDirectoryMode())
 	{
 		fn = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-													getPath(),
-		                                             QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+										spt::string::toQt(getPath()),
+										QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 	}
 	else
 	{
 		if(isOpenMode())
-			fn = QFileDialog::getOpenFileName(this, tr("Open File"), getPath(), tr(""));
+			fn = QFileDialog::getOpenFileName(this, tr("Open File"), spt::string::toQt(getPath()), tr(""));
 		else
-			fn = QFileDialog::getSaveFileName(this, tr("Save File"), getPath(), tr(""));
+			fn = QFileDialog::getSaveFileName(this, tr("Save File"), spt::string::toQt(getPath()), tr(""));
 	}
 
 	if(!fn.isNull())
-		setPathNotify(fn);
+		setPathNotify(spt::string::fromQt(fn));
 }
 
-void PathSelectPanel::notifyPathListeners(QString const &oPath)
+void PathSelectPanel::notifyPathListeners(spt::string::string_t const &oPath)
 {
-	Dispatcher<QString>::notify(oPath);
+	Dispatcher<spt::string::string_t>::notify(oPath);
 }
 
-QString PathSelectPanel::getPath(void)
+spt::string::string_t PathSelectPanel::getPath(void)
 {
-	return mGUI->mPathText->text();
+	return spt::string::fromQt(mGUI->mPathText->text());
 }
 
-void PathSelectPanel::setPath(QString const &oPath)
+void PathSelectPanel::setPath(spt::string::string_t const &oPath)
 {
-	mGUI->mPathText->setText(oPath);
+	mGUI->mPathText->setText(spt::string::toQt(oPath));
 }
 
-void PathSelectPanel::setPathNotify(QString const &oPath)
+void PathSelectPanel::setPathNotify(spt::string::string_t const &oPath)
 {
 	setPath(oPath);
 	notifyPathListeners(oPath);
 }
 
-void PathSelectPanel::addPathListener(Listener<QString> *oListener)
+void PathSelectPanel::addPathListener(Listener<spt::string::string_t> *oListener)
 {
-	Dispatcher<QString>::addListener(oListener);
+	Dispatcher<spt::string::string_t>::addListener(oListener);
 }
 
-void PathSelectPanel::removePathListener(Listener<QString> *oListener)
+void PathSelectPanel::removePathListener(Listener<spt::string::string_t> *oListener)
 {
-	Dispatcher<QString>::removeListener(oListener);
+	Dispatcher<spt::string::string_t>::removeListener(oListener);
 }
 
 void PathSelectPanel::setEditable(bool bEditable)
 {
-	supportlib::gui::setEditable(mGUI->mPathText, bEditable);
+	spt::gui::setEditable(mGUI->mPathText, bEditable);
 }
 
 bool PathSelectPanel::isEditable(void)

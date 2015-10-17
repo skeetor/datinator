@@ -4,10 +4,10 @@
  *
  *******************************************************************************/
 
-#ifndef MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED
-#define MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED
+#ifndef _MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED
+#define _MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED
 
-#include <QtCore/QList>
+#include <vector>
 #include <QtWidgets/QDialog>
 
 #include "plugins/datinator_types.h"
@@ -24,10 +24,10 @@ class ManipulatorEditorDialogBox
 	Q_OBJECT
 
 public:
-	ManipulatorEditorDialogBox(QList<IManipulator *> const &oManipulators, QList<DatabaseColumn *> const &oColumns, QWidget *oParent = NULL);
+	ManipulatorEditorDialogBox(std::vector<IManipulator *> const &oManipulators, std::vector<DatabaseColumn *> const &oColumns, QWidget *oParent = NULL);
 	virtual ~ManipulatorEditorDialogBox(void);
 
-	QList<IManipulator *> getManipulators(void);
+	std::vector<IManipulator *> getManipulators(void);
 
 protected:
 	void addItem(QListWidget *oListView, IManipulator *oManipulator, bool bReference = false);
@@ -51,14 +51,14 @@ protected slots:
 	void onButton(QAbstractButton *oButton);
 	void onReferenceSelectionChanged(void);
 	void onAssignedSelectionChanged(void);
-	void onTestValueChanged(QString oValue);
+	void onTestValueChanged(StdString oValue);
 
 private:
 	Ui::ManipulatorEditorDlgGUI *mGUI;
 	bool mClear;
-	QList<IManipulator *> mManipulators;
+	std::vector<IManipulator *> mManipulators;
 	QLabel *mPlaceholder;
-	QList<DatabaseColumn *> mColumns;
+	std::vector<DatabaseColumn *> mColumns;
 };
 
-#endif // MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED
+#endif // _MANIPULATOR_EDITOR_DIALOG_GUI_H_INCLUDED

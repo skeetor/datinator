@@ -16,9 +16,11 @@
 #include "column_mapping_item.h"
 #include "plugin/gui/progress.h"
 
+#include "support/helper/string.h"
+
 Q_DECLARE_METATYPE(IManipulator *)
 
-extern QList<IManipulator *> gReferences;
+extern std::vector<IManipulator *> gReferences;
 
 ColumnMappingItem::ColumnMappingItem(void)
 {
@@ -92,23 +94,24 @@ void ColumnMappingItem::clearManipulators(void)
 {
 	while(mManipulators.size() > 0)
 	{
-		IManipulator *mp = mManipulators.takeAt(0);
+		IManipulator *mp = mManipulators[0];
+		mManipulators.erase(mManipulators.begin());
 		delete mp;
 	}
 
 	mManipulators.clear();
 }
 
-QList<IManipulator *> const &ColumnMappingItem::getManipulators(void) const
+std::vector<IManipulator *> const &ColumnMappingItem::getManipulators(void) const
 {
 	return mManipulators;
 }
 
-void ColumnMappingItem::setManipulators(QList<IManipulator *> const &oManipulators)
+void ColumnMappingItem::setManipulators(std::vector<IManipulator *> const &oManipulators)
 {
 	clearManipulators();
 	for(IManipulator * const &mp : oManipulators)
-		mManipulators.append(mp->duplicate());
+		mManipulators.push_back(mp->duplicate());
 }
 
 void ColumnMappingItem::addManipulator(IManipulator *oManipulator)
@@ -119,7 +122,7 @@ void ColumnMappingItem::addManipulator(IManipulator *oManipulator)
 	if(hasManipulator(oManipulator) != -1)
 		return;
 
-	mManipulators.append(oManipulator->duplicate());
+	mManipulators.push_back(oManipulator->duplicate());
 }
 
 void ColumnMappingItem::removeManipulator(IManipulator *oManipulator)
@@ -131,7 +134,8 @@ void ColumnMappingItem::removeManipulator(IManipulator *oManipulator)
 	if(i == -1)
 		return;
 
-	delete mManipulators.takeAt(i);
+	delete mManipulators[i];
+	mManipulators.erase(mManipulators.begin());
 }
 
 void ColumnMappingItem::prepare(void)
@@ -140,7 +144,7 @@ void ColumnMappingItem::prepare(void)
 		mp->prepare();
 }
 
-QString *ColumnMappingItem::format(QString *oValue, bool bPreview)
+StdString *ColumnMappingItem::format(StdString *oValue, bool bPreview)
 {
 	for(IManipulator * const &mp : mManipulators)
 		oValue = mp->format(oValue, bPreview);
@@ -148,26 +152,30 @@ QString *ColumnMappingItem::format(QString *oValue, bool bPreview)
 	return oValue;
 }
 
-void ColumnMappingItem::writeColumn(QSettings &oProfile, QString const &oKey, DatabaseColumn *oColumn, bool bWriteType) const
+void ColumnMappingItem::writeColumn(QSettings &oProfile, StdString const &oKey, DatabaseColumn *oColumn, bool bWriteType) const
 {
+	auto key = spt::string::toQt(oKey);
+
 	if(!oColumn)
 	{
-		oProfile.setValue(oKey, "");
+		oProfile.setValue(key, "");
 		return;
 	}
 
-	oProfile.setValue(oKey, oColumn->getName());
+	oProfile.setValue(key, spt::string::toQt(oColumn->getName()));
 	if(bWriteType)
-		oProfile.setValue(oKey+"_type", oColumn->getType());
+		oProfile.setValue(key+"_type", oColumn->getType());
 }
 
-bool ColumnMappingItem::loadProfile(QSettings &oProfile, QString const &oKey, QList<DatabaseColumn *> &oColumns)
+bool ColumnMappingItem::loadProfile(QSettings &oProfile, StdString const &oKey, std::vector<DatabaseColumn *> &oColumns)
 {
+	auto key = spt::string::toQt(oKey);
+
 	// Update the manipulators with the current set of columns
 	for(IManipulator * const &ref : gReferences)
 		ref->setSourceColumns(oColumns);
 
-	QString nm = oProfile.value(oKey+"_src", "").toString();
+	StdString nm = spt::string::fromQt(oProfile.value(key+"_src", "").toString());
 	DatabaseColumn *col = NULL;
 	if(nm.length() > 0)
 	{
@@ -176,24 +184,24 @@ bool ColumnMappingItem::loadProfile(QSettings &oProfile, QString const &oKey, QL
 	}
 	setSourceColumn(col);
 
-	nm = oProfile.value(oKey+"_tgt", "").toString();
+	nm = spt::string::fromQt(oProfile.value(key+"_tgt", "").toString());
 	col = NULL;
 	if(nm.length() > 0)
 	{
 		col = new DatabaseColumn();
 		col->setName(nm);
-		int t = oProfile.value(oKey+"_tgt_type", "1").toInt();
-		col->setType(static_cast<supportlib::db::DataType>(t));
+		int t = oProfile.value(key+"_tgt_type", "1").toInt();
+		col->setType(static_cast<spt::db::DataType>(t));
 	}
 	setTargetColumn(col);
 
-	int n = oProfile.value(oKey+"_manipulators", "0").toInt();
+	int n = oProfile.value(key+"_manipulators", "0").toInt();
 	for(int i = 0; i < n; i++)
 	{
-		QString uuid = oProfile.value(oKey+"_"+QString::number(i)+"_manipulator_id", "").toString();
+		StdString uuid = spt::string::fromQt(oProfile.value(key+"_"+spt::string::toQt(spt::string::toString(i))+"_manipulator_id", "").toString());
 		if(uuid.length() == 0)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "LoadProfile", "Inconsistent profile.");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "LoadProfile", "Inconsistent profile.");
 			return false;
 		}
 
@@ -209,28 +217,28 @@ bool ColumnMappingItem::loadProfile(QSettings &oProfile, QString const &oKey, QL
 
 		if(mp == NULL)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, "LoadProfile", "The manipulator with the id "+uuid+" doesn't exist");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, "LoadProfile", "The manipulator with the id "+uuid+" doesn't exist");
 			return false;
 		}
 
-		mp->loadProfile(oProfile, oKey+"_"+QString::number(i)+"_"+uuid);
+		mp->loadProfile(oProfile, oKey+"_"+spt::string::toString(i)+"_"+uuid);
 		addManipulator(mp);
 	}
 
 	return true;
 }
 
-void ColumnMappingItem::saveProfile(QSettings &oProfile, QString const &oKey) const
+void ColumnMappingItem::saveProfile(QSettings &oProfile, StdString const &oKey) const
 {
 	writeColumn(oProfile, oKey+"_src", getSourceColumn(), false);
 	writeColumn(oProfile, oKey+"_tgt", getTargetColumn(), true);
-	oProfile.setValue(oKey+"_manipulators", mManipulators.size());
+	oProfile.setValue(spt::string::toQt(oKey+"_manipulators"), mManipulators.size());
 	int i = 0;
 	for(IManipulator * const &mp : mManipulators)
 	{
-		QString uuid = mp->getId();
-		QString k = oKey+"_"+QString::number(i);
-		oProfile.setValue(k+"_manipulator_id", uuid);
+		StdString uuid = mp->getId();
+		StdString k = oKey + "_" + spt::string::toString(i);
+		oProfile.setValue(spt::string::toQt(k+"_manipulator_id"), spt::string::toQt(uuid));
 		mp->saveProfile(oProfile, k+"_"+uuid);
 		i++;
 	}

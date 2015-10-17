@@ -4,11 +4,11 @@
  *
  ******************************************************************************/
 
-#ifndef MAIN_WINDOW_H_INCLUDED
-#define MAIN_WINDOW_H_INCLUDED
+#ifndef _MAIN_WINDOW_H_INCLUDED
+#define _MAIN_WINDOW_H_INCLUDED
 
 #include <QtCore/QSettings>
-#include <QtCore/QList>
+#include <vector>
 
 #include <support/supportlib_namespace.h>
 #include <support_qt/window/restorable_window.h>
@@ -49,4 +49,4 @@ private:
 	RestorableWindow mRestorable;
 };
 
-#endif // MAIN_WINDOW_H_INCLUDED
+#endif // _MAIN_WINDOW_H_INCLUDED

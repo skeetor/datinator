@@ -7,7 +7,7 @@
 #ifndef CSV_ITEM_MODEL_H_INCLUDED
 #define CSV_ITEM_MODEL_H_INCLUDED
 
-#include <QtCore/QList>
+#include <vector>
 #include <QtGui/QStandardItemModel>
 
 #include "datinator_types.h"
@@ -26,15 +26,15 @@ public: // QStandardItemModel
 public:
 	void clearRows(void);
 	void showDatatypes(bool bShowDatatypes = true);
-	void setColumns(QList<DatabaseColumn *> const &oColumns);
-	void setRows(QList<QList<QString>> const &oSampleRows);
+	void setColumns(std::vector<DatabaseColumn *> const &oColumns);
+	void setRows(std::vector<std::vector<StdString>> const &oSampleRows);
 
 protected:
-		void setRow(int nRow, QList<QString> const &oData);
+		void setRow(int nRow, std::vector<StdString> const &oData);
 
 private:
 	bool mShowDatatypes;
-	QList<DatabaseColumn *> mColumns;
+	std::vector<DatabaseColumn *> mColumns;
 };
 
 #endif // CSV_ITEM_MODEL_H_INCLUDED

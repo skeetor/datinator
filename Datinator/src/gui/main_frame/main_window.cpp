@@ -12,6 +12,8 @@
 #include "gui/main_frame/main_window_gui.moc"
 #include "gui/main_frame/most_recent.h"
 
+#include "support/helper/string.h"
+
 #define CURRENT_VERSION "0.5.1"
 
 MainWindow::MainWindow(QWidget *oParent)
@@ -20,13 +22,13 @@ MainWindow::MainWindow(QWidget *oParent)
 	mGUI = new Ui::MainWindowGUI();
 	mGUI->setupUi(this);
 
-	setWindowTitle(QString("Datinator ")+CURRENT_VERSION+" (c) 2014 by Gerhard Gruber");
+	setWindowTitle(spt::string::toQt("Datinator " CURRENT_VERSION " (c) 2014 by Gerhard Gruber"));
 
 	mRecentSource = new MostRecent(mGUI->mRecentSourceMenu);
 	mRecentTarget = new MostRecent(mGUI->mRecentTargetMenu);
 	mRecentProfile = new MostRecent(mGUI->mRecentProfile);
 
-	QString p = QApplication::applicationDirPath();
+	auto p = QApplication::applicationDirPath();
 	p += "/res/Application.png";
 	QIcon i(p);
 	setWindowIcon(i);
@@ -48,7 +50,7 @@ MainWindow::~MainWindow(void)
 
 void MainWindow::store(QSettings &oPropertyfile)
 {
-	QString pref = "main_gui/";
+	StdString pref = "main_gui/";
 	mRestorable.store(oPropertyfile, pref);
 	//mRecentSource->store(oPropertyfile, pref);
 	//mRecentTarget->store(oPropertyfile, pref);
@@ -57,7 +59,7 @@ void MainWindow::store(QSettings &oPropertyfile)
 
 void MainWindow::restore(QSettings &oPropertyfile)
 {
-	QString pref = "main_gui/";
+	StdString pref = "main_gui/";
 	mRestorable.restore(oPropertyfile, pref);
 	//mRecentSource->restore(oPropertyfile, pref);
 	//mRecentTarget->restore(oPropertyfile, pref);

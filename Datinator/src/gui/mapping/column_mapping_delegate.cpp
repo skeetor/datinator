@@ -4,8 +4,6 @@
  *
  ******************************************************************************/
 
-#include <QtCore/QList>
-
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QPushButton>
 
@@ -17,11 +15,12 @@
 
 #include "gui/mapping/column_mapping_item.h"
 #include "support/db/dbcolumn.h"
+#include "support/helper/string.h"
 
 Q_DECLARE_METATYPE(DatabaseColumn *)
 Q_DECLARE_METATYPE(IManipulator *)
 
-ColumnMappingDelegate::ColumnMappingDelegate(QList<IManipulator *> oManipulators, ColumnMappingModel *oModel, ColumnMappingView *oView, QObject *oParent)
+ColumnMappingDelegate::ColumnMappingDelegate(std::vector<IManipulator *> oManipulators, ColumnMappingModel *oModel, ColumnMappingView *oView, QObject *oParent)
 : QStyledItemDelegate(oParent)
 {
 	UNUSED(oManipulators);
@@ -30,7 +29,7 @@ ColumnMappingDelegate::ColumnMappingDelegate(QList<IManipulator *> oManipulators
 	mModel = oModel;
 	mSourceDispatcher = NULL;
 	mTargetDispatcher = NULL;
-	mButtonList = new QList<ColumnMappingButton *>();
+	mButtonList = new std::vector<ColumnMappingButton *>();
 }
 
 ColumnMappingDelegate::~ColumnMappingDelegate()
@@ -39,7 +38,7 @@ ColumnMappingDelegate::~ColumnMappingDelegate()
 		mb->setButtonList(NULL);
 }
 
-void ColumnMappingDelegate::setDispatcher(Dispatcher<QList<DatabaseColumn *> *> *oSource, Dispatcher<QList<DatabaseColumn *> *> *oTarget)
+void ColumnMappingDelegate::setDispatcher(Dispatcher<std::vector<DatabaseColumn *> *> *oSource, Dispatcher<std::vector<DatabaseColumn *> *> *oTarget)
 {
 	mSourceDispatcher = oSource;
 	mTargetDispatcher = oTarget;
@@ -63,8 +62,8 @@ QWidget *ColumnMappingDelegate::createEditor(QWidget *oParent, const QStyleOptio
 		ColumnMappingCombobox *cb = new ColumnMappingCombobox(oParent);
 		editor = cb;
 		cb->setAutoFillBackground(true);
-		const QList<DatabaseColumn *> *l;
-		Dispatcher<QList<DatabaseColumn *> *> *dispatcher;
+		const std::vector<DatabaseColumn *> *l;
+		Dispatcher<std::vector<DatabaseColumn *> *> *dispatcher;
 		if(c == Columns::SOURCE)
 		{
 			l = &mSourceColumns;
@@ -84,7 +83,7 @@ QWidget *ColumnMappingDelegate::createEditor(QWidget *oParent, const QStyleOptio
 	{
 		int r = oIndex.row();
 		ColumnMappingButton *b = new ColumnMappingButton(mButtonList, mModel, oParent);
-		mButtonList->insert(r, b);
+		mButtonList->insert(mButtonList->begin()+r, b);
 		b->setToolTip("Click to configure manipulators");
 		editor = b;
 	}
@@ -105,7 +104,7 @@ void ColumnMappingDelegate::setEditorData(QWidget *oEditor, const QModelIndex &o
 		ColumnMappingItem *mi = m->getRowItem(oIndex.row());
 		if(mi->getManipulators().size() > 0)
 		{
-			QString *s = new QString();
+			StdString *s = new StdString();
 			if(mi->getManipulators().size() > 0)
 			{
 				// Only the first item keeps the testvalue.
@@ -115,7 +114,7 @@ void ColumnMappingDelegate::setEditorData(QWidget *oEditor, const QModelIndex &o
 
 			if(s)
 			{
-				b->setText(*s);
+				b->setText(spt::string::toQt(*s));
 				delete s;
 			}
 			else
@@ -127,7 +126,7 @@ void ColumnMappingDelegate::setEditorData(QWidget *oEditor, const QModelIndex &o
 	else
 	{
 		QComboBox *cb = qobject_cast<QComboBox *>(oEditor);
-		QString currentText = oIndex.data(Qt::EditRole).toString();
+		auto currentText = oIndex.data(Qt::EditRole).toString();
   		int cbIndex = cb->findText(currentText);
 		if(cbIndex == -1)
 			cbIndex = 0;
@@ -154,12 +153,12 @@ void ColumnMappingDelegate::setModelData(QWidget *oEditor, QAbstractItemModel *o
 		QStyledItemDelegate::setModelData(oEditor, oModel, oIndex);
 }
 
-void ColumnMappingDelegate::setSourceColumns(QList<DatabaseColumn *> const &oColumns)
+void ColumnMappingDelegate::setSourceColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mSourceColumns = oColumns;
 }
 
-void ColumnMappingDelegate::setTargetColumns(QList<DatabaseColumn *> const &oColumns)
+void ColumnMappingDelegate::setTargetColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mTargetColumns = oColumns;
 }

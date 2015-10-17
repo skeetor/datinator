@@ -61,7 +61,7 @@ extern "C"
 #endif
 
 #ifdef BUILD_CSV_DLL
-CSV_DLL_EXPORT QList<PluginInfo> APIENTRY getPluginInfo(void);
+CSV_DLL_EXPORT std::vector<PluginInfo> APIENTRY getPluginInfo(void);
 #endif // BUILD_CSV_STATIC
 
 #ifdef __cplusplus

@@ -20,10 +20,10 @@ public:
 	SQLiteReader(QWidget *oMainWindow);
 	virtual ~SQLiteReader(void);
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
-	int read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow) override;
+	int read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow) override;
 	int count(void) override;
 
 protected:

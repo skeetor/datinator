@@ -16,11 +16,11 @@ ReaderListener::~ReaderListener()
 {
 }
 
-void ReaderListener::handleNotification(Dispatcher<QList<DatabaseColumn *> *> *oSource, QList<DatabaseColumn *> *oColumns)
+void ReaderListener::handleNotification(Dispatcher<std::vector<DatabaseColumn *> *> *oSource, std::vector<DatabaseColumn *> *oColumns)
 {
 	UNUSED(oSource);
 
-	QList<DatabaseColumn *> ql;
+	std::vector<DatabaseColumn *> ql;
 	if(oColumns == NULL)
 		oColumns = &ql;
 

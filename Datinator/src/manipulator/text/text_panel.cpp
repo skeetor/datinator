@@ -11,6 +11,7 @@
 #include "manipulator/text/text_panel_gui.moc"
 #include "manipulator/text/text.h"
 
+#include "support/helper/string.h"
 
 // First character has to start with a dash or 1-9. After followsPOSITION_LIST_REG_EX
 // either a comma or another number.
@@ -98,14 +99,14 @@ TextManipulatorPanel::~TextManipulatorPanel(void)
 {
 }
 
-QString TextManipulatorPanel::getText(void) const
+StdString TextManipulatorPanel::getText(void) const
 {
-	return mGUI->mTextTxt->text();
+	return spt::string::fromQt(mGUI->mTextTxt->text());
 }
 
-void TextManipulatorPanel::setText(QString const &oText)
+void TextManipulatorPanel::setText(StdString const &oText)
 {
-	mGUI->mTextTxt->setText(oText);
+	mGUI->mTextTxt->setText(spt::string::toQt(oText));
 }
 
 void TextManipulatorPanel::setAction(TextManipulatorAction nAction)
@@ -121,11 +122,11 @@ TextManipulatorAction TextManipulatorPanel::getAction(void) const
 
 void TextManipulatorPanel::setLength(int nMinLength, int nMaxLength, int nFillCharacter, bool bFillAtEnd)
 {
-	QString fc;
+	StdString fc;
 	if(nFillCharacter)
 		fc += nFillCharacter;
 
-	mGUI->mFillCharacterTxt->setText(fc);
+	mGUI->mFillCharacterTxt->setText(spt::string::toQt(fc));
 	mGUI->mMinLengthSpin->setValue(nMinLength);
 	mGUI->mMaxLengthSpin->setValue(nMaxLength);
 	mGUI->mFillAtEndBox->setChecked(bFillAtEnd);
@@ -143,9 +144,9 @@ int TextManipulatorPanel::getMaxLength(void) const
 
 int TextManipulatorPanel::getFillCharacter(void) const
 {
-	QString s = mGUI->mFillCharacterTxt->text();
+	StdString s = spt::string::fromQt(mGUI->mFillCharacterTxt->text());
 	if(s.length() > 0)
-		return s.at(0).unicode();
+		return s[0];
 
 	return 0;
 }
@@ -155,67 +156,67 @@ bool TextManipulatorPanel::getFillAtEnd(void) const
 	return mGUI->mFillAtEndBox->isChecked();
 }
 
-bool TextManipulatorPanel::setPositions(QList<QPair<int, int>> const &oPositionList)
+bool TextManipulatorPanel::setPositions(std::vector<std::pair<int, int>> const &oPositionList)
 {
 	UNUSED(oPositionList);
 
 	return false;
 }
 
-bool TextManipulatorPanel::getPositions(QList<QPair<int, int>> &oPositionList) const
+bool TextManipulatorPanel::getPositions(std::vector<std::pair<int, int>> &oPositionList) const
 {
 	return toPositionList(getPositionText(), oPositionList);
 }
 
-bool TextManipulatorPanel::setPositionText(QString const &oPositionString)
+bool TextManipulatorPanel::setPositionText(StdString const &oPositionString)
 {
 	if(oPositionString.length() > 0)
 	{
-		QList<QPair<int, int>>l;
+		std::vector<std::pair<int, int>>l;
 		if(!toPositionList(oPositionString, l))
 			return false;
 	}
 
-	mGUI->mPositionTxt->setText(oPositionString);
+	mGUI->mPositionTxt->setText(spt::string::toQt(oPositionString));
 	return true;
 }
 
-QString TextManipulatorPanel::getPositionText(void) const
+StdString TextManipulatorPanel::getPositionText(void) const
 {
-	return mGUI->mPositionTxt->text();
+	return spt::string::fromQt(mGUI->mPositionTxt->text());
 }
 
-bool toPositionText(QList<QPair<int, int>> const &oPositionList, QString &oPositionText)
+bool toPositionText(std::vector<std::pair<int, int>> const &oPositionList, StdString &oPositionText)
 {
 	oPositionText = "";
 
 	if(oPositionList.size() == 0)
 		return true;
 
-	for(QPair<int, int> const &p : oPositionList)
+	for(std::pair<int, int> const &p : oPositionList)
 	{
 		if(p.first < 1 && p.second < 1)
 			return false;
 
-		QPair<int, int> pos = p;
+		std::pair<int, int> pos = p;
 		if(pos.first == pos.second)
 			pos.second = 0;
 
 		if(pos.first > 0)
-			oPositionText += QString::number(pos.first);
+			oPositionText += spt::string::toString(pos.first);
 
 		if(pos.second != 0)
 		{
 			oPositionText += '-';
 			if(pos.second != -1)
-				oPositionText += QString::number(pos.second);
+				oPositionText += spt::string::toString(pos.second);
 		}
 	}
 
 	return true;
 }
 
-bool toPositionList(QString const &oPositionString, QList<QPair<int, int>> &oPositionList)
+bool toPositionList(StdString const &oPositionString, std::vector<std::pair<int, int>> &oPositionList)
 {
 	oPositionList.clear();
 
@@ -225,19 +226,19 @@ bool toPositionList(QString const &oPositionString, QList<QPair<int, int>> &oPos
 	if(oPositionString.length() == 0)
 		return true;
 
-	QString s = oPositionString;
+	StdString s = oPositionString;
 	if(s[s.length()-1] != ',')
 		s += ',';
 
-	QPair<int, int> p;
+	std::pair<int, int> p;
 	bool range = false;
 	int n = 0;
 	int chars = 0;			// length of the number
 	p.first = 0;
 	p.second = 0;
-    for(int i = 0; i < s.length(); i++)
+    for(size_t i = 0; i < s.length(); i++)
 	{
-		int c = s.at(i).toLatin1();
+		int c = s[i];
 		if(c == '-')
 		{
 			if(range)
@@ -279,7 +280,7 @@ bool toPositionList(QString const &oPositionString, QList<QPair<int, int>> &oPos
 				p.second = x;
 			}
 
-			oPositionList.append(p);
+			oPositionList.push_back(p);
 
 			n = 0;
 			p.first = 0;
@@ -296,9 +297,9 @@ bool toPositionList(QString const &oPositionString, QList<QPair<int, int>> &oPos
 	return true;
 }
 
-void TextManipulatorPanel::setPattern(QString const &oPattern, bool bInvertSelection, bool bRegularExpression)
+void TextManipulatorPanel::setPattern(StdString const &oPattern, bool bInvertSelection, bool bRegularExpression)
 {
-	mGUI->mPatternTxt->setText(oPattern);
+	mGUI->mPatternTxt->setText(spt::string::toQt(oPattern));
 	mGUI->mRegularExpressionBox->setChecked(bRegularExpression);
 	mGUI->mInvertBox->setChecked(bInvertSelection);
 }
@@ -313,12 +314,12 @@ bool TextManipulatorPanel::getRegularExpression(void) const
 	return mGUI->mRegularExpressionBox->isChecked();
 }
 
-QString TextManipulatorPanel::getPattern(void) const
+StdString TextManipulatorPanel::getPattern(void) const
 {
-	return mGUI->mPatternTxt->text();
+	return spt::string::fromQt(mGUI->mPatternTxt->text());
 }
 
-void TextManipulatorPanel::onTextChanged(QString oText)
+void TextManipulatorPanel::onTextChanged(StdString oText)
 {
 	UNUSED(oText);
 

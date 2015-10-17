@@ -15,8 +15,9 @@
 #include <QtCore/QBuffer>
 
 #include "support_qt/helper/gui_helper.h"
+#include "support/helper/string.h"
 
-void supportlib::gui::setEditable(QLineEdit *oEdit, bool bEditable)
+void spt::gui::setEditable(QLineEdit *oEdit, bool bEditable)
 {
 	QPalette p;
 	oEdit->setReadOnly(!bEditable);
@@ -31,16 +32,16 @@ void supportlib::gui::setEditable(QLineEdit *oEdit, bool bEditable)
 	}
 }
 
-void supportlib::gui::setButtonIcon(QString const &oIconPath, QPushButton *oButton, QString const &oToolTip)
+void spt::gui::setButtonIcon(spt::string::string_t const &oIconPath, QPushButton *oButton, spt::string::string_t const &oToolTip)
 {
-	QPixmap pixmap(oIconPath);
+	QPixmap pixmap(spt::string::toQt(oIconPath));
 	QIcon ButtonIcon(pixmap);
 	oButton->setIcon(ButtonIcon);
 	oButton->setIconSize(pixmap.rect().size());
-	oButton->setToolTip(oToolTip);
+	oButton->setToolTip(spt::string::toQt(oToolTip));
 }
 
-void supportlib::gui::setButtonIcon(unsigned char const *oImageData, int nBufferLen, QPushButton *oButton, QString const &oToolTip)
+void spt::gui::setButtonIcon(unsigned char const *oImageData, int nBufferLen, QPushButton *oButton, spt::string::string_t const &oToolTip)
 {
  	QImage img;
  	img.loadFromData(oImageData, nBufferLen);
@@ -48,10 +49,10 @@ void supportlib::gui::setButtonIcon(unsigned char const *oImageData, int nBuffer
 	QIcon icon(pixmap);
 	oButton->setIcon(icon);
 	oButton->setIconSize(pixmap.rect().size());
-	oButton->setToolTip(oToolTip);
+	oButton->setToolTip(spt::string::toQt(oToolTip));
 }
 
-void supportlib::gui::center(QWidget *oParent, QWidget *oChild, bool bKeepWidth, bool bKeepHeight)
+void spt::gui::center(QWidget *oParent, QWidget *oChild, bool bKeepWidth, bool bKeepHeight)
 {
 	int pw = oParent->width();
 	int ph = oParent->height();

@@ -13,17 +13,16 @@
 #include "support_qt/helper/gui_helper.h"
 #include "support_qt/logging/logging_dialog_box_gui.moc"
 #include "plugin/gui/progress.h"
-
-#include <iostream>
+#include "support/helper/string.h"
 
 // The application will share a single progress dialog. Doesn't really make sense
 // to have individual ones.
 QWidget *gMainWindow = NULL;
 QProgressDialog *gProgressDlg = NULL;
 static int gProgressReference = 0;
-supportlib::logging::Logging gLogging;
+spt::logging::Logging gLogging;
 
-Progress::Progress(QString const &oTitle, QString const &oText)
+Progress::Progress(StdString const &oTitle, StdString const &oText)
 {
 	showProgress(oText, oTitle);
 }
@@ -65,12 +64,12 @@ void Progress::showMessages(void)
 	}
 }
 
-void Progress::addMessage(supportlib::logging::LoggingItem::LogType nType, QString const &oUnit, QString const &oMessage, unsigned int nTimestamp, QString const &oFile, int nLine, QString const &oMethod)
+void Progress::addMessage(spt::logging::LoggingItem::LogType nType, StdString const &oUnit, StdString const &oMessage, unsigned int nTimestamp, StdString const &oFile, int nLine, StdString const &oMethod)
 {
 	gLogging.addEntry(oMessage, oUnit, nType, nTimestamp, oFile, nLine, oMethod);
 }
 
-void Progress::showProgress(QString const &oText, QString const &oTitle)
+void Progress::showProgress(StdString const &oText, StdString const &oTitle)
 {
 	gProgressReference++;
 
@@ -81,15 +80,15 @@ void Progress::showProgress(QString const &oText, QString const &oTitle)
 
 	    gProgressDlg->reset();
 		gProgressDlg->setWindowModality(Qt::WindowModal);
-		supportlib::gui::center(getMainWindow(), gProgressDlg, false, true);
-		gProgressDlg->setWindowTitle(oTitle);
+		spt::gui::center(getMainWindow(), gProgressDlg, false, true);
+		gProgressDlg->setWindowTitle(spt::string::toQt(oTitle));
 		gProgressDlg->show();
         gProgressDlg->setMaximum(1);
         gProgressDlg->setValue(0);
 		qApp->processEvents();
 	}
 
-	gProgressDlg->setLabelText(oText);
+	gProgressDlg->setLabelText(spt::string::toQt(oText));
 }
 
 void Progress::closeProgress(void)

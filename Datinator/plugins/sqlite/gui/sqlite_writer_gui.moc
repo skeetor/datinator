@@ -9,6 +9,7 @@
 
 #include <QtWidgets/QFrame>
 
+#include "datinator_types.h"
 #include "sqlite/gui/sqlite_writer_gui.h"
 
 class QSettings;
@@ -25,11 +26,11 @@ public:
 	SQLiteWriterPanel(QWidget *oParent = NULL);
 	virtual ~SQLiteWriterPanel(void);
 
-	virtual void store(QSettings &oPropertyFile, QString const &oPrefix);
-	virtual void restore(QSettings &oPropertyFile, QString const &oPrefix);
+	virtual void store(QSettings &oPropertyFile, StdString const &oPrefix);
+	virtual void restore(QSettings &oPropertyFile, StdString const &oPrefix);
 
-	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
-	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+	virtual bool loadProfile(QSettings &oProfile, StdString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, StdString const &oKey);
 
 	// Return true if the table should be created if it doesn't exist.
 	bool getCreateTable(void);
@@ -44,8 +45,8 @@ public:
 	bool getRecreateTable(void);
 	void setRecreateTable(bool bRecreateTable);
 
-	QString getPath(void);
-	void setPath(QString const &oPath);
+	StdString getPath(void);
+	void setPath(StdString const &oPath);
 
 	bool getExportSQL(void);
 	void setExportSQL(bool bExportSQL);

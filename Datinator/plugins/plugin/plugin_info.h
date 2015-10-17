@@ -13,9 +13,9 @@
 #ifndef PLUGIN_INFO_H_INCLUDED
 #define PLUGIN_INFO_H_INCLUDED
 
-#include <QtCore/QString>
 #include <QtCore/QFunctionPointer>
 
+#include "datinator_types.h"
 #include "plugin_dll_api.h"
 
 class IDataContainer;
@@ -36,25 +36,25 @@ class PLUGIN_DLL_EXPORT PluginInfo
 {
 public:
 	PluginInfo(void);
-	PluginInfo(QString const &oPath);
+	PluginInfo(StdString const &oPath);
 	PluginInfo(PluginInfo const &oSource);
 	virtual ~PluginInfo(void);
 
 	virtual void copy(PluginInfo const &oSource);
 	virtual PluginInfo &operator=(PluginInfo const &oSource);
 
-	inline QString getPath(void) const
+	inline StdString getPath(void) const
 	{
 		return mPath;
 	}
-	inline void setPath(QString const &oPath)
+	inline void setPath(StdString const &oPath)
 	{
 		mPath = oPath;
 	}
 
 	inline void setUUID(const char *pUUID) { mUUID = pUUID; };
 	inline const char *getUUID(void) const { return mUUID; };
-	inline QString getName(void) const
+	inline StdString getName(void) const
 	{
 		return mName;
 	};
@@ -90,8 +90,8 @@ protected:
 
 private:
 	const char *mUUID;
-	QString mPath;
-	QString mName;
+	StdString mPath;
+	StdString mName;
 	bool mIsReader;
 	IDataContainer *mContainer;
 	CreatePtr mCreate;
@@ -103,7 +103,7 @@ class PLUGIN_DLL_EXPORT PluginInfoReader : virtual public PluginInfo
 {
 public:
 	PluginInfoReader(void) : PluginInfo() { setReader(true); };
-	PluginInfoReader(QString const &oPath) : PluginInfo(oPath) { setReader(true); };
+	PluginInfoReader(StdString const &oPath) : PluginInfo(oPath) { setReader(true); };
 	PluginInfoReader(PluginInfoReader const &oSource) : PluginInfo(oSource) {};
 	PluginInfoReader(PluginInfo const &oSource) : PluginInfo(oSource) {};
 	~PluginInfoReader(void) {};
@@ -142,7 +142,7 @@ class PLUGIN_DLL_EXPORT PluginInfoWriter : virtual public PluginInfo
 {
 public:
 	PluginInfoWriter(void) : PluginInfo() {setReader(false);};
-	PluginInfoWriter(QString const &oPath) : PluginInfo(oPath) {setReader(false);};
+	PluginInfoWriter(StdString const &oPath) : PluginInfo(oPath) {setReader(false);};
 	PluginInfoWriter(PluginInfoWriter const &oSource) : PluginInfo(oSource) {};
 	PluginInfoWriter(PluginInfo const &oSource) : PluginInfo(oSource) {};
 	~PluginInfoWriter(void) {};
@@ -177,7 +177,7 @@ private:
 	typedef PluginInfo super;
 };
 
-extern "C" typedef QList<PluginInfo> APIENTRY (*getPluginListPtr)(void);
+extern "C" typedef std::vector<PluginInfo> APIENTRY (*getPluginListPtr)(void);
 bool registerStaticPlugin(getPluginListPtr pPluginLister);
 
 #endif // PLUGIN_MANAGER_H_INCLUDED

@@ -7,7 +7,7 @@
 #ifndef COLUMN_MAPPING_ITEM_H
 #define COLUMN_MAPPING_ITEM_H
 
-#include <QtCore/QList>
+#include <vector>
 
 #include "datinator_types.h"
 
@@ -39,8 +39,8 @@ public:
 	DatabaseColumn *getTargetColumn(void) const;
 	void setTargetColumn(DatabaseColumn *oColumn);
 
-	QList<IManipulator *> const &getManipulators(void) const;
-	void setManipulators(QList<IManipulator *> const &oManipulators);
+	std::vector<IManipulator *> const &getManipulators(void) const;
+	void setManipulators(std::vector<IManipulator *> const &oManipulators);
 	void clearManipulators(void);
 	void addManipulator(IManipulator *oManipulator);
 	void removeManipulator(IManipulator *oManipulator);
@@ -53,14 +53,14 @@ public:
 	/**
 	 * Apply the manipulation to the data.
 	 */
-	QString *format(QString *oValue, bool bPreview = false);
+	StdString *format(StdString *oValue, bool bPreview = false);
 
-	bool loadProfile(QSettings &oProfile, QString const &oKey, QList<DatabaseColumn *> &oColumns);
-	void saveProfile(QSettings &oProfile, QString const &oKey) const;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey, std::vector<DatabaseColumn *> &oColumns);
+	void saveProfile(QSettings &oProfile, StdString const &oKey) const;
 
 protected:
 	int hasManipulator(IManipulator *oManipulator);
-	void writeColumn(QSettings &oProfile, QString const &oKey, DatabaseColumn *oColumn, bool bWriteType) const;
+	void writeColumn(QSettings &oProfile, StdString const &oKey, DatabaseColumn *oColumn, bool bWriteType) const;
 
 private:
 	void init(void);
@@ -68,7 +68,7 @@ private:
 private:
 	DatabaseColumn *mSourceColumn;
 	DatabaseColumn *mTargetColumn;
-	QList<IManipulator *> mManipulators;
+	std::vector<IManipulator *> mManipulators;
 };
 
 #endif // COLUMN_MAPPING_ITEM_H

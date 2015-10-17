@@ -17,7 +17,7 @@ public:
 	ReaderBase(void);
 	virtual ~ReaderBase(void);
 
-	int read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow) override;
+	int read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow) override;
 	int count(void) override;
 };
 

@@ -8,10 +8,12 @@
 #include <QtCore/QVariant>
 #include <QtCore/QDateTime>
 
+#include "support/helper/string.h"
+
 #include "support_qt/logging/logging_item_model.h"
 #include "support/logging/logging.h"
 
-Q_DECLARE_METATYPE(supportlib::logging::LoggingItem)
+Q_DECLARE_METATYPE(spt::logging::LoggingItem)
 
 typedef enum
 {
@@ -26,11 +28,11 @@ typedef enum
 LoggingItemModel::LoggingItemModel(QObject *oParent)
 : QStandardItemModel(oParent)
 {
-	setHorizontalHeaderItem(LOG_TIMESTAMP, new QStandardItem(QString("Timestamp")));
-	setHorizontalHeaderItem(LOG_SEVERITY, new QStandardItem(QString("Severity")));
-	setHorizontalHeaderItem(LOG_UNIT, new QStandardItem(QString("Unit")));
-	setHorizontalHeaderItem(LOG_MESSAGE, new QStandardItem(QString("Message")));
-	setHorizontalHeaderItem(LOG_OBJECT, new QStandardItem(QString("Object")));
+	setHorizontalHeaderItem(LOG_TIMESTAMP, new QStandardItem("Timestamp"));
+	setHorizontalHeaderItem(LOG_SEVERITY, new QStandardItem("Severity"));
+	setHorizontalHeaderItem(LOG_UNIT, new QStandardItem("Unit"));
+	setHorizontalHeaderItem(LOG_MESSAGE, new QStandardItem("Message"));
+	setHorizontalHeaderItem(LOG_OBJECT, new QStandardItem("Object"));
 }
 
 LoggingItemModel::~LoggingItemModel(void)
@@ -63,41 +65,41 @@ bool LoggingItemModel::setData(QModelIndex const &oIndex, QVariant const &oValue
 	return false;
 }
 
-void LoggingItemModel::addItem(supportlib::logging::LoggingItem const &oItem)
+void LoggingItemModel::addItem(spt::logging::LoggingItem const &oItem)
 {
-	QList<supportlib::logging::LoggingItem> items;
-	items.append(oItem);
+	std::vector<spt::logging::LoggingItem> items;
+	items.push_back(oItem);
 	addItems(items);
 }
 
-void LoggingItemModel::setItems(QList<supportlib::logging::LoggingItem> const &oItems)
+void LoggingItemModel::setItems(std::vector<spt::logging::LoggingItem> const &oItems)
 {
 	clear();
 	addItems(oItems);
 }
 
-void LoggingItemModel::addItems(QList<supportlib::logging::LoggingItem> const &oItems)
+void LoggingItemModel::addItems(std::vector<spt::logging::LoggingItem> const &oItems)
 {
-	if(oItems.count() == 0)
+	if(oItems.size() == 0)
 		return;
 
 	int row = rowCount();
-	int n = row+oItems.count();
+	int n = row+oItems.size();
 	insertRows(row, n);
 
 	int columns = columnCount();
 
-	for(supportlib::logging::LoggingItem const &logitem : oItems)
+	for(spt::logging::LoggingItem const &logitem : oItems)
 	{
 		for(int col = 0; col < columns; col++)
 		{
 			QStandardItem *item = new QStandardItem();
-			QString t;
+			spt::string::string_t t;
 
 			switch(col)
 			{
 				case LOG_TIMESTAMP:
-					t = QDateTime::fromMSecsSinceEpoch(logitem.getTimestamp()).toString("yyyy.MM.dd hh:mm:ss.zzz");
+					t = spt::string::fromQt(QDateTime::fromMSecsSinceEpoch(logitem.getTimestamp()).toString("yyyy.MM.dd hh:mm:ss.zzz"));
 				break;
 
 				case LOG_SEVERITY:
@@ -113,11 +115,11 @@ void LoggingItemModel::addItems(QList<supportlib::logging::LoggingItem> const &o
 				break;
 
 				case LOG_OBJECT:
-					t = logitem.getFile() + "(" + QString::number(logitem.getLine()) + "):"+logitem.getMethod();
+					t = logitem.getFile() + "(" + spt::string::toString(logitem.getLine()) + "):"+logitem.getMethod();
 				break;
 			}
 
-			item->setText(t);
+			item->setText(spt::string::toQt(t));
 			setItem(row, col, item);
 		}
 		row++;

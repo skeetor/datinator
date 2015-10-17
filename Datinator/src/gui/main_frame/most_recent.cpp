@@ -7,6 +7,7 @@
 #include <QtWidgets/QMenu>
 
 #include "gui/main_frame/most_recent.h"
+#include "support/helper/string.h"
 
 Q_DECLARE_METATYPE(MostRecent::ActionItem)
 
@@ -32,33 +33,33 @@ void MostRecent::setMaxItems(int nMaxItems)
 		mMaxItems = MAX_DEFAULT;
 }
 
-int MostRecent::getMaxItems(void)
+size_t MostRecent::getMaxItems(void)
 {
 	return mMaxItems;
 }
 
-void MostRecent::addMenuItemListener(Listener<QString, QString, QString> *oListener)
+void MostRecent::addMenuItemListener(Listener<StdString, StdString, StdString> *oListener)
 {
-	Dispatcher<QString, QString, QString>::addListener(oListener);
+	Dispatcher<StdString, StdString, StdString>::addListener(oListener);
 }
 
-void MostRecent::removeMenuItemListener(Listener<QString, QString, QString> *oListener)
+void MostRecent::removeMenuItemListener(Listener<StdString, StdString, StdString> *oListener)
 {
-	Dispatcher<QString, QString, QString>::removeListener(oListener);
+	Dispatcher<StdString, StdString, StdString>::removeListener(oListener);
 }
 
-void MostRecent::setMenuReference(QString const &oMenuReference)
+void MostRecent::setMenuReference(StdString const &oMenuReference)
 {
 	mMenus[oMenuReference] = mParent;
-	mMenuItems[oMenuReference] = QList<QAction *>();
+	mMenuItems[oMenuReference] = std::vector<QAction *>();
 	connectAction(mParent);
 }
 
-void MostRecent::addMenu(QString const &oMenuReference, QString const &oText, QAction *oBefore)
+void MostRecent::addMenu(StdString const &oMenuReference, StdString const &oText, QAction *oBefore)
 {
-	QList<QAction *> l;
+	std::vector<QAction *> l;
 	QMenu *m = new QMenu(mParent);
-	m->setTitle(oText);
+	m->setTitle(spt::string::toQt(oText));
 	if(oBefore)
 		mParent->insertAction(oBefore, m->menuAction());
 	else
@@ -69,22 +70,22 @@ void MostRecent::addMenu(QString const &oMenuReference, QString const &oText, QA
 	mMenuItems[oMenuReference] = l;
 }
 
-void MostRecent::addItem(QString const &oMenuReference, QString const &oConnectString, QString const &oText)
+void MostRecent::addItem(StdString const &oMenuReference, StdString const &oConnectString, StdString const &oText)
 {
-	QString s = oConnectString;
+	auto s = spt::string::toQt(oConnectString);
 	if(s.length() == 0)
-		s = oText;
+		s = spt::string::toQt(oText);
 	else
 	{
 		if(oText.length() > 0)
-			s += ":"+oText;
+			s += ":"+spt::string::toQt(oText);
 	}
 
 	if(s.length() == 0)
 		return;
 
 	QMenu *m = mMenus[oMenuReference];
-	QList<QAction *> l = mMenuItems[oMenuReference];
+	std::vector<QAction *> l = mMenuItems[oMenuReference];
 
 	int i = -1;
 	int pos = -1;
@@ -114,7 +115,8 @@ void MostRecent::addItem(QString const &oMenuReference, QString const &oConnectS
 	QAction *a = NULL;
 	if(pos >= 0)
 	{
-		a = l.takeAt(pos);
+		a = l[pos];
+		l.erase(l.begin() + pos);
 		if(!found)
 		{
 			delete a;
@@ -138,26 +140,26 @@ void MostRecent::addItem(QString const &oMenuReference, QString const &oConnectS
 		m->addAction(a);
 	}
 
-	l.insert(0, a);
+	l.insert(l.begin(), a);
 	mMenuItems[oMenuReference] = l;
 	if(l.size() > 1)
 		updateMenu(m, l);
 }
 
-QList<MostRecent::ActionItem> MostRecent::getItems(QString const &oMenuReference)
+std::vector<MostRecent::ActionItem> MostRecent::getItems(StdString const &oMenuReference)
 {
-	QList<ActionItem> l;
+	std::vector<ActionItem> l;
 
 	for(QAction * const &a : mMenuItems[oMenuReference])
 	{
 		ActionItem ai = a->data().value<ActionItem>();
-		l.append(ai);
+		l.push_back(ai);
 	}
 
 	return l;
 }
 
-void MostRecent::updateMenu(QMenu *oMenu, QList<QAction *> const &oActions)
+void MostRecent::updateMenu(QMenu *oMenu, std::vector<QAction *> const &oActions)
 {
 	for(QAction * const &a : oActions)
 		oMenu->removeAction(a);
@@ -169,5 +171,5 @@ void MostRecent::updateMenu(QMenu *oMenu, QList<QAction *> const &oActions)
 void MostRecent::onItemTriggered(QAction *oAction)
 {
 	ActionItem ai = oAction->data().value<ActionItem>();
-	Dispatcher<QString, QString, QString>::notify(ai.mMenuReference, ai.mConnectString, ai.mText);
+	Dispatcher<StdString, StdString, StdString>::notify(ai.mMenuReference, ai.mConnectString, ai.mText);
 }

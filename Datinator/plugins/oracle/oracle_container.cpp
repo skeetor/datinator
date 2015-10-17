@@ -6,7 +6,9 @@
 
 #include <QtCore/QSettings>
 
-#include "support_qt/db/login_panel/login_panel_model.h"
+#include <support/helper/string.h>
+#include <support_qt/db/login_panel/login_panel_model.h>
+
 #include "oracle/oracle_container.h"
 #include "plugin/sql/gui/db_panel_gui.moc"
 
@@ -28,29 +30,29 @@ OracleContainer::~OracleContainer(void)
 	disconnect();
 }
 
-void OracleContainer::store(QSettings &oPropertyFile, QString const &oPrefix)
+void OracleContainer::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	super::store(oPropertyFile, oPrefix);
 	oPropertyFile.remove("oracle");
 	LoginPanelModel *model = createLoginPanel()->getModel();
-	QList<QString> logins = model->serialize();
+	std::vector<StdString> logins = model->serialize();
 	int i = 0;
-	for(QString const &login : logins)
+	for(StdString const &login : logins)
 	{
-		oPropertyFile.setValue("oracle/login_"+QString::number(i), login);
+		oPropertyFile.setValue(spt::string::toQt("oracle/login_"+spt::string::toString(i)), spt::string::toQt(login));
 		i++;
 	}
 }
 
-void OracleContainer::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void OracleContainer::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	super::restore(oPropertyFile, oPrefix);
 	LoginPanelModel *model = createLoginPanel()->getModel();
-	QList<QString> logins;
+	std::vector<StdString> logins;
 	int i = 0;
 	do
 	{
-		QString login = oPropertyFile.value("oracle/login_"+QString::number(i), "").toString();
+		StdString login = spt::string::fromQt(oPropertyFile.value(spt::string::toQt("oracle/login_"+spt::string::toString(i)), "").toString());
 		if(login.length() == 0)
 			break;
 		logins.push_back(login);
@@ -84,38 +86,38 @@ soci::backend_factory const &OracleContainer::sociFactory(void)
 	return soci::oracle;
 }
 
-QString OracleContainer::loginToConnectString(DatabaseLogin const &oLogin) const
+StdString OracleContainer::loginToConnectString(DatabaseLogin const &oLogin) const
 {
-	return supportlib::string::StringTToQtString(oLogin.getUser()+"@"+oLogin.getDatabase()+":"+oLogin.getHostname());
+	return oLogin.getUser()+"@"+oLogin.getDatabase()+":"+oLogin.getHostname();
 }
 
-DatabaseLogin OracleContainer::connectStringToLogin(QString const &oConnectString) const
+DatabaseLogin OracleContainer::connectStringToLogin(StdString const &oConnectString) const
 {
 	DatabaseLogin login;
 	if(oConnectString.length() == 0)
 		return login;
 
-	QString cs = oConnectString;
-	int pos = cs.indexOf('@');
-	if(pos != -1)
+	StdString cs = oConnectString;
+	size_t pos = cs.find('@');
+	if(pos != std::string::npos)
 	{
-		login.setUser(supportlib::string::QtStringToStringT(cs.mid(0, pos)));
-		cs = cs.mid(pos+1);
+		login.setUser(cs.substr(0, pos));
+		cs = cs.substr(pos+1);
 	}
 
-	pos = cs.indexOf(':');
-	if(pos != -1)
+	pos = cs.find(':');
+	if(pos != std::string::npos)
 	{
-		login.setDatabase(supportlib::string::QtStringToStringT(cs.mid(0, pos)));
-		cs = cs.mid(pos+1);
+		login.setDatabase(cs.substr(0, pos));
+		cs = cs.substr(pos+1);
 	}
 
-	login.setHost(supportlib::string::QtStringToStringT(cs));
+	login.setHost(cs);
 
 	return login;
 }
 
-StdString OracleContainer::sociConnectString(QString const &oContainerConnectString)
+StdString OracleContainer::sociConnectString(StdString const &oContainerConnectString)
 {
 	// If the conectstring is empty, we use the current login.
 	if(oContainerConnectString.length() > 0)
@@ -139,13 +141,13 @@ StdString OracleContainer::sociConnectString(QString const &oContainerConnectStr
 	return s;
 }
 
-QList<DatabaseColumn *> OracleContainer::readColumnsFromTable(QString const &oTablename)
+std::vector<DatabaseColumn *> OracleContainer::readColumnsFromTable(StdString const &oTablename)
 {
-	QList<DatabaseColumn *> columns;
+	std::vector<DatabaseColumn *> columns;
 	if(oTablename.length() == 0 || !getSession())
 		return columns;
 
-	StdString query = "select column_id, COLUMN_NAME, DATA_TYPE, NULLABLE from all_tab_columns where table_name = '"+supportlib::string::QtStringToStringT(oTablename)+"' order by column_id asc";
+	StdString query = "select column_id, COLUMN_NAME, DATA_TYPE, NULLABLE from all_tab_columns where table_name = '"+oTablename+"' order by column_id asc";
 
 	try
 	{
@@ -161,39 +163,39 @@ QList<DatabaseColumn *> OracleContainer::readColumnsFromTable(QString const &oTa
 			if(null_t.length() > 0)
 				null = null_t[0] != 'N';
 
-			supportlib::db::DataType type = supportlib::db::DataType::type_unknown;
+			spt::db::DataType type = spt::db::DataType::type_unknown;
 			if(type_t == "VARCHAR2")
-				type = supportlib::db::DataType::type_string;
+				type = spt::db::DataType::type_string;
 			else if(type_t == "NUMBER")
-				type = supportlib::db::DataType::type_integer;
+				type = spt::db::DataType::type_integer;
 			else if(type_t == "FLOAT")
-				type = supportlib::db::DataType::type_decimal;
+				type = spt::db::DataType::type_decimal;
 			else if(type_t == "DATE")
-				type = supportlib::db::DataType::type_datetime;
+				type = spt::db::DataType::type_datetime;
 			else if(type_t == "TIMESTAMP")
-				type = supportlib::db::DataType::type_datetime_long;
+				type = spt::db::DataType::type_datetime_long;
 
 			DatabaseColumn *col = new DatabaseColumn();
 			col->setPosition(++pos);
-			col->setName(supportlib::string::StringTToQtString(column));
+			col->setName(column);
 			col->setNullable(null);
 			col->setType(type);
-			columns.append(col);
+			columns.push_back(col);
 		}
 	}
 	catch(std::runtime_error const &e)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to load tables from ["+getConnectString()+"]");
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, query.c_str());
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to load tables from ["+getConnectString()+"]");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, query);
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 	}
 
 	return columns;
 }
 
-QList<QString> OracleContainer::loadTables(void)
+std::vector<StdString> OracleContainer::loadTables(void)
 {
-	QList<QString> tables;
+	std::vector<StdString> tables;
 	if(mLogin.getUser().size() > 0 && mLogin.getDatabase().size() > 0)
 	{
 		Progress prg("Loading tables ...");
@@ -206,7 +208,7 @@ QList<QString> OracleContainer::loadTables(void)
 
 		session << "select count(1) from all_tables", soci::into(i);
 		prg->setMaximum(prg->maximum()+i);
-		prg->setLabelText("Retrieving "+ QString::number(i)+" table name(s) ...");
+		prg->setLabelText(spt::string::toQt("Retrieving "+spt::string::toString(i)+" table name(s) ..."));
 		prg->setValue(prg->value()+1);
 
 		soci::rowset<soci::row> rs = (session.prepare << "select distinct table_name from all_tables order by table_name");
@@ -219,8 +221,8 @@ QList<QString> OracleContainer::loadTables(void)
 			prg->setValue(prg->value()+1);
 			if(!session.got_data())
 				continue;
-			QString tab = supportlib::string::StringTToQtString(row.get<StdString>(0));
-			tables.append(tab);
+			StdString tab = row.get<StdString>(0);
+			tables.push_back(tab);
 		}
 	}
 
@@ -229,7 +231,9 @@ QList<QString> OracleContainer::loadTables(void)
 
 void OracleContainer::handleNotification(Dispatcher<LoginEvent> *oSource, LoginEvent oEvent)
 {
-	QString connectstring = loginToConnectString(oEvent.getEvent());
+	UNUSED(oSource);
+
+	StdString connectstring = loginToConnectString(oEvent.getEvent());
 	Progress prg("Switching to database ... ["+connectstring + "]", "Connecting ...");
 	if(!oEvent.isActivated() || mLogin != oEvent.getEvent())
 	{
@@ -246,15 +250,15 @@ void OracleContainer::handleNotification(Dispatcher<LoginEvent> *oSource, LoginE
 	connect();
 }
 
-QString OracleContainer::limitQuery(QString const &oQuery, int nLimit) const
+StdString OracleContainer::limitQuery(StdString const &oQuery, int nLimit) const
 {
 	if(nLimit <= 0)
 		return oQuery;
 
-	return "select * from ("+oQuery+") where rownum <= " + QString::number(nLimit);
+	return "select * from ("+oQuery+") where rownum <= " + spt::string::toString(nLimit);
 }
 
-bool OracleContainer::loadProfile(QSettings &oProfile, QString const &oKey)
+bool OracleContainer::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!super::loadProfile(oProfile, oKey))
 		return false;
@@ -262,12 +266,12 @@ bool OracleContainer::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void OracleContainer::saveProfile(QSettings &oProfile, QString const &oKey)
+void OracleContainer::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	super::saveProfile(oProfile, oKey);
 }
 
-bool OracleContainer::connect(QString const &oConnectString)
+bool OracleContainer::connect(StdString const &oConnectString)
 {
 	if(!super::connect(oConnectString) || !getSession())
 		return false;

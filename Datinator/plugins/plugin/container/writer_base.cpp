@@ -4,8 +4,6 @@
  *
  ******************************************************************************/
 
-#include <QtCore/QString>
-
 #include "plugin/container/writer_base.h"
 
 WriterBase::WriterBase(void)
@@ -32,12 +30,12 @@ bool WriterBase::defaultTruncate(void) const
 	return true;
 }
 
-bool WriterBase::prepareOpen(QList<DatabaseColumn *> const &oColumns)
+bool WriterBase::prepareOpen(std::vector<DatabaseColumn *> const &oColumns)
 {
 	return prepareOpen(oColumns);
 }
 
-int WriterBase::write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow)
+int WriterBase::write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow)
 {
 	return write(oColumns, oRow);
 }

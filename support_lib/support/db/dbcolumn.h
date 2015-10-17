@@ -13,7 +13,7 @@
 #include "support/db/column_types.h"
 #include "support/db/type_helper.h"
 
-namespace supportlib
+namespace spt
 {
 namespace db
 {
@@ -242,6 +242,6 @@ private:
 };
 
 } // namespace db
-} // namespace supportlib
+} // namespace spt
 
 #endif // DBCOLUMN_H

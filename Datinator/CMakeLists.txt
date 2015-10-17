@@ -42,7 +42,7 @@ set (SUPPORT_INCLUDE_PATH "${SUPPORT_LIBRARY_BASE_PATH}" CACHE PATH "Path where 
 option (STATIC_BUILD "Build as a static version (default is shared)" OFF)
 option (UNICODE_BUILD "Build for UNICODE (default is off)" OFF)
 
-option (BUILD_ORACLE_PLUGIN "Build Oracle plugin" OFF)
+option (BUILD_ORACLE_PLUGIN "Build Oracle plugin" ON)
 option (BUILD_SQLITE3_PLUGIN "Build SQLite3 plugin" ON)
 option (BUILD_CSV_PLUGIN "Build CSV plugin" ON)
 
@@ -128,7 +128,6 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/plugins)
 
 include_directories(${SUPPORT_INCLUDE_PATH})
-include_directories(${SUPPORT_INCLUDE_PATH}/include)
 
 # will be filled by subsequent CMakeLists
 list(APPEND STATIC_LIBRARIES "")

@@ -7,23 +7,22 @@
 #ifndef CONTAINER_BASE_H_INCLUDED
 #define CONTAINER_BASE_H_INCLUDED
 
-#include <QtCore/QString>
-#include <QtCore/QList>
-#include <QtCore/QPair>
+#include <vector>
+#include <utility>
+
 #include <QtWidgets/QProgressDialog>
 
-#include "container/container_dll_api.h"
+#include "datinator_types.h"
 
 #include "idata_container.h"
 #include "support/db/dbcolumn.h"
 #include "support/patterns/observer.h"
 #include "support/logging/logging.h"
-#include "container/gui/datatype_string.h"
 
 class PLUGIN_DLL_EXPORT ContainerBase
 	: public virtual IDataContainer,
-	  public Dispatcher<QList<DatabaseColumn *> *>,	// Columns changed
-	  public Dispatcher<QString /* oConnectString */, QString /* oSelector */>		// Selector changed.
+	  public Dispatcher<std::vector<DatabaseColumn *> *>,	// Columns changed
+	  public Dispatcher<StdString /* oConnectString */, StdString /* oSelector */>		// Selector changed.
 {
 public:
 	ContainerBase(QWidget *oMainWindow);
@@ -34,50 +33,50 @@ public:
 	QWidget *getMainWindow(void);
 
 public: // IDataContainer
-	QString getContainername(void) override;
-	QString getContainerUUID(void) const override;
-	void addColumnListener(Listener<QList<DatabaseColumn *> *> *oListener) override;
-	void removeColumnListener(Listener<QList<DatabaseColumn *> *> *oListener) override;
-	void notifyColumnListeners(QList<DatabaseColumn *> *oColumns);
+	StdString getContainername(void) override;
+	StdString getContainerUUID(void) const override;
+	void addColumnListener(Listener<std::vector<DatabaseColumn *> *> *oListener) override;
+	void removeColumnListener(Listener<std::vector<DatabaseColumn *> *> *oListener) override;
+	void notifyColumnListeners(std::vector<DatabaseColumn *> *oColumns);
 
-	void addSelectorListener(Listener<QString, QString> *oListener) override;
-	void removeSelectorListener(Listener<QString, QString> *oListener) override;
-	void notifySelectorListeners(QString const &oConnectString, QString const &oSelector);
+	void addSelectorListener(Listener<StdString, StdString> *oListener) override;
+	void removeSelectorListener(Listener<StdString, StdString> *oListener) override;
+	void notifySelectorListeners(StdString const &oConnectString, StdString const &oSelector);
 
-	QList<DatabaseColumn *> getColumns(void) override;
+	std::vector<DatabaseColumn *> getColumns(void) override;
 
-	void setSelector(QString const &oId) override;
-	QString getSelector(void) override;
+	void setSelector(StdString const &oId) override;
+	StdString getSelector(void) override;
 
-	bool connect(QString const &oConnectString = "") override;
-	bool disconnect(QString const &oConnectString = "") override;
-	QString getConnectString(void) override;
+	bool connect(StdString const &oConnectString = "") override;
+	bool disconnect(StdString const &oConnectString = "") override;
+	StdString getConnectString(void) override;
 
 	bool begin(void) override;
 	void end(void) override;
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
 	// The container base saves/loads the connect string and the selector id.
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 
 protected:
 	virtual void releaseColumns(void);
-	virtual QList<DatabaseColumn *> loadColumns(void) = 0;
+	virtual std::vector<DatabaseColumn *> loadColumns(void) = 0;
 
-	virtual void setContainerUUID(QString const &oContainerId);
-	virtual void setContainername(QString const &oContainername);
-	void setConnectString(QString const &oConnectString);
+	virtual void setContainerUUID(StdString const &oContainerId);
+	virtual void setContainername(StdString const &oContainername);
+	void setConnectString(StdString const &oConnectString);
 
 private:
 	QWidget *mMainWindow;
-	QList<DatabaseColumn *> mColumns;
-	QString mContainerUUID;
-	QString mContainername;
-	QString mSelector;
-	QString mConnectString;
+	std::vector<DatabaseColumn *> mColumns;
+	StdString mContainerUUID;
+	StdString mContainername;
+	StdString mSelector;
+	StdString mConnectString;
 };
 
 #endif // CONTAINER_BASE_H_INCLUDED

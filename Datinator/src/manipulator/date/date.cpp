@@ -4,20 +4,25 @@
  *
  *******************************************************************************/
 
-#include <QtCore/QString>
 #include <QtCore/QSettings>
 
 #include "manipulator/date/date.h"
 #include "manipulator/date/date_panel_gui.moc"
 
-bool initFormats(void);
+#include "support/helper/string.h"
 
-QList<QString> gFormat;
-QList<QString> gFormatText;
+static bool initFormats(void);
+
+std::vector<StdString> gFormat;
+std::vector<StdString> gFormatText;
+
+
+namespace datinator_unused {
 bool gInitialized = initFormats();
+}
 
 // @static
-bool initFormats(void)
+static bool initFormats(void)
 {
 	if(gFormat.size() != 0)
 		return true;
@@ -28,36 +33,36 @@ bool initFormats(void)
 		{
 			case DateManipulator::DateFormat::DT_SHORT:
 			{
-				gFormat.append("yyyy.MM.dd");
-				gFormatText.append("yyyy.MM.dd");
+				gFormat.push_back("yyyy.MM.dd");
+				gFormatText.push_back("yyyy.MM.dd");
 				break;
 			}
 
 			case DateManipulator::DateFormat::DT_LONG:
 			{
-				gFormat.append("yyyy.MM.dd HH:mm:ss");
-				gFormatText.append("yyyy.MM.dd HH:mm:ss");
+				gFormat.push_back("yyyy.MM.dd HH:mm:ss");
+				gFormatText.push_back("yyyy.MM.dd HH:mm:ss");
 				break;
 			}
 
 			case DateManipulator::DateFormat::DT_MILI:
 			{
-				gFormat.append("yyyy.MM.dd HH:mm:ss.z");
-				gFormatText.append("yyyy.MM.dd HH:mm:ss.z");
+				gFormat.push_back("yyyy.MM.dd HH:mm:ss.z");
+				gFormatText.push_back("yyyy.MM.dd HH:mm:ss.z");
 				break;
 			}
 
 			case DateManipulator::DateFormat::DT_CUSTOM:
 			{
-				gFormat.append("");
-				gFormatText.append("Custom format (see help for details)");
+				gFormat.push_back("");
+				gFormatText.push_back("Custom format (see help for details)");
 				break;
 			}
 
 			case DateManipulator::DateFormat::DT_SYSDATE:
 			{
-				gFormat.append("");
-				gFormatText.append("System date");
+				gFormat.push_back("");
+				gFormatText.push_back("System date");
 				break;
 			}
 
@@ -69,20 +74,20 @@ bool initFormats(void)
 	return true;
 }
 
-QList<QString> const &DateManipulator::getFormats(void)
+std::vector<StdString> const &DateManipulator::getFormats(void)
 {
 	return gFormat;
 }
 
-QList<QString> const &DateManipulator::getFormatTexts(void)
+std::vector<StdString> const &DateManipulator::getFormatTexts(void)
 {
 	return gFormatText;
 }
 
 // @static
-QString DateManipulator::getFormat(DateManipulator::DateFormat nFormat)
+StdString DateManipulator::getFormat(DateManipulator::DateFormat nFormat)
 {
-	QString s;
+	StdString s;
 	if(nFormat >= DateManipulator::DateFormat::DT_SHORT && nFormat < DateManipulator::DateFormat::DT_MAX)
 		s = gFormat[nFormat];
 
@@ -111,7 +116,7 @@ bool DateManipulator::isValid(void) const
 	return true;
 }
 
-QString DateManipulator::getId(void)
+StdString DateManipulator::getId(void)
 {
 	return "41714980-046C-11E4-9191-0800200C9A66";
 }
@@ -148,12 +153,12 @@ void DateManipulator::copy(DateManipulator const &oSource)
 	setValues();
 }
 
-QString DateManipulator::getName(void)
+StdString DateManipulator::getName(void)
 {
 	return "Date format";
 }
 
-QString DateManipulator::getDescription(void)
+StdString DateManipulator::getDescription(void)
 {
 	return "Returns a date value";
 }
@@ -192,22 +197,22 @@ void DateManipulator::setValues(void)
 	mPanel->setMode(getMode());
 }
 
-QString DateManipulator::getInputFormat(void) const
+StdString DateManipulator::getInputFormat(void) const
 {
 	return mInputFormat;
 }
 
-void DateManipulator::setInputFormat(QString const &oFormat)
+void DateManipulator::setInputFormat(StdString const &oFormat)
 {
 	mInputFormat = oFormat;
 }
 
-QString DateManipulator::getOutputFormat(void) const
+StdString DateManipulator::getOutputFormat(void) const
 {
 	return mOutputFormat;
 }
 
-void DateManipulator::setOutputFormat(QString const &oFormat)
+void DateManipulator::setOutputFormat(StdString const &oFormat)
 {
 	mOutputFormat = oFormat;
 }
@@ -258,7 +263,7 @@ bool DateManipulator::isConfigured(void)
 	return true;
 }
 
-QString DateManipulator::createString(QString const &oInputDate)
+StdString DateManipulator::createString(StdString const &oInputDate)
 {
 	QDateTime t;
 
@@ -271,28 +276,28 @@ QString DateManipulator::createString(QString const &oInputDate)
 	}
 	else
 	{
-		t = QDateTime::fromString(oInputDate, getInputFormat());
+		t = QDateTime::fromString(spt::string::toQt(oInputDate), spt::string::toQt(getInputFormat()));
 
 		setValid(t.isValid());
 		if(!isValid())
 			setError("Invalid date format: Input=["+oInputDate+"] Output=["+getOutputFormat()+"]");
 	}
 
-	return t.toString(getOutputFormat());
+	return spt::string::fromQt(t.toString(spt::string::toQt(getOutputFormat())));
 }
 
 /**
  * If the input string has some value, it is only used
  * if no Text is specified by the user. If this is the case
  */
-QString *DateManipulator::format(QString *oValue, bool bPreview)
+StdString *DateManipulator::format(StdString *oValue, bool bPreview)
 {
-	QString v;
+	StdString v;
 
 	if(bPreview)
 	{
 		QDateTime t = QDateTime::currentDateTime();
-		v = t.toString(getInputFormat());
+		v = spt::string::fromQt(t.toString(spt::string::toQt(getInputFormat())));
 	}
 	else
 	{
@@ -311,28 +316,30 @@ void DateManipulator::prepare(void)
 	mDateTime = QDateTime::currentDateTime();
 }
 
-bool DateManipulator::loadProfile(QSettings &oProfile, QString const &oKey)
+bool DateManipulator::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!Manipulator::loadProfile(oProfile, oKey))
 		return false;
+	auto key = spt::string::toQt(oKey);
 
-	setSysdate(oProfile.value(oKey+"_sysdate", "false").toBool());
-	setSysdateStart(oProfile.value(oKey+"_sysdate_start", "false").toBool());
-	setInputFormat(oProfile.value(oKey+"_input_format", "yyyy.MM.dd").toString());
-	setOutputFormat(oProfile.value(oKey+"_output_format", "yyyy.MM.dd").toString());
+	setSysdate(oProfile.value(key+"_sysdate", "false").toBool());
+	setSysdateStart(oProfile.value(key+"_sysdate_start", "false").toBool());
+	setInputFormat(spt::string::fromQt(oProfile.value(key+"_input_format", "yyyy.MM.dd").toString()));
+	setOutputFormat(spt::string::fromQt(oProfile.value(key+"_output_format", "yyyy.MM.dd").toString()));
 
 	getConfigurationPanel(NULL);
 	setValues();
 	return true;
 }
 
-void DateManipulator::saveProfile(QSettings &oProfile, QString const &oKey)
+void DateManipulator::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	Manipulator::saveProfile(oProfile, oKey);
+	auto key = spt::string::toQt(oKey);
 
 	readValues();
-	oProfile.setValue(oKey+"_sysdate", isSysdate());
-	oProfile.setValue(oKey+"_sysdate_start", isSysdateStart());
-	oProfile.setValue(oKey+"_input_format", getInputFormat());
-	oProfile.setValue(oKey+"_output_format", getOutputFormat());
+	oProfile.setValue(key+"_sysdate", isSysdate());
+	oProfile.setValue(key+"_sysdate_start", isSysdateStart());
+	oProfile.setValue(key+"_input_format", spt::string::toQt(getInputFormat()));
+	oProfile.setValue(key+"_output_format", spt::string::toQt(getOutputFormat()));
 }

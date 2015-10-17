@@ -34,9 +34,9 @@ public:
 	 */
 	virtual void setTruncateMode(bool bTruncate = true) = 0;
 
-	virtual bool prepareOpen(QList<DatabaseColumn *> const &oColumns) = 0;
+	virtual bool prepareOpen(std::vector<DatabaseColumn *> const &oColumns) = 0;
 
-	virtual int write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow) = 0;
+	virtual int write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow) = 0;
 	virtual void commit(void) = 0;
 	virtual void rollback(void) = 0;
 };

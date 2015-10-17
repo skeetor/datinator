@@ -7,6 +7,8 @@
 #include <QtWidgets/QMessageBox>
 #include <QtCore/QSettings>
 
+#include "support/helper/string.h"
+
 #include "plugin/container/container_base.h"
 #include "support_qt/helper/gui_helper.h"
 #include "support_qt/logging/logging_dialog_box_gui.moc"
@@ -36,25 +38,25 @@ QWidget *ContainerBase::getMainWindow(void)
 	return mMainWindow;
 }
 
-void ContainerBase::store(QSettings &oPropertyFile, QString const &oPrefix)
+void ContainerBase::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	UNUSED(oPropertyFile);
 	UNUSED(oPrefix);
 }
 
-void ContainerBase::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void ContainerBase::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	UNUSED(oPropertyFile);
 	UNUSED(oPrefix);
 }
 
-bool ContainerBase::connect(QString const &oConnectString)
+bool ContainerBase::connect(StdString const &oConnectString)
 {
 	mConnectString = oConnectString;
 	return true;
 }
 
-bool ContainerBase::disconnect(QString const &oConnectString)
+bool ContainerBase::disconnect(StdString const &oConnectString)
 {
 	UNUSED(oConnectString);
 
@@ -70,34 +72,34 @@ void ContainerBase::end(void)
 {
 }
 
-QString ContainerBase::getConnectString(void)
+StdString ContainerBase::getConnectString(void)
 {
 	return mConnectString;
 }
 
-void ContainerBase::setConnectString(QString const &oConnectString)
+void ContainerBase::setConnectString(StdString const &oConnectString)
 {
 	mConnectString = oConnectString;
 }
 
-QString ContainerBase::getSelector(void)
+StdString ContainerBase::getSelector(void)
 {
 	return mSelector;
 }
 
-void ContainerBase::setSelector(QString const &oId)
+void ContainerBase::setSelector(StdString const &oId)
 {
 	releaseColumns();
 	mSelector = oId;
 	Progress prg("Refresh columns");
 	prg->setMaximum(prg->maximum()+1);
-	QList<DatabaseColumn *> columns = getColumns();
+	std::vector<DatabaseColumn *> columns = getColumns();
 	prg->setValue(prg->value()+1);
 	notifyColumnListeners(&columns);
 	notifySelectorListeners(getConnectString(), oId);
 }
 
-QList<DatabaseColumn *> ContainerBase::getColumns(void)
+std::vector<DatabaseColumn *> ContainerBase::getColumns(void)
 {
 	if(mColumns.size() == 0)
 		mColumns = loadColumns();
@@ -113,66 +115,68 @@ void ContainerBase::releaseColumns(void)
 	mColumns.clear();
 }
 
-void ContainerBase::addSelectorListener(Listener<QString, QString> *oListener)
+void ContainerBase::addSelectorListener(Listener<StdString, StdString> *oListener)
 {
-	Dispatcher<QString, QString>::addListener(oListener);
+	Dispatcher<StdString, StdString>::addListener(oListener);
 }
 
-void ContainerBase::removeSelectorListener(Listener<QString, QString> *oListener)
+void ContainerBase::removeSelectorListener(Listener<StdString, StdString> *oListener)
 {
-	Dispatcher<QString, QString>::removeListener(oListener);
+	Dispatcher<StdString, StdString>::removeListener(oListener);
 }
 
-void ContainerBase::notifySelectorListeners(QString const &oConnectString, QString const &oSelector)
+void ContainerBase::notifySelectorListeners(StdString const &oConnectString, StdString const &oSelector)
 {
-	Dispatcher<QString, QString>::notify(oConnectString, oSelector);
+	Dispatcher<StdString, StdString>::notify(oConnectString, oSelector);
 }
 
-void ContainerBase::addColumnListener(Listener<QList<DatabaseColumn *> *> *oListener)
+void ContainerBase::addColumnListener(Listener<std::vector<DatabaseColumn *> *> *oListener)
 {
-	Dispatcher<QList<DatabaseColumn *> *>::addListener(oListener);
+	Dispatcher<std::vector<DatabaseColumn *> *>::addListener(oListener);
 }
 
-void ContainerBase::removeColumnListener(Listener<QList<DatabaseColumn *> *> *oListener)
+void ContainerBase::removeColumnListener(Listener<std::vector<DatabaseColumn *> *> *oListener)
 {
-	Dispatcher<QList<DatabaseColumn *> *>::removeListener(oListener);
+	Dispatcher<std::vector<DatabaseColumn *> *>::removeListener(oListener);
 }
 
-void ContainerBase::notifyColumnListeners(QList<DatabaseColumn *> *oColumns)
+void ContainerBase::notifyColumnListeners(std::vector<DatabaseColumn *> *oColumns)
 {
-	Dispatcher<QList<DatabaseColumn *> *>::notify(oColumns);
+	Dispatcher<std::vector<DatabaseColumn *> *>::notify(oColumns);
 }
 
-QString ContainerBase::getContainerUUID(void) const
+StdString ContainerBase::getContainerUUID(void) const
 {
 	return mContainerUUID;
 }
 
-void ContainerBase::setContainerUUID(QString const &oContainerUUID)
+void ContainerBase::setContainerUUID(StdString const &oContainerUUID)
 {
 	mContainerUUID = oContainerUUID;
 }
 
-void ContainerBase::setContainername(QString const &oContainername)
+void ContainerBase::setContainername(StdString const &oContainername)
 {
 	mContainername = oContainername;
 }
 
-QString ContainerBase::getContainername(void)
+StdString ContainerBase::getContainername(void)
 {
 	return mContainername;
 }
 
-bool ContainerBase::loadProfile(QSettings &oProfile, QString const &oKey)
+bool ContainerBase::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
-	connect(oProfile.value(oKey+"_connect", "").toString());
-	setSelector(oProfile.value(oKey+"_selector", "").toString());
+	auto key = spt::string::toQt(oKey);
+	connect(spt::string::fromQt(oProfile.value(key+"_connect", "").toString()));
+	setSelector(spt::string::fromQt(oProfile.value(key+"_selector", "").toString()));
 
 	return true;
 }
 
-void ContainerBase::saveProfile(QSettings &oProfile, QString const &oKey)
+void ContainerBase::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
-	oProfile.setValue(oKey+"_connect", getConnectString());
-	oProfile.setValue(oKey+"_selector", getSelector());
+	auto key = spt::string::toQt(oKey);
+	oProfile.setValue(key+"_connect", spt::string::toQt(getConnectString()));
+	oProfile.setValue(key+"_selector", spt::string::toQt(getSelector()));
 }

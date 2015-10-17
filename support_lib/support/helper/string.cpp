@@ -6,33 +6,33 @@
 
 #include "support/helper/string.h"
 
-namespace supportlib
+namespace spt
 {
 	namespace string
 	{
-		SUPPORT_DLL_EXPORT std::vector<supportlib::string::string_t> &split(supportlib::string::string_t const &s, supportlib::string::char_t delim, std::vector<supportlib::string::string_t> &elems)
+		SUPPORT_DLL_EXPORT std::vector<spt::string::string_t> &split(spt::string::string_t const &s, spt::string::char_t delim, std::vector<spt::string::string_t> &elems)
 		{
 			std::stringstream ss(s);
-			supportlib::string::string_t item;
+			spt::string::string_t item;
 			while (std::getline(ss, item, delim))
 				elems.push_back(item);
 
 			return elems;
 		}
 
-		SUPPORT_DLL_EXPORT std::vector<supportlib::string::string_t> split(supportlib::string::string_t const &s, supportlib::string::char_t delim)
+		SUPPORT_DLL_EXPORT std::vector<spt::string::string_t> split(spt::string::string_t const &s, spt::string::char_t delim)
 		{
-			std::vector<supportlib::string::string_t> elems;
+			std::vector<spt::string::string_t> elems;
 			split(s, delim, elems);
 			return elems;
 		}
 
 
-		SUPPORT_DLL_EXPORT supportlib::string::string_t maskString(supportlib::string::string_t const &oInput)
+		SUPPORT_DLL_EXPORT spt::string::string_t maskString(spt::string::string_t const &oInput)
 		{
-			supportlib::string::string_t chars = "\\\t\n\r;";
-			supportlib::string::string_t s;
-			supportlib::string::string_t v = oInput;
+			spt::string::string_t chars = "\\\t\n\r;";
+			spt::string::string_t s;
+			spt::string::string_t v = oInput;
 			int pos = 0;
 
 			while((pos = v.find_first_of(chars)) != -1)
@@ -72,10 +72,10 @@ namespace supportlib
 			return s;
 		}
 
-		SUPPORT_DLL_EXPORT supportlib::string::string_t unmaskString(supportlib::string::string_t const &oInput)
+		SUPPORT_DLL_EXPORT spt::string::string_t unmaskString(spt::string::string_t const &oInput)
 		{
-			supportlib::string::string_t s;
-			supportlib::string::string_t v = oInput;
+			spt::string::string_t s;
+			spt::string::string_t v = oInput;
 			int pos = 0;
 
 			while((pos = v.find('\\')) != -1)

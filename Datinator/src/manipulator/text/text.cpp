@@ -4,13 +4,14 @@
  *
  *******************************************************************************/
 
-#include <QtCore/QString>
 #include <QtCore/QSettings>
+#include <QtCore/QString>
 
 #include <support/helper/string.h>
 #include <support/unicode/unicode_types.h>
 
 #include "manipulator/text/text.h"
+#include "support/helper/string.h"
 
 TextManipulator::TextManipulator(void)
 {
@@ -79,7 +80,7 @@ bool TextManipulator::isConfigured(void)
 
 		default:
 		{
-			setError("Internal Error! Invalid Action value:"+ QString::number(getAction()));
+			setError("Internal Error! Invalid Action value:"+ spt::string::toString(getAction()));
 			return false;
 		}
 	}
@@ -87,7 +88,7 @@ bool TextManipulator::isConfigured(void)
 	return true;
 }
 
-QString TextManipulator::getId(void)
+StdString TextManipulator::getId(void)
 {
 	return "DBEF3EA0-FFC0-11E3-9191-0800200C9A66";
 }
@@ -98,17 +99,17 @@ void TextManipulator::reset(void)
 	setAction(TextManipulatorAction::SEL_Text);
 	setText("");
 	setLength(0, 0, 0, true);
-	setPositions(QList<QPair<int, int>>());
+	setPositions(std::vector<std::pair<int, int>>());
 	setPattern("", false, false);
 	setValues();
 }
 
-void TextManipulator::setText(QString const &oText)
+void TextManipulator::setText(StdString const &oText)
 {
 	mText = oText;
 }
 
-QString TextManipulator::getText(void) const
+StdString TextManipulator::getText(void) const
 {
 	return mText;
 }
@@ -151,18 +152,18 @@ bool TextManipulator::getFillAtEnd(void) const
 	return mFillAtEnd;
 }
 
-bool TextManipulator::setPositions(QList<QPair<int, int>> const &oPositionList)
+bool TextManipulator::setPositions(std::vector<std::pair<int, int>> const &oPositionList)
 {
 	mPositions = oPositionList;
 	return true;
 }
 
-QList<QPair<int, int>> TextManipulator::getPositions(void) const
+std::vector<std::pair<int, int>> TextManipulator::getPositions(void) const
 {
 	return mPositions;
 }
 
-void TextManipulator::setPattern(QString const &oPattern, bool bInvertSelection, bool bRegularExpression)
+void TextManipulator::setPattern(StdString const &oPattern, bool bInvertSelection, bool bRegularExpression)
 {
 	mPattern = oPattern;
 	mRegularExpression = bRegularExpression;
@@ -179,7 +180,7 @@ bool TextManipulator::getRegularExpression(void) const
 	return mRegularExpression;
 }
 
-QString TextManipulator::getPattern(void) const
+StdString TextManipulator::getPattern(void) const
 {
 	return mPattern;
 }
@@ -203,12 +204,12 @@ void TextManipulator::copy(TextManipulator const &oSource)
 	setValues();
 }
 
-QString TextManipulator::getName(void)
+StdString TextManipulator::getName(void)
 {
 	return "String formatting";
 }
 
-QString TextManipulator::getDescription(void)
+StdString TextManipulator::getDescription(void)
 {
 	return "Returns a text value";
 }
@@ -232,7 +233,7 @@ void TextManipulator::readValues(void)
 
 	setAction(mPanel->getAction());
 	setLength(mPanel->getMinLength(), mPanel->getMaxLength(), mPanel->getFillCharacter(), mPanel->getFillAtEnd());
-	QList<QPair<int, int>>l;
+	std::vector<std::pair<int, int>>l;
 	mPanel->getPositions(l);
 	setPositions(l);
 	setPattern(mPanel->getPattern(), mPanel->getInvertSelection(), mPanel->getRegularExpression());
@@ -263,12 +264,12 @@ QWidget *TextManipulator::getConfigurationPanel(QWidget *oParent)
 	return mPanel;
 }
 
-QString *TextManipulator::format(QString *oValue, bool bPreview)
+StdString *TextManipulator::format(StdString *oValue, bool bPreview)
 {
 	UNUSED(bPreview);
 
-	QString s;
-	QString v;
+	StdString s;
+	StdString v;
 
 	if(oValue)
 		v = *oValue;
@@ -282,7 +283,7 @@ QString *TextManipulator::format(QString *oValue, bool bPreview)
 			if(mMaxLength)
 			{
 				if(n > mMaxLength)
-					s = s.mid(0, mMaxLength);
+					s = s.substr(0, mMaxLength);
 			}
 
 			bool end = getFillAtEnd();
@@ -290,12 +291,12 @@ QString *TextManipulator::format(QString *oValue, bool bPreview)
 			if(!c)
 				c = ' ';
 
-			while(s.length() < mMinLength)
+			while(s.length() < (size_t)mMinLength)
 			{
 				if(end)
 					s += c;
 				else
-					s = c + s;
+					s = static_cast<spt::string::char_t>(c) + s;
 			}
 		}
 		break;
@@ -306,7 +307,7 @@ QString *TextManipulator::format(QString *oValue, bool bPreview)
 
 		case TextManipulatorAction::SEL_ReplacePattern:
 		{
-			QString replace = getText();
+			StdString replace = getText();
 			s = selectByPattern(v, getPattern(), getRegularExpression(), getInvertSelection(), &replace);
 		}
 		break;
@@ -319,7 +320,8 @@ QString *TextManipulator::format(QString *oValue, bool bPreview)
 		{
 			if(oValue)
 			{
-				s = oValue->toLower();
+				StdString s1 = s;
+				std::transform(s1.begin(), s1.end(), s.begin(), ::tolower);
 				delete oValue;
 				oValue = NULL;
 			}
@@ -330,7 +332,8 @@ QString *TextManipulator::format(QString *oValue, bool bPreview)
 		{
 			if(oValue)
 			{
-				s = oValue->toUpper();
+				StdString s1 = s;
+				std::transform(s1.begin(), s1.end(), s.begin(), ::toupper);
 				delete oValue;
 				oValue = NULL;
 			}
@@ -342,12 +345,12 @@ QString *TextManipulator::format(QString *oValue, bool bPreview)
 			if(!oValue)
 				break;
 
-			StdString line = supportlib::string::QtStringToStringT(*oValue);
+			StdString line = *oValue;
 			if(getInvertSelection())
-				line = supportlib::string::unmaskString(line);
+				line = spt::string::unmaskString(line);
 			else
-				line = supportlib::string::maskString(line);
-			s = supportlib::string::StringTToQtString(line);
+				line = spt::string::maskString(line);
+			s = line;
 		}
 		break;
 
@@ -360,52 +363,55 @@ QString *TextManipulator::format(QString *oValue, bool bPreview)
 	return applyMode(oValue, s);
 }
 
-bool TextManipulator::loadProfile(QSettings &oProfile, QString const &oKey)
+bool TextManipulator::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!Manipulator::loadProfile(oProfile, oKey))
 		return false;
 
-	setText(oProfile.value(oKey+"_text", "").toString());
-	setAction(static_cast<TextManipulatorAction>(oProfile.value(oKey+"_action").toInt()));
+	auto key = spt::string::toQt(oKey);
 
-	int val1 = oProfile.value(oKey+"_min_length").toInt();
-	int val2 = oProfile.value(oKey+"_max_length").toInt();
-	int val3 = oProfile.value(oKey+"_fill_char").toInt();
-	bool b = oProfile.value(oKey+"_fill_at_end").toBool();
+	setText(spt::string::fromQt(oProfile.value(key+"_text", "").toString()));
+	setAction(static_cast<TextManipulatorAction>(oProfile.value(key+"_action").toInt()));
+
+	int val1 = oProfile.value(key+"_min_length").toInt();
+	int val2 = oProfile.value(key+"_max_length").toInt();
+	int val3 = oProfile.value(key+"_fill_char").toInt();
+	bool b = oProfile.value(key+"_fill_at_end").toBool();
 	setLength(val1, val2, val3, b);
 
-	bool invert = oProfile.value(oKey+"_invert_selection").toBool();
-	QList<QPair<int, int>>l;
-	toPositionList(oProfile.value(oKey+"_positions").toString(), l);
+	bool invert = oProfile.value(key+"_invert_selection").toBool();
+	std::vector<std::pair<int, int>>l;
+	toPositionList(spt::string::fromQt(oProfile.value(key+"_positions").toString()), l);
 	setPositions(l);
 
-	b = oProfile.value(oKey+"_regular_expression").toBool();
-	setPattern(oProfile.value(oKey+"_regular_expression").toString(), invert, b);
+	b = oProfile.value(key+"_regular_expression").toBool();
+	setPattern(spt::string::fromQt(oProfile.value(key+"_regular_expression").toString()), invert, b);
 
 	getConfigurationPanel(NULL);
 	setValues();
 	return true;
 }
 
-void TextManipulator::saveProfile(QSettings &oProfile, QString const &oKey)
+void TextManipulator::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	Manipulator::saveProfile(oProfile, oKey);
+	auto key = spt::string::toQt(oKey);
 
 	readValues();
-	oProfile.setValue(oKey+"_text", getText());
-	oProfile.setValue(oKey+"_action", getAction());
+	oProfile.setValue(key+"_text", spt::string::toQt(getText()));
+	oProfile.setValue(key+"_action", getAction());
 
-	oProfile.setValue(oKey+"_min_length", getMinLength());
-	oProfile.setValue(oKey+"_max_length", getMinLength());
-	oProfile.setValue(oKey+"_fill_char", getFillCharacter());
-	oProfile.setValue(oKey+"_fill_at_end", getFillAtEnd());
+	oProfile.setValue(key+"_min_length", getMinLength());
+	oProfile.setValue(key+"_max_length", getMinLength());
+	oProfile.setValue(key+"_fill_char", getFillCharacter());
+	oProfile.setValue(key+"_fill_at_end", getFillAtEnd());
 
-	QString s;
+	StdString s;
 	toPositionText(getPositions(), s);
-	oProfile.setValue(oKey+"_positions", s);
+	oProfile.setValue(key+"_positions", spt::string::toQt(s));
 
-	oProfile.setValue(oKey+"_pattern", getPattern());
-	oProfile.setValue(oKey+"_regular_expression", getRegularExpression());
+	oProfile.setValue(key+"_pattern", spt::string::toQt(getPattern()));
+	oProfile.setValue(key+"_regular_expression", getRegularExpression());
 }
 
 void TextManipulator::prepare(void)
@@ -414,13 +420,13 @@ void TextManipulator::prepare(void)
 	readValues();
 }
 
-QString TextManipulator::selectByPosition(QString const &oValue) const
+StdString TextManipulator::selectByPosition(StdString const &oValue) const
 {
-	QString s;
+	StdString s;
 
-	QList<QPair<int, int>> l = getPositions();
+	std::vector<std::pair<int, int>> l = getPositions();
 	int n = oValue.length();
-	for(QPair<int, int> &p : l)
+	for(std::pair<int, int> &p : l)
 	{
 		int start = p.first;
 		int end = p.second;
@@ -447,15 +453,16 @@ QString TextManipulator::selectByPosition(QString const &oValue) const
 		if(end > n)
 			end = n;
 
-		s += oValue.mid(start, end-start);
+		s += oValue.substr(start, end-start);
 	}
 
 	return s;
 }
 
-QString TextManipulator::selectByPattern(QString const &oValue, QString const &oPattern, bool bRegularExpression, bool bInvertSelection, const QString *oReplace) const
+StdString TextManipulator::selectByPattern(StdString const &oValue, StdString const &oPattern, bool bRegularExpression, bool bInvertSelection, const StdString *oReplace) const
 {
-	QString s;
+	StdString s;
+	QString value = spt::string::toQt(oValue);
 	QRegExp regex;
 
 	if(bRegularExpression)
@@ -463,8 +470,8 @@ QString TextManipulator::selectByPattern(QString const &oValue, QString const &o
 	else
 		regex.setPatternSyntax(QRegExp::WildcardUnix);
 
-	regex.setPattern(oPattern);
-	int i = oValue.indexOf(regex);
+	regex.setPattern(spt::string::toQt(oPattern));
+	int i = value.indexOf(regex);
 	QList<QString> matches = regex.capturedTexts();
 	int l = regex.matchedLength();
 	int sz = matches.size();
@@ -477,7 +484,7 @@ QString TextManipulator::selectByPattern(QString const &oValue, QString const &o
 		if(i == -1 || l < 1)
 			return oValue;
 
-		s = oValue.mid(0, i) + oValue.mid(i+l);
+		s = spt::string::fromQt(value.mid(0, i) + value.mid(i+l));
 	}
 	else
 	{
@@ -485,9 +492,9 @@ QString TextManipulator::selectByPattern(QString const &oValue, QString const &o
 			return s;
 
 		if(oReplace == NULL)
-			s = oValue.mid(i, l);
+			s = oValue.substr(i, l);
 		else
-			s = oValue.mid(0, i) + (*oReplace) + oValue.mid(i+l);
+			s = oValue.substr(0, i) + (*oReplace) + oValue.substr(i+l);
 	}
 
 	return s;

@@ -38,17 +38,17 @@ bool OracleReader::isReader(void)
 	return true;
 }
 
-void OracleReader::store(QSettings &oPropertyFile, QString const &oPrefix)
+void OracleReader::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	OracleContainer::store(oPropertyFile, oPrefix);
 }
 
-void OracleReader::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void OracleReader::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	OracleContainer::restore(oPropertyFile, oPrefix);
 }
 
-int OracleReader::read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow)
+int OracleReader::read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow)
 {
 	return SociContainer::read(oColumns, oRow);
 }

@@ -9,16 +9,16 @@
 
 #include "support/helper/hexdump.h"
 
-supportlib::string::string_t toHexArray(std::vector<char> const &oBuffer)
+spt::string::string_t toHexArray(std::vector<char> const &oBuffer)
 {
-	supportlib::string::string_t s;
-	supportlib::string::char_t const *sep = ", ";
-	supportlib::string::char_t str[12];
+	spt::string::string_t s;
+	spt::string::char_t const *sep = ", ";
+	spt::string::char_t str[12];
 	str[0] = 0;
 
 	for(unsigned char const &c : oBuffer)
 	{
-		sprintf_t(&str[supportlib::string::strlen(str)], "0x%02X", c);
+		sprintf_t(&str[spt::string::strlen(str)], "0x%02X", c);
 		s += str;
 		strcpy_t(str, sep);
 	}
@@ -26,7 +26,7 @@ supportlib::string::string_t toHexArray(std::vector<char> const &oBuffer)
 	return s;
 }
 
-bool hexdumpToFile(supportlib::string::string_t const &oInput, supportlib::string::string_t const &oOutput)
+bool hexdumpToFile(spt::string::string_t const &oInput, spt::string::string_t const &oOutput)
 {
 	std::fstream fl(oInput, std::ios::in | std::ios::binary);
 	std::fstream txt(oOutput, std::ios::out);
@@ -34,7 +34,7 @@ bool hexdumpToFile(supportlib::string::string_t const &oInput, supportlib::strin
 	while(!fl.eof())
 	{
 		std::vector<char> buffer;
-		supportlib::string::string_t s;
+		spt::string::string_t s;
 		fl.read(fbuffer, sizeof(fbuffer));
 		int n = fl.gcount();
 		for(int i = 0; i < n; i++)

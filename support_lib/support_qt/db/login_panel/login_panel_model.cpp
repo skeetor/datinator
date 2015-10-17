@@ -6,9 +6,11 @@
 
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
+#include <QtCore/QString>
 
 #include "support_qt/db/login_panel/login_panel_model.h"
 #include "support/db/database_login.h"
+#include "support/helper/string.h"
 
 Q_DECLARE_METATYPE(DatabaseLogin)
 
@@ -32,22 +34,22 @@ Qt::ItemFlags LoginPanelModel::flags(const QModelIndex &oIndex) const
 	return fl;
 }
 
-QList<QString> LoginPanelModel::serialize(void)
+std::vector<spt::string::string_t> LoginPanelModel::serialize(void)
 {
-	QList<QString> logins;
+	std::vector<spt::string::string_t> logins;
 	int n = rowCount();
 	for(int i = 0; i < n; i++)
 	{
 		QVariant v = data(index(i, 0), Qt::UserRole);
 		DatabaseLogin login = v.value<DatabaseLogin>();
-		QString serialized = supportlib::string::StringTToQtString(login.serialize());
+		spt::string::string_t serialized = login.serialize();
 		logins.push_back(serialized);
 	}
 
 	return logins;
 }
 
-bool LoginPanelModel::deserialize(QList<QString> const &oLogins)
+bool LoginPanelModel::deserialize(std::vector<spt::string::string_t> const &oLogins)
 {
 	removeRows(0, rowCount());
 	if(oLogins.size() == 0)
@@ -56,16 +58,14 @@ bool LoginPanelModel::deserialize(QList<QString> const &oLogins)
 	insertRows(0, oLogins.size());
 	int i = 0;
 	QStandardItem *item;
-	for(QString const &serialized : oLogins)
+	for(spt::string::string_t const &serialized : oLogins)
 	{
-		DatabaseLogin login(supportlib::string::QtStringToStringT(serialized));
+		DatabaseLogin login(serialized);
 		QVariant v;
 		v.setValue(login);
-		QString t = supportlib::string::StringTToQtString(login.getUser())
-			+ "@"+supportlib::string::StringTToQtString(login.getDatabase())
-		;
+		spt::string::string_t t = login.getUser()+ "@"+login.getDatabase();
 		item = new QStandardItem();
-		item->setText(t);
+		item->setText(spt::string::toQt(t));
 		item->setData(v, Qt::UserRole);
 		setItem(i, 0, item);
 		i++;

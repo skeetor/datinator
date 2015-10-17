@@ -20,9 +20,9 @@ public:
 public: // IDataContainer
 	void setTruncateMode(bool bTruncate = true) override;
 	bool defaultTruncate(void) const override;
-	bool prepareOpen(QList<DatabaseColumn *> const &oColumns) override;
+	bool prepareOpen(std::vector<DatabaseColumn *> const &oColumns) override;
 
-	int	write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow) override;
+	int	write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow) override;
 
 	void commit(void) override;
 	void rollback(void) override;

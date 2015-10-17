@@ -16,11 +16,11 @@ WriterListener::~WriterListener()
 {
 }
 
-void WriterListener::handleNotification(Dispatcher<QList<DatabaseColumn *> *> *oSource, QList<DatabaseColumn *> *oColumns)
+void WriterListener::handleNotification(Dispatcher<std::vector<DatabaseColumn *> *> *oSource, std::vector<DatabaseColumn *> *oColumns)
 {
 	UNUSED(oSource);
 
-	QList<DatabaseColumn *> ql;
+	std::vector<DatabaseColumn *> ql;
 	if(oColumns == NULL)
 		oColumns = &ql;
 

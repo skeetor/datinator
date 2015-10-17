@@ -13,7 +13,7 @@ DBColumnObserver::DBColumnObserver(void)
 	mColumns.clear();
 }
 
-DBColumnObserver::DBColumnObserver(QList<DatabaseColumn *> const &oColumns)
+DBColumnObserver::DBColumnObserver(std::vector<DatabaseColumn *> const &oColumns)
 {
 	mAllocated = false;
 	mDefault = false;
@@ -35,17 +35,17 @@ bool DBColumnObserver::isDefault(void)
 	return mDefault;
 }
 
-QList<DatabaseColumn *> const &DBColumnObserver::getColumns(void) const
+std::vector<DatabaseColumn *> const &DBColumnObserver::getColumns(void) const
 {
 	return mColumns;
 }
 
-void DBColumnObserver::setColumns(QList<DatabaseColumn *> const &oColumns)
+void DBColumnObserver::setColumns(std::vector<DatabaseColumn *> const &oColumns)
 {
 	setColumns(&oColumns);
 }
 
-void DBColumnObserver::setColumns(QList<DatabaseColumn *> const *oColumns)
+void DBColumnObserver::setColumns(std::vector<DatabaseColumn *> const *oColumns)
 {
 	free();
 	if(oColumns)
@@ -54,12 +54,12 @@ void DBColumnObserver::setColumns(QList<DatabaseColumn *> const *oColumns)
 	notifyColumnListeners();
 }
 
-int DBColumnObserver::addColumn(DatabaseColumn *oColumn, bool bCopy)
+ssize_t DBColumnObserver::addColumn(DatabaseColumn *oColumn, bool bCopy)
 {
 	if(!oColumn)
 		return -1;
 
-	int i = -1;
+	ssize_t i = -1;
 	for(DatabaseColumn * const &col : mColumns)
 	{
 		i++;
@@ -70,27 +70,27 @@ int DBColumnObserver::addColumn(DatabaseColumn *oColumn, bool bCopy)
 	if(bCopy)
 		oColumn = oColumn->duplicate();
 
-	mColumns.append(oColumn);
+	mColumns.push_back(oColumn);
 
 	return mColumns.size()-1;
 }
 
-QList<DatabaseColumn *> const &DBColumnObserver::list(void)
+std::vector<DatabaseColumn *> const &DBColumnObserver::list(void)
 {
 	return mColumns;
 }
 
-DBColumnObserver::operator QList<DatabaseColumn *> const &(void)
+DBColumnObserver::operator std::vector<DatabaseColumn *> const &(void)
 {
 	return mColumns;
 }
 
-DBColumnObserver::operator QList<DatabaseColumn *> const &(void) const
+DBColumnObserver::operator std::vector<DatabaseColumn *> const &(void) const
 {
 	return mColumns;
 }
 
-DBColumnObserver &DBColumnObserver::operator=(QList<DatabaseColumn *> const &oColumns)
+DBColumnObserver &DBColumnObserver::operator=(std::vector<DatabaseColumn *> const &oColumns)
 {
 	setColumns(oColumns);
 	return *this;
@@ -101,7 +101,7 @@ DBColumnObserver &DBColumnObserver::operator=(QList<DatabaseColumn *> const &oCo
  * If it is desired to create a deep copy, then copy() will
  * do this.
  */
-DBColumnObserver &DBColumnObserver::copy(QList<DatabaseColumn *> const &oColumns, bool bDeepCopy)
+DBColumnObserver &DBColumnObserver::copy(std::vector<DatabaseColumn *> const &oColumns, bool bDeepCopy)
 {
 	free();
 	if(bDeepCopy)
@@ -135,23 +135,23 @@ void DBColumnObserver::free(void)
 
 void DBColumnObserver::notifyColumnListeners(void)
 {
-	Dispatcher<QList<DatabaseColumn *> *>::notify(&mColumns);
+	Dispatcher<std::vector<DatabaseColumn *> *>::notify(&mColumns);
 }
 
-DatabaseColumn *DBColumnObserver::at(int nIndex)
+DatabaseColumn *DBColumnObserver::at(ssize_t nIndex)
 {
-	if(nIndex > mColumns.size())
+	if(static_cast<size_t>(nIndex) > mColumns.size())
 		return NULL;
 
 	return mColumns[nIndex];
 }
 
-DatabaseColumn *DBColumnObserver::operator[](int nIndex)
+DatabaseColumn *DBColumnObserver::operator[](ssize_t nIndex)
 {
 	return at(nIndex);
 }
 
-int DBColumnObserver::find(DatabaseColumn const *oColumn) const
+ssize_t DBColumnObserver::find(DatabaseColumn const *oColumn) const
 {
 	if(!oColumn)
 		return -1;

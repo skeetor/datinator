@@ -7,7 +7,7 @@
 #include "support_defs.h"
 #include "support_dll_api.h"
 
-#ifdef _WIN32
+#ifdef _WINDOWS
 
 extern "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -36,5 +36,5 @@ extern "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpv
     return TRUE; // succesful
 }
 
-#endif // _WIN32
+#endif // _WINDOWS
 

@@ -7,10 +7,6 @@
 #ifndef COLUMN_MANIPULATOR_PANEL_H_INCLUDED
 #define COLUMN_MANIPULATOR_PANEL_H_INCLUDED
 
-#include <QtWidgets/QFrame>
-#include <QtCore/QList>
-#include <QtCore/QPair>
-
 #include "manipulator/column/column_panel_gui.h"
 #include "manipulator/manipulator_panel_qt.moc"
 

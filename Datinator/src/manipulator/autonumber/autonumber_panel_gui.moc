@@ -22,22 +22,22 @@ public:
 	AutoNumberPanel(AutoNumberManipulator *oOwner, QWidget *oParent = NULL);
 	virtual ~AutoNumberPanel(void);
 
-	int getValue(void) const;
-	void setValue(int nValue);
+	size_t getValue(void) const;
+	void setValue(size_t nValue);
 
-	int getWidth(void) const;
-	void setWidth(int nWidth);
+	size_t getWidth(void) const;
+	void setWidth(size_t nWidth);
 
-	int getIncrement(void) const;
-	void setIncrement(int bIncrement);
+	size_t getIncrement(void) const;
+	void setIncrement(size_t bIncrement);
 
 	bool getLeadingZeroes(void) const;
 	void setLeadingZeroes(bool bLeadingZeroes);
 
 protected slots:
-	void onWidthChanged(int nValue);
-	void onValueChanged(int nValue);
-	void onIncrementChanged(int nValue);
+	void onWidthChanged(size_t nValue);
+	void onValueChanged(size_t nValue);
+	void onIncrementChanged(size_t nValue);
 	void onLeadingZeroes(bool bValue);
 
 private:

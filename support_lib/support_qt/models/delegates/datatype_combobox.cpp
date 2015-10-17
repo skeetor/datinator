@@ -4,12 +4,12 @@
 //
 //******************************************************************************
 
-#include <QtCore/QPair>
+#include <utility>
 #include <QtWidgets/QComboBox>
 
-#include "support/qt/models/delegates/datatype_combobox.h"
+#include "support_qt/models/delegates/datatype_combobox.h"
 
-DatatypeCombobox::DatatypeCombobox(QList<int> const &oRows, QList<int> const &oColumns, QObject *oParent)
+DatatypeCombobox::DatatypeCombobox(std::vector<int> const &oRows, std::vector<int> const &oColumns, QObject *oParent)
 : QStyledItemDelegate(oParent)
 {
 	setRows(oRows);
@@ -20,14 +20,14 @@ DatatypeCombobox::DatatypeCombobox(int nRow, int nColumn, QObject *oParent)
 {
 	if(nRow != -1)
 	{
-		QList<int> l;
+		std::vector<int> l;
 		l.append(nRow);
 		setRows(l);
 	}
 
 	if(nColumn != -1)
 	{
-		QList<int> l;
+		std::vector<int> l;
 		l.append(nColumn);
 		setColumns(l);
 	}
@@ -37,17 +37,17 @@ DatatypeCombobox::~DatatypeCombobox()
 {
 }
 
-void DatatypeCombobox::setRows(QList<int> const &oRows)
+void DatatypeCombobox::setRows(std::vector<int> const &oRows)
 {
 	mRows = oRows;
 }
 
-void DatatypeCombobox::setColumns(QList<int> const &oColumns)
+void DatatypeCombobox::setColumns(std::vector<int> const &oColumns)
 {
 	mColumns = oColumns;
 }
 
-void DatatypeCombobox::setTypeStrings(QList<QPair<DataType, QString>> const &oTypeStrings)
+void DatatypeCombobox::setTypeStrings(std::vector<std::pair<DataType, spt::string::string_t>> const &oTypeStrings)
 {
 	mTypeStrings = oTypeStrings;
 }
@@ -98,7 +98,7 @@ QWidget *DatatypeCombobox::createEditor(QWidget *oParent, const QStyleOptionView
 	{
 		QComboBox *cb = new QComboBox(oParent);
 		cb->setAutoFillBackground(true);		// Required to show the comboboxes in the view correctly.
-		for(QPair<DataType, QString> const &p : mTypeStrings)
+		for(std::pair<DataType, spt::string::string_t> const &p : mTypeStrings)
 			cb->addItem(p.second);
 
 		return cb;
@@ -112,7 +112,7 @@ void DatatypeCombobox::setEditorData(QWidget *oEditor, const QModelIndex &oIndex
 	if(QComboBox *cb = qobject_cast<QComboBox *>(oEditor))
 	{
 		// get the index of the text in the combobox that matches the current value of the itenm
-		QString currentText = oIndex.data(Qt::EditRole).toString();
+		spt::string::string_t currentText = oIndex.data(Qt::EditRole).toString();
 		int cbIndex = cb->findText(currentText);
 
 		// if it is valid, adjust the combobox

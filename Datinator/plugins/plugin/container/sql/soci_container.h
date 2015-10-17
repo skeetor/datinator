@@ -4,9 +4,10 @@
  *
  *******************************************************************************/
 
-#ifndef SOCI_CONTAINER_H_INCLUDED
-#define SOCI_CONTAINER_H_INCLUDED
+#ifndef _SOCI_CONTAINER_H_INCLUDED
+#define _SOCI_CONTAINER_H_INCLUDED
 
+#include "datinator_types.h"
 #include "plugin/plugin_dll_api.h"
 #include "plugin/container/sql/sql_container.h"
 #include "plugin/sql/gui/sql_preview_gui.moc"
@@ -15,7 +16,7 @@
 
 class PLUGIN_DLL_EXPORT SociContainer
 	:	public SQLContainer,
-		protected Listener<QString>, // Table changed
+		protected Listener<StdString>, // Table changed
 		public Listener<SQLPreview::ActionEvent, QVariant, int>	// Handler for the reader config panel when chaning from table to query.
 {
 public:
@@ -28,7 +29,7 @@ public:
 	 * bException returns true if an exception occurs and the result may
 	 * be corrupted.
 	 */
-	QList<QList<QString>> fetchRows(QList<DatabaseColumn *> &oColumns, QString const &oQuery, bool &bException, int nCount = 0);
+	std::vector<std::vector<StdString>> fetchRows(std::vector<DatabaseColumn *> &oColumns, StdString const &oQuery, bool &bException, int nCount = 0);
 	bool commit(void);
 	bool rollback(void);
 
@@ -36,47 +37,47 @@ public:
 	 * Connect to the database. If a session is currently opened
 	 * it will be closed. Any uncommited data might be lost.
 	 */
-	bool connect(QString const &oConnectString = "") override;
-	bool disconnect(QString const &oConnectString = "") override;
+	bool connect(StdString const &oConnectString = "") override;
+	bool disconnect(StdString const &oConnectString = "") override;
 
 	bool begin(void) override;
 	void end(void) override;
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 
-	virtual int read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow);
+	virtual int read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow);
 
-	void setSelector(QString const &oId) override;
+	void setSelector(StdString const &oId) override;
 	/**
 	 * Converts the current selector to a valid query.
 	 */
-	virtual QString selectorToQuery(void);
+	virtual StdString selectorToQuery(void);
 
-	void setTablename(QString const &oTableName);	// specifies the tablename if the query is for the while table (select * from x)
-	QString getTablename(void) const;
+	void setTablename(StdString const &oTableName);	// specifies the tablename if the query is for the while table (select * from x)
+	StdString getTablename(void) const;
 
-	void setQuery(QString const &oQuery);		// Speciefies a custom select.
-	QString getQuery(void) const;
+	void setQuery(StdString const &oQuery);		// Speciefies a custom select.
+	StdString getQuery(void) const;
 
 	/**
 	 * Reload the tables from the database and update the view. If the
 	 * oSelection is empty or doesn't exist, the first table will be selected, otherwise
 	 * the specified table.
 	 */
-	void refreshTables(QString const &oSelection = "", bool bNotify = true) override;
+	void refreshTables(StdString const &oSelection = "", bool bNotify = true) override;
 
 protected:
-	QList<DatabaseColumn *> loadColumns(void) override;
+	std::vector<DatabaseColumn *> loadColumns(void) override;
 
-	void handleNotification(Dispatcher<QString> *oSource, QString oTable);	// Table listener
+	void handleNotification(Dispatcher<StdString> *oSource, StdString oTable);	// Table listener
 	void handleNotification(Dispatcher<SQLPreview::ActionEvent, QVariant, int> *oSource, SQLPreview::ActionEvent nEvent, QVariant oData, int nRows);
 
-	virtual bool prepareOpen(QList<DatabaseColumn *> const &oColumns);
-	virtual int write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow);
+	virtual bool prepareOpen(std::vector<DatabaseColumn *> const &oColumns);
+	virtual int write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow);
 
 	/**
 	 * Returns true if the current selector is a table, otherwise it is a query.
@@ -86,33 +87,33 @@ protected:
 	/**
 	 * Read the column definition from the table data.
 	 */
-	virtual QList<DatabaseColumn *> readColumnsFromTable(QString const &oTablename);
+	virtual std::vector<DatabaseColumn *> readColumnsFromTable(StdString const &oTablename);
 
 	/**
 	 * Read the column definition from the query result.
 	 */
-	virtual QList<DatabaseColumn *> readColumnsFromQuery(QString const &oQuery, bool bLimit);
-	virtual QString limitQuery(QString const &oQuery, int nLimit) const = 0;
+	virtual std::vector<DatabaseColumn *> readColumnsFromQuery(StdString const &oQuery, bool bLimit);
+	virtual StdString limitQuery(StdString const &oQuery, int nLimit) const = 0;
 
 	/**
 	 * sociConnectString gets the container connect identifier and must convert it to a connectstring
 	 * which can be used in soci to connect to the actual database.
 	 */
-	virtual StdString sociConnectString(QString const &oContainerConnectString) = 0;
+	virtual StdString sociConnectString(StdString const &oContainerConnectString) = 0;
 	virtual soci::backend_factory const &sociFactory(void) = 0;
 	SQLPreviewPanel *getPreviewPanel(void);
 	void initPanel(DBPanel *oPanel) override;
-	void refreshPreview(QString const &oQuery, int nLimit);
+	void refreshPreview(StdString const &oQuery, int nLimit);
 	virtual bool isReader(void) = 0;
 
-	virtual QList<QString> loadTables(void) = 0;
-	bool createTable(QString const &oTablename, QList<DatabaseColumn *> &oColumns);
-	virtual QString createColumnStatement(DatabaseColumn *oColumn);
+	virtual std::vector<StdString> loadTables(void) = 0;
+	bool createTable(StdString const &oTablename, std::vector<DatabaseColumn *> &oColumns);
+	virtual StdString createColumnStatement(DatabaseColumn *oColumn);
 
 	/**
 	 * Convert a row into an array of strings
 	 */
-	QList<QString> fromRow(QList<DatabaseColumn *> &oColumns, soci::row const &oRow);
+	std::vector<StdString> fromRow(std::vector<DatabaseColumn *> &oColumns, soci::row const &oRow);
 
 	/**
 	 * If the filename is set and bSQLToFile == true the insert statements will also be put into
@@ -120,7 +121,7 @@ protected:
 	 * This should be called before the actual copying is done, to make sure that the
 	 * parameters are properly initialized and validated.
 	 */
-	void setSQLLog(QString const &SQFilename, bool bSQLToFile, bool bFileOnly);
+	void setSQLLog(StdString const &SQFilename, bool bSQLToFile, bool bFileOnly);
 
 	/**
 	 * Either a file or a db output must be set. Both is allowed. If none
@@ -147,15 +148,15 @@ protected:
 	 */
 	bool commit(bool bForceCommit);
 
-	bool prepareStatement(QString const &oSelect);
+	bool prepareStatement(StdString const &oSelect);
 
 	/**
 	 * Convert the input value, to the insertable outputvalue. If false is returned
 	 * an error is reported.
 	 */
-	virtual bool prepareValue(DatabaseColumn *oColumn, QString const &oValue, StdString &oResult);
+	virtual bool prepareValue(DatabaseColumn *oColumn, StdString const &oValue, StdString &oResult);
 
-	virtual QString prepareTablename(QString const &oTablename);
+	virtual StdString prepareTablename(StdString const &oTablename);
 	virtual int count(void);
 
 private:
@@ -167,16 +168,16 @@ private:
 	SQLPreviewPanel *mPreviewPanel;
 	int mPreviewLimit;
 	StdString mSociConnectString;
-	QString mQuery;
-	QString mTablename;
-	QString mSQLFilename;
+	StdString mQuery;
+	StdString mTablename;
+	StdString mSQLFilename;
 	bool mSQLToFile;		// If true, then the statement will be written to a file.
 	bool mFileOnly;			// If false, then the SQL will be inserted into the DB, if true, then it will be written only
 							// to the file if mSQLtoFile is also true, otherwise an errorr is thrown.
 	int mAutoCommitCount;	// If -1, no autocommit is performed. If 0 then autocommit is done when finished, otherwise every N records a commit is performed.
 	int mRecordCount;
-	QString mInsert;
+	StdString mInsert;
 	std::fstream mSQLFile;
 };
 
-#endif // SOCI_CONTAINER_H_INCLUDED
+#endif // _SOCI_CONTAINER_H_INCLUDED

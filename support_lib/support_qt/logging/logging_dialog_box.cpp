@@ -29,7 +29,7 @@ LoggingDialogBox::~LoggingDialogBox(void)
 {
 }
 
-void LoggingDialogBox::setLog(supportlib::logging::Logging const &oLog)
+void LoggingDialogBox::setLog(spt::logging::Logging const &oLog)
 {
 	mModel->setItems(oLog.getItems());
 }

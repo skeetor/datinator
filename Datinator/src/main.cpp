@@ -13,25 +13,31 @@
 
 #include <QDir>
 #include <QTextStream>
+#include <QtCore/QString>
 #include <QtCore/QSettings>
 #include <QtCore/QList>
 #include <QtCore/QStandardPaths>
+
+#include <support/unicode/unicode_types.h>
+#include <support/helper/string.h>
 
 #include <plugins/idata_container_reader.h>
 #include <plugins/idata_container_writer.h>
 
 /*#include "support/unicode/unicode_types.h"
 #include "support/helper/hexdump.h"
-bool hexdumpToFile(supportlib::string_t const &oInput, supportlib::string_t const &oOutput);*/
+bool hexdumpToFile(spt::string_t const &oInput, spt::string_t const &oOutput);*/
 
 #include "application.h"
 #include "gui/main_frame/main_window_gui.moc"
 
 #define DEFAULT_CONFIG_FILE		"datinator.ini"
 
+#ifdef _WINDOWS
 static const int MAX_CONSOLE_LINES = 500;
-
 static void RedirectIOToConsole(void);
+#endif
+
 static void parseCommandline(int argc, char *argv[]);
 
 Application *Application::mApplication = NULL;
@@ -76,7 +82,7 @@ int main(int argc, char *argv[])
 	QSettings &settings = app->getPropertyFile();
 	MainWindow frame;
 
-	std::cout << "Datinator started from " << supportlib::string::QtStringToStringT(QDir::currentPath()) << "\n" << std::endl;
+	std::cout << "Datinator started from " << spt::string::fromQt(QDir::currentPath()) << "\n" << std::endl;
 
 	frame.show();
 	frame.reloadPlugins();
@@ -134,7 +140,7 @@ QSettings &Application::getPropertyFile(void)
 		p += "_debug";
 #endif // _DEBUG
 
-		std::cout << "Propertyfile: " << supportlib::string::QtStringToStringT(p) << "\n" << std::endl;
+		std::cout << "Propertyfile: " << spt::string::tfromQt(p) << "\n" << std::endl;
 		mPropertyFile = new QSettings(p, QSettings::IniFormat);
     }
 
@@ -145,7 +151,7 @@ static void parseCommandline(int argc, char *argv[])
 {
 	for(int i = 1; i < argc; i++)
 	{
-		QString arg = argv[i];
+		StdString arg = argv[i];
 		if(arg == "-console")
 			gConsoleMode = true;
 	}
@@ -202,7 +208,7 @@ void updatePath(QString oPath, QString oExe)
 	{
 		oExe = oExe.replace("/", "\\");
 		oPath = oExe+";"+oPath;
-		std::string env_path = "PATH="+oPath.toStdString();
+		StdString env_path = "PATH="+spt::string::fromQt(oPath);
 		std::cout << "Path updated.\n" << env_path << std::endl;
 		putenv(env_path.c_str());
 	}
@@ -215,7 +221,7 @@ void updatePath(QString oPath, QString oExe)
 	if(!oPath.contains(oExe.toUpper()+":"))
 	{
 		oPath = oExe+":"+oPath;
-		std::string env_path = oPath.toStdString();
+		StdString env_path = spt::string::fromQt(oPath);
 		std::cout << "Path updated.\n" << env_path << std::endl;
 		setenv("PATH", env_path.c_str(), 1);
 	}

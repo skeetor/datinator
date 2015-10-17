@@ -19,24 +19,24 @@ public:
 	OracleWriter(QWidget *oMainWindow);
 	virtual ~OracleWriter(void);
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
 protected:
 	OracleWriterPanel *createConfigPanel(void) override;
-	QString getDateFormatString(QString const &oValue, bool bTimestamp) const;
-	bool prepareValue(DatabaseColumn *oColumn, QString const &oValue, StdString &oResult) override;
+	StdString getDateFormatString(StdString const &oValue, bool bTimestamp) const;
+	bool prepareValue(DatabaseColumn *oColumn, StdString const &oValue, StdString &oResult) override;
 	bool isReader(void) override;
 
 public: // @IDataContainerWriter
 	bool canModifyColumns(void) const override;
 	bool canTruncate(void) const override;
 	bool defaultTruncate(void) const override;
-	bool prepareOpen(QList<DatabaseColumn *> const &oColumns) override;
-	int write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow) override;
+	bool prepareOpen(std::vector<DatabaseColumn *> const &oColumns) override;
+	int write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow) override;
 
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 	void commit(void) override;
 	void rollback(void) override;
 

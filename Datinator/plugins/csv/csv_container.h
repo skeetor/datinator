@@ -22,14 +22,14 @@ public:
 	CSVContainer(QWidget *oMainWindow);
 	virtual ~CSVContainer(void);
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
 	inline int getRownum(void) { return mRownum; }
 	inline void setRownum(int nRownum) { mRownum = nRownum; }
 
-	bool connect(QString const &oConnectString = "") override;
-	bool disconnect(QString const &oConnectString = "") override;
+	bool connect(StdString const &oConnectString = "") override;
+	bool disconnect(StdString const &oConnectString = "") override;
 	bool begin(void) override;
 	void end(void) override;
 

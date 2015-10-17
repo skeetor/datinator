@@ -15,24 +15,24 @@
 
 class ColumnMappingCombobox :
 	 public QComboBox,
-	 public Listener<QList<DatabaseColumn *> *>
+	 public Listener<std::vector<DatabaseColumn *> *>
 {
 public:
 	ColumnMappingCombobox(QWidget *oParent = NULL);
 	virtual ~ColumnMappingCombobox(void);
 
-	void setDispatcher(Dispatcher<QList<DatabaseColumn *> *> *oDispatcher);
-	void setColumns(QList<DatabaseColumn *> const &oColumns);
+	void setDispatcher(Dispatcher<std::vector<DatabaseColumn *> *> *oDispatcher);
+	void setColumns(std::vector<DatabaseColumn *> const &oColumns);
 
 public:	// Listener<T>
-	virtual void handleNotification(Dispatcher<QList<DatabaseColumn *> *> *oSource, QList<DatabaseColumn *> *oColumns);
-	virtual void invalidateDispatcher(Dispatcher<QList<DatabaseColumn *> *> const *oDispatcher);
+	virtual void handleNotification(Dispatcher<std::vector<DatabaseColumn *> *> *oSource, std::vector<DatabaseColumn *> *oColumns);
+	virtual void invalidateDispatcher(Dispatcher<std::vector<DatabaseColumn *> *> const *oDispatcher);
 
 protected:
-	void updateColumns(QList<DatabaseColumn *> const &oColumns);
+	void updateColumns(std::vector<DatabaseColumn *> const &oColumns);
 
 private:
-	Dispatcher<QList<DatabaseColumn *> *> *mDispatcher;
+	Dispatcher<std::vector<DatabaseColumn *> *> *mDispatcher;
 };
 
 #endif // COLUMN_MAPPING_COMBOBOX_H

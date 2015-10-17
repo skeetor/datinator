@@ -45,12 +45,12 @@ SQLiteWriterPanel *SQLiteWriter::createConfigPanel(void)
 	return mConfigPanel;
 }
 
-void SQLiteWriter::store(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLiteWriter::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	SQLiteContainer::store(oPropertyFile, oPrefix);
 }
 
-void SQLiteWriter::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLiteWriter::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	SQLiteContainer::restore(oPropertyFile, oPrefix);
 }
@@ -65,7 +65,7 @@ void SQLiteWriter::rollback(void)
 	SociContainer::rollback();
 }
 
-bool SQLiteWriter::loadProfile(QSettings &oProfile, QString const &oKey)
+bool SQLiteWriter::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	createConfigPanel();
 	if(!SQLiteContainer::loadProfile(oProfile, oKey))
@@ -77,31 +77,32 @@ bool SQLiteWriter::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void SQLiteWriter::saveProfile(QSettings &oProfile, QString const &oKey)
+void SQLiteWriter::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	SQLiteContainer::saveProfile(oProfile, oKey);
 	mConfigPanel->saveProfile(oProfile, oKey);
 }
 
-bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
+bool SQLiteWriter::updateTable(std::vector<DatabaseColumn *> const &oColumns)
 {
 	// In the writer we are always writing to a table.
 //	if(!isQueryByTable())
 //		return true;
 
-	QList<DatabaseColumn *> required;
+	std::vector<DatabaseColumn *> required;
 	bool table_missing = false;
-	QString container_table = getTablename().toUpper();
+	StdString container_table = getTablename();
+	std::transform(container_table.begin(), container_table.end(), container_table.begin(), ::toupper);
 
 	if(container_table.length() == 0)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Tablename is empty! Please enter a tablename or select an existing table.");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Tablename is empty! Please enter a tablename or select an existing table.");
 		return false;
 	}
 
-	StdString table_name = supportlib::string::QtStringToStringT(container_table);
+	StdString table_name = container_table;
 
-	QList<DatabaseColumn *> tabColumns = readColumnsFromTable(container_table);
+	std::vector<DatabaseColumn *> tabColumns = readColumnsFromTable(container_table);
 	if(tabColumns.size() == 0)
 	{
 		required = oColumns;
@@ -113,11 +114,13 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 		// table. If not we may have to add the.
 		for(DatabaseColumn * const &col : oColumns)
 		{
-			QString cn = col->getName().toUpper();
+			StdString cn = col->getName();
+			std::transform(cn.begin(), cn.end(), cn.begin(), ::toupper);
 			bool found = false;
 			for(DatabaseColumn * &tab_col : tabColumns)
 			{
-				QString tn = tab_col->getName().toUpper();
+				StdString tn = tab_col->getName();
+				std::transform(tn.begin(), tn.end(), tn.begin(), ::toupper);
 				if(cn == tn)
 				{
 					found = true;
@@ -126,7 +129,7 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 			}
 
 			if(!found)
-				required.append(col);
+				required.push_back(col);
 		}
 	}
 
@@ -134,10 +137,10 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 	{
 		for(DatabaseColumn * const &col : oColumns)
 		{
-			QString cn = col->getName();
-			for(int i = 0; i < cn.length(); i++)
+			StdString cn = col->getName();
+			for(size_t i = 0; i < cn.length(); i++)
 			{
-				int c = cn.at(i).toLatin1();
+				int c = cn[i];
 				bool invalid = false;
 				if(!isalpha(c))
 				{
@@ -151,7 +154,7 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 				}
 				if(invalid)
 				{
-					ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "[" + cn + "] is an invalid columnname. Please use only [A-Z a-z 0-9 _$]. First character must not be a number.");
+					ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "[" + cn + "] is an invalid columnname. Please use only [A-Z a-z 0-9 _$]. First character must not be a number.");
 					return false;
 				}
 			}
@@ -166,8 +169,8 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 		// them, then we can't proceed.
         if(!create && !modify)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Can't create target columns or target table '"+container_table+"'");
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Please active the 'Create Table', and/or 'Create Columns' option, choose a matching table or choose appropriate columns.");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Can't create target columns or target table '"+container_table+"'");
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Please active the 'Create Table', and/or 'Create Columns' option, choose a matching table or choose appropriate columns.");
 			return false;
 		}
 
@@ -179,8 +182,8 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 			// then we can't proceed.
 			if(table_missing && !create)
 			{
-				ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Can't create target columns or target table '"+container_table+"'");
-				ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Please active the 'Create Table', and/or 'Create Columns' option, choose a matching table or choose appropriate columns.");
+				ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Can't create target columns or target table '"+container_table+"'");
+				ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Please active the 'Create Table', and/or 'Create Columns' option, choose a matching table or choose appropriate columns.");
 				return false;
 			}
 		}
@@ -211,8 +214,8 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 				{
 					switch(col->getType())
 					{
-						case supportlib::db::DataType::type_integer:
-						case supportlib::db::DataType::type_decimal:
+						case spt::db::DataType::type_integer:
+						case spt::db::DataType::type_decimal:
 							typ = "INTEGER";
 						break;
 
@@ -220,7 +223,7 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 							typ	= "TEXT";
 					}
 
-					statement += supportlib::string::QtStringToStringT(col->getName()) + " " + typ+sep;
+					statement += col->getName() + " " + typ + sep;
 				}
 				statement = statement.substr(0, statement.length()-sep.length());
 				statement += ")\n";
@@ -232,8 +235,8 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 				{
 					switch(col->getType())
 					{
-						case supportlib::db::DataType::type_integer:
-						case supportlib::db::DataType::type_decimal:
+						case spt::db::DataType::type_integer:
+						case spt::db::DataType::type_decimal:
 							typ = "INTEGER";
 						break;
 
@@ -241,7 +244,7 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 							typ	= "TEXT";
 					}
 
-					statement = "alter table " + table_name + " add column " + supportlib::string::QtStringToStringT(col->getName()) + " " + typ;
+					statement = "alter table " + table_name + " add column " + col->getName() + " " + typ;
 					session << statement;
 				}
 			}
@@ -249,9 +252,9 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 		}
 		catch(std::runtime_error const &e)
 		{
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to update tables definition for "+getTablename());
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, supportlib::string::StringTToQtString(statement));
-			ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to update tables definition for "+getTablename());
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, statement);
+			ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 			return false;
 		}
 	}
@@ -259,7 +262,7 @@ bool SQLiteWriter::updateTable(QList<DatabaseColumn *> const &oColumns)
 	return true;
 }
 
-bool SQLiteWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
+bool SQLiteWriter::prepareOpen(std::vector<DatabaseColumn *> const &oColumns)
 {
 	setSQLLog(createConfigPanel()->getPath(), createConfigPanel()->getExportSQL(), createConfigPanel()->getExportSQLOnly());
 	if(!SociContainer::prepareOpen(oColumns))
@@ -285,15 +288,17 @@ bool SQLiteWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 			// so if this is desired, the table should be dropped
 			// and recreated, which would probably kill triggers
 			// and indexes as well.
-			StdString query = "delete from " + supportlib::string::QtStringToStringT(getTablename().toUpper());
+			StdString tn = getTablename();
+			std::transform(tn.begin(), tn.end(), tn.begin(), ::toupper);
+			StdString query = "delete from " + tn;
 			try
 			{
 				session << query;
 			}
 			catch(std::runtime_error const &e)
 			{
-				ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Truncate failed for "+getTablename());
-				ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+				ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Truncate failed for "+getTablename());
+				ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 				return false;
 			}
 		}
@@ -301,15 +306,15 @@ bool SQLiteWriter::prepareOpen(QList<DatabaseColumn *> const &oColumns)
 	}
 	catch(std::runtime_error const &e)
 	{
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to start transaction");
-		ErrorMessage(supportlib::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, "Unable to start transaction");
+		ErrorMessage(spt::logging::LoggingItem::LOG_ERROR, MODULENAME, e.what());
 		return false;
 	}
 
 	return true;
 }
 
-bool SQLiteWriter::toInsertValue(DatabaseColumn const *oColumn, QString const &oValue, QString &oOutValue)
+bool SQLiteWriter::toInsertValue(DatabaseColumn const *oColumn, StdString const &oValue, StdString &oOutValue)
 {
 	oOutValue = "";
 	if(oColumn->isNull())
@@ -322,7 +327,7 @@ bool SQLiteWriter::toInsertValue(DatabaseColumn const *oColumn, QString const &o
 	return true;
 }
 
-int SQLiteWriter::write(QList<DatabaseColumn *> const &oColumns, QList<QString> const &oRow)
+int SQLiteWriter::write(std::vector<DatabaseColumn *> const &oColumns, std::vector<StdString> const &oRow)
 {
 	return SociContainer::write(oColumns, oRow);
 }

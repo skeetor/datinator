@@ -24,7 +24,7 @@ DatabaseLogin::DatabaseLogin(DatabaseLogin const &oSource)
 	copy(oSource);
 }
 
-DatabaseLogin::DatabaseLogin(supportlib::string::string_t const &oSerialized)
+DatabaseLogin::DatabaseLogin(spt::string::string_t const &oSerialized)
 {
 	if(!deserialize(oSerialized))
 		clear();
@@ -68,17 +68,17 @@ void DatabaseLogin::copy(DatabaseLogin const &oSource)
 	saveHost(oSource.requiresSaveHost());
 }
 
-supportlib::string::string_t DatabaseLogin::getUser(void) const
+spt::string::string_t DatabaseLogin::getUser(void) const
 {
 	return mUser;
 }
 
-void DatabaseLogin::setUser(supportlib::string::string_t const &oUser)
+void DatabaseLogin::setUser(spt::string::string_t const &oUser)
 {
 	mUser = oUser;
 }
 
-supportlib::string::string_t DatabaseLogin::encrypt(supportlib::string::string_t const &oPassword) const
+spt::string::string_t DatabaseLogin::encrypt(spt::string::string_t const &oPassword) const
 {
 	int bsz = (oPassword.length()+3)*2;
 	char *b = new char[bsz];
@@ -98,20 +98,20 @@ supportlib::string::string_t DatabaseLogin::encrypt(supportlib::string::string_t
 		b[i++] = s[1];
 	}
 
-	supportlib::string::string_t str = b;
+	spt::string::string_t str = b;
 	memset(b, 0, bsz);
 	delete [] b;
 
 	return str;
 }
 
-supportlib::string::string_t DatabaseLogin::decrypt(void) const
+spt::string::string_t DatabaseLogin::decrypt(void) const
 {
 	// The first two characters are the length. If there is no more
 	// then the password is empty.
 	int len = mPassword.length();
 
-	supportlib::string::string_t str;
+	spt::string::string_t str;
 	unsigned char byte = 0;
 	unsigned char c;
 	int i = 1;
@@ -149,55 +149,55 @@ supportlib::string::string_t DatabaseLogin::decrypt(void) const
 	return str;
 }
 
-supportlib::string::string_t DatabaseLogin::getPassword(void) const
+spt::string::string_t DatabaseLogin::getPassword(void) const
 {
 	return mPassword;
 }
 
-void DatabaseLogin::setPassword(supportlib::string::string_t const &oPassword)
+void DatabaseLogin::setPassword(spt::string::string_t const &oPassword)
 {
 	mPassword = oPassword;
 }
 
-supportlib::string::string_t DatabaseLogin::getDatabase(void) const
+spt::string::string_t DatabaseLogin::getDatabase(void) const
 {
 	return mDatabase;
 }
 
-supportlib::string::string_t DatabaseLogin::getClearPassword(void) const
+spt::string::string_t DatabaseLogin::getClearPassword(void) const
 {
 	return decrypt();
 }
 
-void DatabaseLogin::setClearPassword(supportlib::string::string_t const &oPassword)
+void DatabaseLogin::setClearPassword(spt::string::string_t const &oPassword)
 {
 	setPassword(encrypt(oPassword));
 }
 
-void DatabaseLogin::setDatabase(supportlib::string::string_t const &oDatabase)
+void DatabaseLogin::setDatabase(spt::string::string_t const &oDatabase)
 {
 	mDatabase = oDatabase;
 }
 
-supportlib::string::string_t DatabaseLogin::getHostname(void) const
+spt::string::string_t DatabaseLogin::getHostname(void) const
 {
 	return mHost;
 }
 
-void DatabaseLogin::setHostname(supportlib::string::string_t const &oHost)
+void DatabaseLogin::setHostname(spt::string::string_t const &oHost)
 {
 	mHost = oHost;
 }
 
-supportlib::string::string_t DatabaseLogin::getHost(void) const
+spt::string::string_t DatabaseLogin::getHost(void) const
 {
-	supportlib::string::string_t h = mHost;
+	spt::string::string_t h = mHost;
 
 	int port = getPort();
 	if(port != -1)
 	{
-		supportlib::string::stringstream_t ss;
-		supportlib::string::string_t s;
+		spt::string::stringstream_t ss;
+		spt::string::string_t s;
 		h += ':';
 		ss << port;
 		ss >> s;
@@ -207,7 +207,7 @@ supportlib::string::string_t DatabaseLogin::getHost(void) const
 	return h;
 }
 
-void DatabaseLogin::setHost(supportlib::string::string_t const &oHost)
+void DatabaseLogin::setHost(spt::string::string_t const &oHost)
 {
 	mHost = oHost;
 	splitHost();
@@ -262,9 +262,9 @@ bool DatabaseLogin::operator!=(DatabaseLogin const &oSource) const
 	return !equals(oSource);
 }
 
-supportlib::string::string_t DatabaseLogin::serialize(void)
+spt::string::string_t DatabaseLogin::serialize(void)
 {
-	supportlib::string::string_t s;
+	spt::string::string_t s;
 
 	s += getUser()+';';
 	s += getPassword()+';';
@@ -280,11 +280,11 @@ supportlib::string::string_t DatabaseLogin::serialize(void)
 	return s;
 }
 
-bool DatabaseLogin::deserialize(supportlib::string::string_t const &oSerialized)
+bool DatabaseLogin::deserialize(spt::string::string_t const &oSerialized)
 {
 	clear();
 
-	std::vector<supportlib::string::string_t> values = supportlib::string::split(oSerialized, ';');
+	std::vector<spt::string::string_t> values = spt::string::split(oSerialized, ';');
 	size_t i = 0;
 	if(values.size() > i)
 		setUser(values[i]);
@@ -301,7 +301,7 @@ bool DatabaseLogin::deserialize(supportlib::string::string_t const &oSerialized)
 	if(values.size() > i)
 	{
 		bool hs = false;
-		supportlib::string::string_t s = values[i];
+		spt::string::string_t s = values[i];
 		if(s.length() > 0)
 		{
 			if(s[0] == 'T')

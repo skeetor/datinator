@@ -6,6 +6,8 @@
 
 #include <QtCore/QSettings>
 
+#include "support/helper/string.h"
+
 #include "plugin/container/file/file_container_base.h"
 #include "plugin/container/gui/file_panel_gui.moc"
 
@@ -20,14 +22,14 @@ FileContainerBase::~FileContainerBase(void)
 {
 }
 
-void FileContainerBase::store(QSettings &oPropertyFile, QString const &oPrefix)
+void FileContainerBase::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
-	oPropertyFile.setValue(oPrefix+"lastpath", getFilename());
+	oPropertyFile.setValue(spt::string::toQt(oPrefix)+"lastpath", spt::string::toQt(getFilename()));
 }
 
-void FileContainerBase::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void FileContainerBase::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
-    QString f = oPropertyFile.value(oPrefix+"lastpath", "").toString();
+    StdString f = spt::string::fromQt((oPropertyFile.value(spt::string::toQt(oPrefix)+"lastpath", "").toString()));
 	setFilename(f);
 }
 
@@ -71,14 +73,14 @@ void FileContainerBase::releaseColumns(void)
 	super::releaseColumns();
 }
 
-void FileContainerBase::handleNotification(Dispatcher<QString> *oSource, QString oPath)
+void FileContainerBase::handleNotification(Dispatcher<StdString> *oSource, StdString oPath)
 {
 	UNUSED(oSource);
 
     setFilename(oPath);
 }
 
-bool FileContainerBase::connect(QString const &oFilename)
+bool FileContainerBase::connect(StdString const &oFilename)
 {
 	FilePanel *p = getFilePanel();
 	if(p)
@@ -92,24 +94,24 @@ bool FileContainerBase::begin(void)
 	return super::begin();
 }
 
-void FileContainerBase::setFilename(QString const &oFilename)
+void FileContainerBase::setFilename(StdString const &oFilename)
 {
 	connect(oFilename);
 	setSelector("");
 }
 
-QString FileContainerBase::getFilename(void)
+StdString FileContainerBase::getFilename(void)
 {
 	return getConnectString();
 }
 
-bool FileContainerBase::loadProfile(QSettings &oProfile, QString const &oKey)
+bool FileContainerBase::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	return super::loadProfile(oProfile, oKey);
 	return true;
 }
 
-void FileContainerBase::saveProfile(QSettings &oProfile, QString const &oKey)
+void FileContainerBase::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	super::saveProfile(oProfile, oKey);
 }

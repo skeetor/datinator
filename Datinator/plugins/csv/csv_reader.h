@@ -4,8 +4,8 @@
  *
  ******************************************************************************/
 
-#ifndef CSV_READER_H_INCLUDED
-#define CSV_READER_H_INCLUDED
+#ifndef _CSV_READER_H_INCLUDED
+#define _CSV_READER_H_INCLUDED
 
 #include "plugin/container/reader_base.h"
 
@@ -30,14 +30,14 @@ public:
 public: // @IDataContainer
 	QWidget *getConfigPanel(void) override;
 
-	int read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow) override;
+	int read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow) override;
 	int count(void) override;
 
 protected:
-	QList<DatabaseColumn *> loadColumns(void) override;
+	std::vector<DatabaseColumn *> loadColumns(void) override;
 	CSVReaderConfigPanel *createContainerConfigPanel(void) override;
 	bool isReader(void) override;
-	virtual void updateSampleView(QList<DatabaseColumn *> const &oColumns);
+	virtual void updateSampleView(std::vector<DatabaseColumn *> const &oColumns);
 	CSV::Openmode getOpenmode(void) override;
 
 private:
@@ -47,4 +47,4 @@ private:
 	CSVReaderConfigPanel *mConfigPanel;
 };
 
-#endif // CSV_READER_H_INCLUDED
+#endif // _CSV_READER_H_INCLUDED

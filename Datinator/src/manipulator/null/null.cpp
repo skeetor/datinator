@@ -4,8 +4,6 @@
  *
  *******************************************************************************/
 
-#include <QtCore/QString>
-
 #include "manipulator/null/null.h"
 
 NullManipulator::NullManipulator(void)
@@ -16,7 +14,7 @@ NullManipulator::~NullManipulator(void)
 {
 }
 
-QString NullManipulator::getId(void)
+StdString NullManipulator::getId(void)
 {
 	return "B7F61B90-FFC0-11E3-9191-0800200C9A66";
 }
@@ -26,17 +24,17 @@ bool NullManipulator::isConfigured(void)
 	return true;
 }
 
-QString NullManipulator::toString(void)
+StdString NullManipulator::toString(void)
 {
 	return "[null]";
 }
 
-QString NullManipulator::getName(void)
+StdString NullManipulator::getName(void)
 {
 	return "Null";
 }
 
-QString NullManipulator::getDescription(void)
+StdString NullManipulator::getDescription(void)
 {
 	return "This manipulator will always return a null value.";
 }
@@ -58,7 +56,7 @@ QWidget *NullManipulator::getConfigurationPanel(QWidget *oParent)
 	return NULL;
 }
 
-QString *NullManipulator::format(QString *oValue, bool bPreview)
+StdString *NullManipulator::format(StdString *oValue, bool bPreview)
 {
 	UNUSED(bPreview);
 
@@ -76,12 +74,12 @@ void NullManipulator::prepare(void)
 	Manipulator::prepare();
 }
 
-bool NullManipulator::loadProfile(QSettings &oProfile, QString const &oKey)
+bool NullManipulator::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	return Manipulator::loadProfile(oProfile, oKey);
 }
 
-void NullManipulator::saveProfile(QSettings &oProfile, QString const &oKey)
+void NullManipulator::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	Manipulator::saveProfile(oProfile, oKey);
 }

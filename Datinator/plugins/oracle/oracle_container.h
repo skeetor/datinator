@@ -4,9 +4,11 @@
  *
  *******************************************************************************/
 
-#ifndef ORACLE_CONTAINER_H_INCLUDED
-#define ORACLE_CONTAINER_H_INCLUDED
+#ifndef _ORACLE_CONTAINER_H_INCLUDED
+#define _ORACLE_CONTAINER_H_INCLUDED
 
+#include "datinator_types.h"
+#include "oracle/oracle_dll_api.h"
 #include "support/patterns/observer.h"
 
 #include "support_qt/db/login_panel/login_event.h"
@@ -20,43 +22,43 @@ class LoginPanelModel;
 namespace soci { class session; }
 
 class ORACLE_DLL_EXPORT OracleContainer
-	: public SociContainer,
-	  protected Listener<LoginEvent>
+	: public SociContainer
+	, protected Listener<LoginEvent>
 {
 public:
 	OracleContainer(QWidget *oMainWindow);
 	virtual ~OracleContainer(void);
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
-	bool connect(QString const &oConnectString = "") override;
+	bool connect(StdString const &oConnectString = "") override;
 
 protected:
-	QString loginToConnectString(DatabaseLogin const &oLogin) const;
-	DatabaseLogin connectStringToLogin(QString const &oConnectString) const;
+	StdString loginToConnectString(DatabaseLogin const &oLogin) const;
+	DatabaseLogin connectStringToLogin(StdString const &oConnectString) const;
 
-	QString limitQuery(QString const &oQuery, int nLimit) const override;
-	virtual QList<QString> loadTables(void) override;
+	StdString limitQuery(StdString const &oQuery, int nLimit) const override;
+	virtual std::vector<StdString> loadTables(void) override;
 
 	DatabaseLoginPanel *createLoginPanel(void) override;
 	void initPanel(DBPanel *oPanel) override;
 
-	StdString sociConnectString(QString const &oContainerConnectString) override;
+	StdString sociConnectString(StdString const &oContainerConnectString) override;
 	soci::backend_factory const &sociFactory(void) override;
-	QList<DatabaseColumn *> readColumnsFromTable(QString const &oTablename) override;
+	std::vector<DatabaseColumn *> readColumnsFromTable(StdString const &oTablename) override;
 
 	void handleNotification(Dispatcher<LoginEvent> *oSource, LoginEvent oEvent) override;
 
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 
 private:
 	typedef SociContainer super;
 
 	DatabaseLoginPanel *mLoginPanel;
 	DatabaseLogin mLogin;
-	QList<QString> mTables;
+	std::vector<StdString> mTables;
 };
 
-#endif // ORACLE_CONTAINER_H_INCLUDED
+#endif // _ORACLE_CONTAINER_H_INCLUDED

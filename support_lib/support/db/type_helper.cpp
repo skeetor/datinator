@@ -33,7 +33,7 @@
 typedef struct
 {
 	unsigned int mBitNumber;
-    int (*mEvaluate)(supportlib::string::string_t const &oValue);
+    int (*mEvaluate)(spt::string::string_t const &oValue);
 } TypeEvaluator;
 
 
@@ -52,45 +52,45 @@ TypeEvaluator Evaluators[] =
 	{ 0, NULL}
 };
 
-supportlib::string::string_t toTypeString(supportlib::db::DataType oType)
+spt::string::string_t toTypeString(spt::db::DataType oType)
 {
-	supportlib::string::string_t s = "type_unknown";
+	spt::string::string_t s = "type_unknown";
 
 	switch(oType)
 	{
-		case supportlib::db::type_date:
+		case spt::db::type_date:
 			s = "type_date";
 		break;
 
-		case supportlib::db::type_time:
+		case spt::db::type_time:
 			s = "type_time";
 		break;
 
-		case supportlib::db::type_time_long:
+		case spt::db::type_time_long:
 			s = "type_time_long";
 		break;
 
-		case supportlib::db::type_datetime:
+		case spt::db::type_datetime:
 			s = "type_datetime";
 		break;
 
-		case supportlib::db::type_datetime_long:
+		case spt::db::type_datetime_long:
 			s = "type_datetime_long";
 		break;
 
-		case supportlib::db::type_string:
+		case spt::db::type_string:
 			s = "type_string";
 		break;
 
-		case supportlib::db::type_decimal:
+		case spt::db::type_decimal:
 			s = "type_decimal";
 		break;
 
-		case supportlib::db::type_integer:
+		case spt::db::type_integer:
 			s = "type_integer";
 		break;
 
-		case supportlib::db::type_ip:
+		case spt::db::type_ip:
 			s = "type_ip";
 		break;
 
@@ -101,47 +101,47 @@ supportlib::string::string_t toTypeString(supportlib::db::DataType oType)
 	return s;
 }
 
-supportlib::db::DataType toType(supportlib::string::string_t const &oType)
+spt::db::DataType toType(spt::string::string_t const &oType)
 {
-	supportlib::db::DataType rc = supportlib::db::DataType::type_unknown;
+	spt::db::DataType rc = spt::db::DataType::type_unknown;
 
 	if(oType == "type_date")
-		rc = supportlib::db::DataType::type_date;
+		rc = spt::db::DataType::type_date;
 	else if(oType == "type_time")
-		rc = supportlib::db::DataType::type_time;
+		rc = spt::db::DataType::type_time;
 	else if(oType == "type_time_long")
-		rc = supportlib::db::DataType::type_time_long;
+		rc = spt::db::DataType::type_time_long;
 	else if(oType == "type_datetime")
-		rc = supportlib::db::DataType::type_datetime;
+		rc = spt::db::DataType::type_datetime;
 	else if(oType == "type_datetime_long")
-		rc = supportlib::db::DataType::type_datetime_long;
+		rc = spt::db::DataType::type_datetime_long;
 	else if(oType == "type_string")
-		rc = supportlib::db::DataType::type_string;
+		rc = spt::db::DataType::type_string;
 	else if(oType == "type_decimal")
-		rc = supportlib::db::DataType::type_decimal;
+		rc = spt::db::DataType::type_decimal;
 	else if(oType == "type_integer")
-		rc = supportlib::db::DataType::type_integer;
+		rc = spt::db::DataType::type_integer;
 	else if(oType == "type_ip")
-		rc = supportlib::db::DataType::type_ip;
+		rc = spt::db::DataType::type_ip;
 
 	return rc;
 }
 
-supportlib::db::DataType guessType(supportlib::string::string_t const &oValue)
+spt::db::DataType guessType(spt::string::string_t const &oValue)
 {
-	supportlib::string::string_t v = strip(oValue);
+	spt::string::string_t v = strip(oValue);
 	int len = v.length();
 	if(len == 0)
-		return supportlib::db::DataType::type_unknown;
+		return spt::db::DataType::type_unknown;
 
-	supportlib::db::DataType result = supportlib::db::DataType::type_unknown;
+	spt::db::DataType result = spt::db::DataType::type_unknown;
 	unsigned int type_mask = 0;
 	int tokens = 0;
 	int n;
 	int i = 0;
 
-	supportlib::string::string_t prefix;
-	supportlib::string::stringstream_t ss(oValue);
+	spt::string::string_t prefix;
+	spt::string::stringstream_t ss(oValue);
 
 	while(ss.rdbuf()->in_avail() > 0)
 	{
@@ -170,7 +170,7 @@ supportlib::db::DataType guessType(supportlib::string::string_t const &oValue)
 			if((n = eval->mEvaluate(v)) > 0)
 			{
 				if(BIT_IS_SET(type_mask, eval->mBitNumber))
-					return supportlib::db::DataType::type_string;
+					return spt::db::DataType::type_string;
 
 				BIT_SET(type_mask, eval->mBitNumber);
 
@@ -219,49 +219,49 @@ supportlib::db::DataType guessType(supportlib::string::string_t const &oValue)
 	switch(type_mask)
 	{
 		case BIT_VALUE(BIT_DATETIME):
-			result = supportlib::db::DataType::type_datetime;
+			result = spt::db::DataType::type_datetime;
 			tokens--;
 		break;
 
 		case BIT_VALUE(BIT_DATETIME_LONG):
 		case BIT_VALUE(BIT_DATE) + BIT_VALUE(BIT_TIME_LONG):
 		case BIT_VALUE(BIT_DATE) + BIT_VALUE(BIT_TIME) + BIT_VALUE(BIT_TIME_LONG):
-			result = supportlib::db::DataType::type_datetime_long;
+			result = spt::db::DataType::type_datetime_long;
 			tokens--;
 		break;
 
 		case BIT_VALUE(BIT_DATE):
-			result = supportlib::db::DataType::type_date;
+			result = spt::db::DataType::type_date;
 		break;
 
 		case BIT_VALUE(BIT_TIME):
-			result = supportlib::db::DataType::type_time;
+			result = spt::db::DataType::type_time;
 		break;
 
 		case BIT_VALUE(BIT_INTEGER):
-			result = supportlib::db::DataType::type_integer;
+			result = spt::db::DataType::type_integer;
 		break;
 
 		case BIT_VALUE(BIT_DECIMAL):
-			result = supportlib::db::DataType::type_decimal;
+			result = spt::db::DataType::type_decimal;
 		break;
 
 		case BIT_VALUE(BIT_IP):
-			result = supportlib::db::DataType::type_ip;
+			result = spt::db::DataType::type_ip;
 		break;
 
 		default:
-			result = supportlib::db::DataType::type_string;
+			result = spt::db::DataType::type_string;
 		break;
 	}
 
 	if(tokens != 1)
-		result = supportlib::db::DataType::type_string;
+		result = spt::db::DataType::type_string;
 
 	return result;
 }
 
-supportlib::string::string_t strip(supportlib::string::string_t const &oString, bool bBegin, bool bEnd)
+spt::string::string_t strip(spt::string::string_t const &oString, bool bBegin, bool bEnd)
 {
 	int start = 0;
 	int end = oString.length();
@@ -269,7 +269,7 @@ supportlib::string::string_t strip(supportlib::string::string_t const &oString, 
 	if(start == end)
 		return oString;
 
-	supportlib::string::string_t s(oString);
+	spt::string::string_t s(oString);
 	if(bBegin)
 	{
 		while(start < end)
@@ -299,7 +299,7 @@ supportlib::string::string_t strip(supportlib::string::string_t const &oString, 
 	return s;
 }
 
-int isDecimal(supportlib::string::string_t const &oValue)
+int isDecimal(spt::string::string_t const &oValue)
 {
 	double dummy;
 	int n = toDecimal(oValue, 0, dummy);
@@ -309,7 +309,7 @@ int isDecimal(supportlib::string::string_t const &oValue)
 	return n;
 }
 
-int toDecimal(supportlib::string::string_t const &oValue, int nIndex, double &nValue)
+int toDecimal(spt::string::string_t const &oValue, int nIndex, double &nValue)
 {
 	nValue = 0;
 	int n = oValue.length();
@@ -374,7 +374,7 @@ int toDecimal(supportlib::string::string_t const &oValue, int nIndex, double &nV
 	return i;
 }
 
-int isInteger(supportlib::string::string_t const &oValue)
+int isInteger(spt::string::string_t const &oValue)
 {
 	int dummy;
 
@@ -385,7 +385,7 @@ int isInteger(supportlib::string::string_t const &oValue)
 	return n;
 }
 
-int toInteger(supportlib::string::string_t const &oValue, int nIndex, int &nValue)
+int toInteger(spt::string::string_t const &oValue, int nIndex, int &nValue)
 {
 	nValue = 0;
 	int n = oValue.length();
@@ -432,7 +432,7 @@ int toInteger(supportlib::string::string_t const &oValue, int nIndex, int &nValu
 	return i;
 }
 
-int isTimeMilliseconds(supportlib::string::string_t const &oValue)
+int isTimeMilliseconds(spt::string::string_t const &oValue)
 {
 	bool isMilli;
 
@@ -446,7 +446,7 @@ int isTimeMilliseconds(supportlib::string::string_t const &oValue)
 	return n;
 }
 
-int isTime(supportlib::string::string_t const &oValue)
+int isTime(spt::string::string_t const &oValue)
 {
 	int n = toTime(oValue);
 	if(n < static_cast<int>(oValue.length()))
@@ -455,7 +455,7 @@ int isTime(supportlib::string::string_t const &oValue)
 	return n;
 }
 
-int toTime(supportlib::string::string_t const &oValue, int *oHour, int *oMinute, int *oSecond, bool *bMilis, double *oMilis)
+int toTime(spt::string::string_t const &oValue, int *oHour, int *oMinute, int *oSecond, bool *bMilis, double *oMilis)
 {
 	int v[3];
 	int i = 0;
@@ -466,7 +466,7 @@ int toTime(supportlib::string::string_t const &oValue, int *oHour, int *oMinute,
 	double mil = 0;
 	char c = 0;
 
-	supportlib::string::string_t s = oValue;
+	spt::string::string_t s = oValue;
 
 	memset(v, 0, sizeof(v));
 	while(1)
@@ -551,7 +551,7 @@ int toTime(supportlib::string::string_t const &oValue, int *oHour, int *oMinute,
 }
 
 
-int isIP(supportlib::string::string_t const &oValue)
+int isIP(spt::string::string_t const &oValue)
 {
 	int n = toIP(oValue);
 	if(n < static_cast<int>(oValue.length()))
@@ -560,7 +560,7 @@ int isIP(supportlib::string::string_t const &oValue)
 	return n;
 }
 
-int toIP(supportlib::string::string_t const &oValue, int *oAddress)
+int toIP(spt::string::string_t const &oValue, int *oAddress)
 {
 	int v[4];
 	int i = 0;
@@ -568,7 +568,7 @@ int toIP(supportlib::string::string_t const &oValue, int *oAddress)
 	int pos;
 	int n = 0;
 
-	supportlib::string::string_t s = oValue;
+	spt::string::string_t s = oValue;
 
 	memset(v, 0, sizeof(v));
 	while(1)
@@ -614,13 +614,13 @@ int toIP(supportlib::string::string_t const &oValue, int *oAddress)
     return n;
 }
 
-int isDateTimeMilliseconds(supportlib::string::string_t const &oValue)
+int isDateTimeMilliseconds(spt::string::string_t const &oValue)
 {
 	int total = toDate(oValue);
 	if(!total)
 		return 0;
 
-	supportlib::string::string_t val = oValue.substr(total);
+	spt::string::string_t val = oValue.substr(total);
 	int h;
 	int m;
 	int s;
@@ -641,13 +641,13 @@ int isDateTimeMilliseconds(supportlib::string::string_t const &oValue)
 	return n;
 }
 
-int isDateTime(supportlib::string::string_t const &oValue)
+int isDateTime(spt::string::string_t const &oValue)
 {
 	int n = toDate(oValue);
 	if(!n)
 		return 0;
 
-	supportlib::string::string_t val = oValue.substr(n);
+	spt::string::string_t val = oValue.substr(n);
 	int h;
 	int m;
 	int s;
@@ -667,7 +667,7 @@ int isDateTime(supportlib::string::string_t const &oValue)
 	return n;
 }
 
-int isDate(supportlib::string::string_t const &oValue)
+int isDate(spt::string::string_t const &oValue)
 {
 	int n = toDate(oValue);
 	if(n < static_cast<int>(oValue.length()))
@@ -676,7 +676,7 @@ int isDate(supportlib::string::string_t const &oValue)
 	return n;
 }
 
-int toDate(supportlib::string::string_t const &oValue, int *oYear, int *oMonth, int *oDay)
+int toDate(spt::string::string_t const &oValue, int *oYear, int *oMonth, int *oDay)
 {
 	int v[3];
 	int i = 0;
@@ -684,7 +684,7 @@ int toDate(supportlib::string::string_t const &oValue, int *oYear, int *oMonth, 
 	int years = 0;
 	int days = 0;
 	int n = 0;
-	supportlib::string::string_t s = oValue;
+	spt::string::string_t s = oValue;
 
 	memset(v, 0, sizeof(v));
 	while(1)

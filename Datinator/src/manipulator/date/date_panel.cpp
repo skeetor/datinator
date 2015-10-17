@@ -6,6 +6,7 @@
 
 #include "manipulator/date/date_panel_gui.moc"
 #include "manipulator/date/date.h"
+#include "support/helper/string.h"
 
 DateManipulatorPanel::DateManipulatorPanel(DateManipulator *oOwner, QWidget *oParent)
 : ManipulatorPanel(oOwner, oParent)
@@ -26,9 +27,9 @@ DateManipulatorPanel::~DateManipulatorPanel(void)
 
 void DateManipulatorPanel::initCombobox(QComboBox *oBox)
 {
-	QList<QString> const &fmts = DateManipulator::getFormatTexts();
+	std::vector<StdString> const &fmts = DateManipulator::getFormatTexts();
 	for(int i = 0; i < DateManipulator::DateFormat::DT_MAX; i++)
-		oBox->addItem(fmts[i], i);
+		oBox->addItem(spt::string::toQt(fmts[i]), i);
 }
 
 bool DateManipulatorPanel::isSysdateStart(void) const
@@ -77,20 +78,20 @@ void DateManipulatorPanel::onSysdateStart(bool bSysdateStart)
 	notifyOwner();
 }
 
-QString DateManipulatorPanel::getFormat(QComboBox *oBox, QLineEdit *oCustomFormat) const
+StdString DateManipulatorPanel::getFormat(QComboBox *oBox, QLineEdit *oCustomFormat) const
 {
 	QVariant v = oBox->currentData();
-	int fmt = v.value<int>();
-	QList<QString> const &fmts = DateManipulator::getFormatTexts();
+	size_t fmt = v.value<int>();
+	std::vector<StdString> const &fmts = DateManipulator::getFormatTexts();
 	if(fmt == DateManipulator::DateFormat::DT_CUSTOM)
-		return oCustomFormat->text();
+		return spt::string::fromQt(oCustomFormat->text());
 	else if(fmt < fmts.size())
 		return fmts[fmt];
 
 	return "";
 }
 
-void DateManipulatorPanel::setFormat(QString const &oString, QComboBox *oBox, QLineEdit *oCustomFormat)
+void DateManipulatorPanel::setFormat(StdString const &oString, QComboBox *oBox, QLineEdit *oCustomFormat)
 {
 	oCustomFormat->setText("");
 	if(oString.length() == 0)
@@ -99,7 +100,7 @@ void DateManipulatorPanel::setFormat(QString const &oString, QComboBox *oBox, QL
 		return;
 	}
 
-	QList<QString> const &fmts = DateManipulator::getFormats();
+	std::vector<StdString> const &fmts = DateManipulator::getFormats();
 	int r = oBox->count();
 	for(int i = 0; i < r; i++)
 	{
@@ -111,30 +112,30 @@ void DateManipulatorPanel::setFormat(QString const &oString, QComboBox *oBox, QL
 	}
 
 	oBox->setCurrentIndex(DateManipulator::DateFormat::DT_CUSTOM);
-	oCustomFormat->setText(oString);
+	oCustomFormat->setText(spt::string::toQt(oString));
 }
 
-QString DateManipulatorPanel::getInputFormat(void) const
+StdString DateManipulatorPanel::getInputFormat(void) const
 {
 	return getFormat(mGUI->mInputBox, mGUI->mInputFormatTxt);
 }
 
-void DateManipulatorPanel::setInputFormat(QString const &oFormat)
+void DateManipulatorPanel::setInputFormat(StdString const &oFormat)
 {
 	setFormat(oFormat, mGUI->mInputBox, mGUI->mInputFormatTxt);
 }
 
-QString DateManipulatorPanel::getOutputFormat(void) const
+StdString DateManipulatorPanel::getOutputFormat(void) const
 {
 	return getFormat(mGUI->mOutputBox, mGUI->mOutputFormatTxt);
 }
 
-void DateManipulatorPanel::setOutputFormat(QString const &oFormat)
+void DateManipulatorPanel::setOutputFormat(StdString const &oFormat)
 {
 	setFormat(oFormat, mGUI->mOutputBox, mGUI->mOutputFormatTxt);
 }
 
-void DateManipulatorPanel::onTextChanged(QString oText)
+void DateManipulatorPanel::onTextChanged(StdString oText)
 {
 	UNUSED(oText);
 

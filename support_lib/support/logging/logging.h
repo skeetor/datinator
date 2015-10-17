@@ -4,17 +4,18 @@
  *
  ******************************************************************************/
 
-#ifndef LOGGING_H
-#define LOGGING_H
+#ifndef _SUPPORT_LOGGING_H
+#define _SUPPORT_LOGGING_H
 
-#include <QtCore/QString>
-#include <QtCore/QList>
+#include "support/unicode/unicode_types.h"
+#include "support/support_dll_api.h"
+#include <vector>
 
-namespace supportlib
+namespace spt
 {
 namespace logging
 {
-	class LoggingItem
+	class SUPPORT_DLL_EXPORT LoggingItem
 	{
 	public:
 		typedef enum
@@ -29,7 +30,7 @@ namespace logging
 	public:
 		LoggingItem(void);
 		LoggingItem(LoggingItem const &oSource);
-		LoggingItem(QString const &oMessage, QString const &oUnit = "", LogType nType = LOG_UNDEFINED, unsigned int nTimestamp = 0, QString const &oFile = "", int nLine = 0, QString const &oMethod = "");
+		LoggingItem(spt::string::string_t const &oMessage, spt::string::string_t const &oUnit = "", LogType nType = LOG_UNDEFINED, unsigned int nTimestamp = 0, spt::string::string_t const &oFile = "", int nLine = 0, spt::string::string_t const &oMethod = "");
 		virtual ~LoggingItem(void);
 
 		virtual void copy(LoggingItem const &oSource);
@@ -38,54 +39,54 @@ namespace logging
 		inline int getLine(void) const { return mLine; };
 		inline void setLine(int nLine) { mLine = nLine; };
 
-		QString getTypeText(void) const;
+		spt::string::string_t getTypeText(void) const;
 		inline LogType getType(void) const { return mType; };
 		inline void setType(LogType nType) { mType = nType; };
 
-		inline qint64 getTimestamp(void) const { return mTimestamp; };
-		void setTimestamp(qint64 nTimestamp = 0);		// set the current systemtime as the timestamp if == 0
+		inline size_t getTimestamp(void) const { return mTimestamp; };
+		void setTimestamp(size_t nTimestamp = 0);		// set the current systemtime as the timestamp if == 0
 
-		inline QString getFile(void) const { return mFile; };
-		inline void setFile(QString const &oFile) { mFile = oFile; };
+		inline spt::string::string_t getFile(void) const { return mFile; };
+		inline void setFile(spt::string::string_t const &oFile) { mFile = oFile; };
 
-		inline QString getMethod(void) const { return mMethod; };
-		inline void setMethod(QString const &oMethod) { mMethod = oMethod; };
+		inline spt::string::string_t getMethod(void) const { return mMethod; };
+		inline void setMethod(spt::string::string_t const &oMethod) { mMethod = oMethod; };
 
-		inline QString getMessage(void) const { return mMessage; };
-		inline void setMessage(QString const &oMessage) { mMessage = oMessage; };
+		inline spt::string::string_t getMessage(void) const { return mMessage; };
+		inline void setMessage(spt::string::string_t const &oMessage) { mMessage = oMessage; };
 
-		inline QString getUnit(void) const { return mUnit; };
-		inline void setUnit(QString const &oUnit) { mUnit = oUnit; };
+		inline spt::string::string_t getUnit(void) const { return mUnit; };
+		inline void setUnit(spt::string::string_t const &oUnit) { mUnit = oUnit; };
 
 	private:
 		LogType mType;
 		int mLine;
-		qint64 mTimestamp;
-		QString mFile;
-		QString mMethod;
-		QString mUnit;
-		QString mMessage;
+		size_t mTimestamp;
+		spt::string::string_t mFile;
+		spt::string::string_t mMethod;
+		spt::string::string_t mUnit;
+		spt::string::string_t mMessage;
 	};
 
-	class Logging
+	class SUPPORT_DLL_EXPORT Logging
 	{
 	public:
 		Logging(void);
 		virtual ~Logging(void);
 
-		virtual void addEntry(QString const &oMessage, QString const &oUnit = "", LoggingItem::LogType nType = LoggingItem::LogType::LOG_UNDEFINED, unsigned int nTimestamp = 0, QString const &oFile = "", int nLine = 0, QString const &oMethod = "");
+		virtual void addEntry(spt::string::string_t const &oMessage, spt::string::string_t const &oUnit = "", LoggingItem::LogType nType = LoggingItem::LogType::LOG_UNDEFINED, unsigned int nTimestamp = 0, spt::string::string_t const &oFile = "", int nLine = 0, spt::string::string_t const &oMethod = "");
 
-		inline void addItem(LoggingItem const &oItem) { mItems.append(oItem); } ;
-		inline QList<LoggingItem> getItems(void) const { return mItems; };
+		inline void addItem(LoggingItem const &oItem) { mItems.push_back(oItem); } ;
+		inline std::vector<LoggingItem> getItems(void) const { return mItems; };
 
 		inline void clear(void) { mItems.clear(); };
-		inline int count(void) { return mItems.count(); };
+		inline int count(void) { return mItems.size(); };
 
 	private:
-		QList<LoggingItem> mItems;
+		std::vector<LoggingItem> mItems;
 	};
 
 }
 }
 
-#endif // LOGGING_H
+#endif // _SUPPORT_LOGGING_H

@@ -9,6 +9,7 @@
 
 #include <QtWidgets/QFrame>
 
+#include "datinator_types.h"
 #include "plugin/plugin_dll_api.h"
 #include "plugin/sql/gui/commit_config_gui.h"
 
@@ -22,8 +23,8 @@ public:
 	CommitConfig(QWidget *oParent = NULL);
 	virtual ~CommitConfig(void);
 
-	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
-	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+	virtual bool loadProfile(QSettings &oProfile, StdString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, StdString const &oKey);
 
 	/**
 	 * Returns -1 if no autocommit, 0 for commit at the end, or N for a record count.

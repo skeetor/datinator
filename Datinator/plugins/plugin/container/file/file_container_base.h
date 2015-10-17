@@ -7,6 +7,8 @@
 #ifndef _FILE_CONTAINER_BASE_H_INCLUDED
 #define _FILE_CONTAINER_BASE_H_INCLUDED
 
+#include "datinator_types.h"
+
 #include "support/patterns/observer.h"
 #include "plugin/plugin_dll_api.h"
 #include "plugin/container/container_base.h"
@@ -16,20 +18,20 @@ class FilePanelConfigPanel;
 
 class PLUGIN_DLL_EXPORT FileContainerBase
     : public ContainerBase
-    , Listener<QString /* oPath */>
+    , Listener<StdString /* oPath */>
 {
 public:
 	FileContainerBase(QWidget *oMainWindow);
 	virtual ~FileContainerBase(void);
 
-	bool connect(QString const &oId) override;
+	bool connect(StdString const &oId) override;
 	bool begin(void) override;
 
-	void store(QSettings &oPropertyFile, QString const &oPrefix) override;
-	void restore(QSettings &oPropertyFile, QString const &oPrefix) override;
+	void store(QSettings &oPropertyFile, StdString const &oPrefix) override;
+	void restore(QSettings &oPropertyFile, StdString const &oPrefix) override;
 
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 
 	/**
 	 * For a file container, this will create the main panel which
@@ -40,8 +42,8 @@ public:
 	QWidget *getConfigPanel(void) override;
 
 public:
-	virtual void setFilename(QString const &oFilename);
-	virtual QString getFilename(void);
+	virtual void setFilename(StdString const &oFilename);
+	virtual StdString getFilename(void);
 
 	virtual bool isUnicode(void);
 	virtual void setUnicode(bool bUnicode = true);
@@ -52,7 +54,7 @@ protected:
 	virtual void enlargePanel(void);
 	virtual bool isReader(void) = 0;
 	void releaseColumns(void) override;
-	void handleNotification(Dispatcher<QString> *oSource, QString oPath) override;
+	void handleNotification(Dispatcher<StdString> *oSource, StdString oPath) override;
 
 private:
 	typedef ContainerBase super;

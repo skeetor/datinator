@@ -6,7 +6,7 @@
 
 #include <support/support_dll_api.h>
 
-namespace supportlib
+namespace spt
 {
 namespace image
 {

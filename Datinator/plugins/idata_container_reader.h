@@ -20,7 +20,7 @@ public:
 	 * is the number of rows returned and has to be 1 here. The number of elements
 	 * in the row, must match the number of columns in the getColumns()
 	 */
-	virtual int read(QList<DatabaseColumn *> &oColumns, QList<QString> &oRow) = 0;
+	virtual int read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow) = 0;
 
 	/**
 	 * Return -1 if the operation is not supported, otherwise the number of rows for the source.

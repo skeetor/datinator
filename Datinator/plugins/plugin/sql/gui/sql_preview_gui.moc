@@ -36,21 +36,21 @@ public:
 	 *
 	 * SQL Execute
 	 *   Event == EVENT_SQL_EXECUTE
-	 *   QVariant = QString : sql statement
+	 *   QVariant = StdString : sql statement
 	 */
 	void addActionListener(Listener<SQLPreview::ActionEvent, QVariant, int> *oListener);
 	void removeActionListener(Listener<SQLPreview::ActionEvent, QVariant, int> *oListener);
 
-	void setPreview(QList<DatabaseColumn *> const &oColumns, QList<QList<QString>> const &oRows);
+	void setPreview(std::vector<DatabaseColumn *> const &oColumns, std::vector<std::vector<StdString>> const &oRows);
 
-	QString getQuery(void);
-	void setQuery(QString const &oQuery, bool bNotify = true);
+	StdString getQuery(void);
+	void setQuery(StdString const &oQuery, bool bNotify = true);
 
 	void setPreviewLimit(int nCount);
 	int getPreviewLimit(void);
 
-	virtual bool loadProfile(QSettings &oProfile, QString const &oKey);
-	virtual void saveProfile(QSettings &oProfile, QString const &oKey);
+	virtual bool loadProfile(QSettings &oProfile, StdString const &oKey);
+	virtual void saveProfile(QSettings &oProfile, StdString const &oKey);
 
 public slots:
 	virtual void onSQL(bool bState);

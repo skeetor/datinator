@@ -7,6 +7,8 @@
 #ifndef TEXT_MANIPULATOR_H_INCLUDED
 #define TEXT_MANIPULATOR_H_INCLUDED
 
+#include <utility>
+
 #include "manipulator/manipulator.h"
 #include "manipulator/text/text_panel_gui.moc"
 #include "manipulator/text/selection.h"
@@ -21,19 +23,19 @@ public:
 	TextManipulator(TextManipulator const &oSource);
 	virtual ~TextManipulator(void);
 
-	QString getId(void) override;
-	QString getName(void) override;
-	QString getDescription(void) override;
+	StdString getId(void) override;
+	StdString getName(void) override;
+	StdString getDescription(void) override;
 	IManipulator *createInstance(void) override;
 	IManipulator *duplicate(void) override;
 	QWidget *getConfigurationPanel(QWidget *oParent = 0) override;
-	QString *format(QString *oValue, bool bPreview = false) override;
+	StdString *format(StdString *oValue, bool bPreview = false) override;
 	void reset(void) override;
 	void prepare(void) override;
 	bool isConfigured(void) override;
 
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
 
 	virtual TextManipulator &operator=(TextManipulator const &oSource);
 	virtual void copy(TextManipulator const &oSource);
@@ -47,16 +49,16 @@ public:
 	int getFillCharacter(void) const;
 	bool getFillAtEnd(void) const;
 
-	bool setPositions(QList<QPair<int, int>> const &oPositionList);
-	QList<QPair<int, int>> getPositions(void) const;
+	bool setPositions(std::vector<std::pair<int, int>> const &oPositionList);
+	std::vector<std::pair<int, int>> getPositions(void) const;
 
-	void setPattern(QString const &oPattern, bool bInvertSelection, bool bRegularExpression);
+	void setPattern(StdString const &oPattern, bool bInvertSelection, bool bRegularExpression);
 	bool getInvertSelection(void) const;
 	bool getRegularExpression(void) const;
-	QString getPattern(void) const;
+	StdString getPattern(void) const;
 
-	void setText(QString const &oText);
-	QString getText(void) const;
+	void setText(StdString const &oText);
+	StdString getText(void) const;
 
 protected:
 	/**
@@ -68,25 +70,25 @@ protected:
 	/**
 	 * Select the string indicated by the position settings
 	 */
-	QString selectByPosition(QString const &oValue) const;
+	StdString selectByPosition(StdString const &oValue) const;
 
 	/**
 	 * Select the string indicated by a regular expression/wildcard pattern.
 	 */
-	QString selectByPattern(QString const &oValue, QString const &oPattern, bool bRegularExpression, bool bInvertSelection, const QString *oReplace) const;
+	StdString selectByPattern(StdString const &oValue, StdString const &oPattern, bool bRegularExpression, bool bInvertSelection, const StdString *oReplace) const;
 
 private:
 	TextManipulatorPanel *mPanel;
 	TextManipulatorAction mAction;
-	int mMinLength;
-	int mMaxLength;
+	ssize_t mMinLength;
+	ssize_t mMaxLength;
 	int mFillCharacter;
 	bool mFillAtEnd;
 	bool mInvertSelection;
 	bool mRegularExpression;
-	QList<QPair<int, int>> mPositions;
-	QString mPattern;
-	QString mText;
+	std::vector<std::pair<int, int>> mPositions;
+	StdString mPattern;
+	StdString mText;
 };
 
 #endif // TEXT_MANIPULATOR_H_INCLUDED

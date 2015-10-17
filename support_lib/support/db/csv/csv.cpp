@@ -439,7 +439,7 @@ CSV::ErrorCode CSV::readColumns(bool bAutodetectTypes)
 		for(CSVColumn *&col : mColumns)
 		{
 			i++;
-			if(col == NULL || col->getType() != supportlib::db::DataType::type_unknown)
+			if(col == NULL || col->getType() != spt::db::DataType::type_unknown)
 			{
 				complete++;
 				continue;

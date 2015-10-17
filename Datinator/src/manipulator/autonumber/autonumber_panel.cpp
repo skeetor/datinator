@@ -20,7 +20,7 @@ AutoNumberPanel::~AutoNumberPanel(void)
 {
 }
 
-void AutoNumberPanel::onWidthChanged(int nWidth)
+void AutoNumberPanel::onWidthChanged(size_t nWidth)
 {
 	if(nWidth > 0)
 	{
@@ -38,14 +38,14 @@ void AutoNumberPanel::onWidthChanged(int nWidth)
 	notifyOwner();
 }
 
-void AutoNumberPanel::onValueChanged(int nValue)
+void AutoNumberPanel::onValueChanged(size_t nValue)
 {
 	UNUSED(nValue);
 
 	notifyOwner();
 }
 
-void AutoNumberPanel::onIncrementChanged(int nIncrement)
+void AutoNumberPanel::onIncrementChanged(size_t nIncrement)
 {
 	UNUSED(nIncrement);
 
@@ -58,32 +58,32 @@ void AutoNumberPanel::onLeadingZeroes(bool bLeadingZeroes)
 	notifyOwner();
 }
 
-int AutoNumberPanel::getValue(void) const
+size_t AutoNumberPanel::getValue(void) const
 {
 	return mGUI->mValueBox->value();
 }
 
-void AutoNumberPanel::setValue(int nValue)
+void AutoNumberPanel::setValue(size_t nValue)
 {
 	mGUI->mValueBox->setValue(nValue);
 }
 
-int AutoNumberPanel::getWidth(void) const
+size_t AutoNumberPanel::getWidth(void) const
 {
 	return 	mGUI->mWidthBox->value();
 }
 
-void AutoNumberPanel::setWidth(int nWidth)
+void AutoNumberPanel::setWidth(size_t nWidth)
 {
 	mGUI->mWidthBox->setValue(nWidth);
 }
 
-int AutoNumberPanel::getIncrement(void) const
+size_t AutoNumberPanel::getIncrement(void) const
 {
 	return mGUI->mIncrementBox->value();
 }
 
-void AutoNumberPanel::setIncrement(int nIncrement)
+void AutoNumberPanel::setIncrement(size_t nIncrement)
 {
 	mGUI->mIncrementBox->setValue(nIncrement);
 }

@@ -31,19 +31,19 @@ SQLiteWriterPanel::~SQLiteWriterPanel(void)
 {
 }
 
-void SQLiteWriterPanel::store(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLiteWriterPanel::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	UNUSED(oPropertyFile);
 	UNUSED(oPrefix);
 }
 
-void SQLiteWriterPanel::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLiteWriterPanel::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	UNUSED(oPropertyFile);
 	UNUSED(oPrefix);
 }
 
-bool SQLiteWriterPanel::loadProfile(QSettings &oProfile, QString const &oKey)
+bool SQLiteWriterPanel::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!mCreateOptionPanel->loadProfile(oProfile, oKey))
 		return false;
@@ -57,7 +57,7 @@ bool SQLiteWriterPanel::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void SQLiteWriterPanel::saveProfile(QSettings &oProfile, QString const &oKey)
+void SQLiteWriterPanel::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	mExportPanel->saveProfile(oProfile, oKey);
 	mCreateOptionPanel->saveProfile(oProfile, oKey);
@@ -94,12 +94,12 @@ void SQLiteWriterPanel::setRecreateTable(bool bRecreateTable)
 	mCreateOptionPanel->setRecreateTable(bRecreateTable);
 }
 
-QString SQLiteWriterPanel::getPath(void)
+StdString SQLiteWriterPanel::getPath(void)
 {
 	return mExportPanel->getPath();
 }
 
-void SQLiteWriterPanel::setPath(QString const &oPath)
+void SQLiteWriterPanel::setPath(StdString const &oPath)
 {
 	mExportPanel->setPath(oPath);
 }

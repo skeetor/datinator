@@ -8,7 +8,9 @@
 #define COLUMN_EDITOR_MODEL_H_INCLUDED
 
 #include <QtGui/QStandardItemModel>
-#include <QtCore/QList>
+
+#include <vector>
+
 #include "datinator_types.h"
 #include "support/patterns/observer.h"
 #include "support/db/dbcolumn.h"
@@ -22,7 +24,7 @@ public:
 	ColumnEditorModel(QObject *oParent = NULL);
 	virtual ~ColumnEditorModel(void);
 
-	void setColumns(QList<DatabaseColumn *> const &oColumns);
+	void setColumns(std::vector<DatabaseColumn *> const &oColumns);
 	DatabaseColumn *columnItem(int nRow);
 
 	/**
@@ -44,8 +46,8 @@ protected:
 	void notifyRowListeners(bool bInserted, int nRow, int nCount);
 	void deleteRow(int nRow);
 	void putItem(int nRow, DatabaseColumn *oItem);
-	void updateName(int nRow, QString const &oName);
-	void updateType(int nRow, QString const &oType);
+	void updateName(int nRow, StdString const &oName);
+	void updateType(int nRow, StdString const &oType);
 };
 
 #endif // COLUMN_EDITOR_MODEL_H_INCLUDED

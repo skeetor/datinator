@@ -7,8 +7,7 @@
 #ifndef CSV_READER_CONFIG_PANEL_H_INCLUDED
 #define CSV_READER_CONFIG_PANEL_H_INCLUDED
 
-#include <QtCore/QList>
-#include <QtCore/QString>
+#include <vector>
 
 #include "csv/csv_dll_api.h"
 #include "plugin/container/gui/file_panel_config_panel.h"
@@ -25,8 +24,8 @@ public:
 	CSVReaderConfigPanel(CSVReader *oContainer, QWidget *oParent = NULL);
 	virtual ~CSVReaderConfigPanel(void);
 
-	void setColumns(QList<DatabaseColumn *> const &oColumns);
-	void setRows(QList<QList<QString>> const &oRows);
+	void setColumns(std::vector<DatabaseColumn *> const &oColumns);
+	void setRows(std::vector<std::vector<StdString>> const &oRows);
 
 private:
 	Ui::CSVReaderConfigPanelGUI *mGUI;

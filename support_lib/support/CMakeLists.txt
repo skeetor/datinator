@@ -45,6 +45,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 add_subdirectory (helper)
 add_subdirectory (db)
+add_subdirectory (logging)
 add_subdirectory (unicode)
 add_subdirectory (patterns)
 add_subdirectory (images)

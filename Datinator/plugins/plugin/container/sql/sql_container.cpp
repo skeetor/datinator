@@ -19,12 +19,12 @@ SQLContainer::~SQLContainer(void)
 {
 }
 
-void SQLContainer::store(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLContainer::store(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	ContainerBase::store(oPropertyFile, oPrefix);
 }
 
-void SQLContainer::restore(QSettings &oPropertyFile, QString const &oPrefix)
+void SQLContainer::restore(QSettings &oPropertyFile, StdString const &oPrefix)
 {
 	ContainerBase::restore(oPropertyFile, oPrefix);
 }
@@ -45,13 +45,13 @@ QWidget *SQLContainer::getConfigPanel(void)
 	return mPanel;
 }
 
-void SQLContainer::setTables(QList<QString> const &oTables, QString const &oSelection, bool bNotify)
+void SQLContainer::setTables(std::vector<StdString> const &oTables, StdString const &oSelection, bool bNotify)
 {
 	if(mPanel)
 		mPanel->setTables(oTables, oSelection, bNotify);
 }
 
-void SQLContainer::selectTable(QString const &oSelection, bool bNotify)
+void SQLContainer::selectTable(StdString const &oSelection, bool bNotify)
 {
 	if(mPanel)
 		mPanel->selectTable(oSelection, bNotify);
@@ -60,15 +60,15 @@ void SQLContainer::selectTable(QString const &oSelection, bool bNotify)
 void SQLContainer::clearTables(void)
 {
 	if(mPanel)
-		mPanel->setTables(QList<QString>());
+		mPanel->setTables(std::vector<StdString>());
 }
 
-void SQLContainer::setQuery(QString const &oQuery)
+void SQLContainer::setQuery(StdString const &oQuery)
 {
 	setSelector(oQuery);
 }
 
-bool SQLContainer::loadProfile(QSettings &oProfile, QString const &oKey)
+bool SQLContainer::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
 	if(!super::loadProfile(oProfile, oKey))
 		return false;
@@ -79,7 +79,7 @@ bool SQLContainer::loadProfile(QSettings &oProfile, QString const &oKey)
 	return true;
 }
 
-void SQLContainer::saveProfile(QSettings &oProfile, QString const &oKey)
+void SQLContainer::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	super::saveProfile(oProfile, oKey);
 	mPanel->saveProfile(oProfile, oKey);

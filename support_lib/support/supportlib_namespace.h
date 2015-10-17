@@ -7,10 +7,10 @@
 #ifndef SUPPORTLIB_NAMESPACE_H
 #define SUPPORTLIB_NAMESPACE_H
 
-#define SUPPORTLIB_NAMESPACE_BEGIN	namespace supportlib {
+#define SUPPORTLIB_NAMESPACE_BEGIN	namespace spt {
 #define SUPPORTLIB_NAMESPACE_END	};
 
-namespace supportlib
+namespace spt
 {
 }
 

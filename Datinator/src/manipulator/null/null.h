@@ -23,19 +23,19 @@ public:
 	virtual ~NullManipulator(void);
 
 	bool isConfigured(void) override;
-	QString getId(void) override;
-	QString toString(void) override;
-	QString getName(void) override;
-	QString getDescription(void) override;
+	StdString getId(void) override;
+	StdString toString(void) override;
+	StdString getName(void) override;
+	StdString getDescription(void) override;
 	IManipulator *createInstance(void) override;
 	IManipulator *duplicate(void) override;
 	QWidget *getConfigurationPanel(QWidget *oParent = 0) override;
-	QString *format(QString *oValue, bool bPreview = false) override;
+	StdString *format(StdString *oValue, bool bPreview = false) override;
 	void reset(void) override;
 	void prepare(void) override;
 
-	void saveProfile(QSettings &oProfile, QString const &oKey) override;
-	bool loadProfile(QSettings &oProfile, QString const &oKey) override;
+	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
+	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
 };
 
 #endif // NULL_H_INCLUDED

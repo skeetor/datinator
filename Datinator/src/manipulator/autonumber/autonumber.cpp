@@ -4,11 +4,12 @@
  *
  *******************************************************************************/
 
-#include <QtCore/QString>
 #include <QtCore/QTextStream>
 #include <QtCore/QSettings>
+#include <QtCore/QString>
 
 #include "manipulator/autonumber/autonumber.h"
+#include "support/helper/string.h"
 
 AutoNumberManipulator::AutoNumberManipulator(void)
 {
@@ -27,32 +28,32 @@ AutoNumberManipulator::~AutoNumberManipulator(void)
 {
 }
 
-int AutoNumberManipulator::getValue(void) const
+size_t AutoNumberManipulator::getValue(void) const
 {
 	return mValue;
 }
 
-void AutoNumberManipulator::setValue(int nValue)
+void AutoNumberManipulator::setValue(size_t nValue)
 {
 	mValue = nValue;
 }
 
-int AutoNumberManipulator::getWidth(void) const
+size_t AutoNumberManipulator::getWidth(void) const
 {
 	return mWidth;
 }
 
-void AutoNumberManipulator::setWidth(int nWidth)
+void AutoNumberManipulator::setWidth(size_t nWidth)
 {
 	mWidth = nWidth;
 }
 
-int AutoNumberManipulator::getIncrement(void) const
+size_t AutoNumberManipulator::getIncrement(void) const
 {
 	return mIncrement;
 }
 
-void AutoNumberManipulator::setIncrement(int nIncrement)
+void AutoNumberManipulator::setIncrement(size_t nIncrement)
 {
 	mIncrement = nIncrement;
 }
@@ -73,7 +74,7 @@ bool AutoNumberManipulator::isConfigured(void)
 	return true;
 }
 
-QString AutoNumberManipulator::getId(void)
+StdString AutoNumberManipulator::getId(void)
 {
 	return "53200A70-0360-11E4-9191-0800200C9A66";
 }
@@ -112,12 +113,12 @@ void AutoNumberManipulator::copy(AutoNumberManipulator const &oSource)
 	setLeadingZeroes(oSource.getLeadingZeroes());
 }
 
-QString AutoNumberManipulator::getName(void)
+StdString AutoNumberManipulator::getName(void)
 {
 	return "Automatic numbering";
 }
 
-QString AutoNumberManipulator::getDescription(void)
+StdString AutoNumberManipulator::getDescription(void)
 {
 	return "Creates an incremental number";
 }
@@ -172,15 +173,14 @@ QWidget *AutoNumberManipulator::getConfigurationPanel(QWidget *oParent)
 	return mPanel;
 }
 
-QString AutoNumberManipulator::createString(void) const
+StdString AutoNumberManipulator::createString(void) const
 {
-	QString result;
-	QTextStream(&result) << mValue;
+	StdString result = spt::string::toString(mValue);
 
-	int w = getWidth();
+	size_t w = getWidth();
 	if(w > 0)
 	{
-		QString c = " ";
+		StdString c = " ";
 		if(getLeadingZeroes())
 			c = "0";
 
@@ -195,24 +195,26 @@ QString AutoNumberManipulator::createString(void) const
  * If the input string has some value, it is only used
  * if no Text is specified by the user. If this is the case
  */
-QString *AutoNumberManipulator::format(QString *oValue, bool bPreview)
+StdString *AutoNumberManipulator::format(StdString *oValue, bool bPreview)
 {
-	QString result = createString();
+	StdString result = createString();
 	if(!bPreview)
 		setValue(getValue() + mIncrement);
 
 	return applyMode(oValue, result);
 }
 
-bool AutoNumberManipulator::loadProfile(QSettings &oProfile, QString const &oKey)
+bool AutoNumberManipulator::loadProfile(QSettings &oProfile, StdString const &oKey)
 {
+	auto key = spt::string::toQt(oKey);
+
 	if(!Manipulator::loadProfile(oProfile, oKey))
 		return false;
 
-	setValue(oProfile.value(oKey+"_value", "1").toInt());
-	setIncrement(oProfile.value(oKey+"_increment", "1").toInt());
-	setWidth(oProfile.value(oKey+"_width", "1").toInt());
-	setLeadingZeroes(oProfile.value(oKey+"_leading_zero", "").toBool());
+	setValue(oProfile.value(key+"_value", "1").toInt());
+	setIncrement(oProfile.value(key+"_increment", "1").toInt());
+	setWidth(oProfile.value(key+"_width", "1").toInt());
+	setLeadingZeroes(oProfile.value(key+"_leading_zero", "").toBool());
 
 	getConfigurationPanel(NULL);
 	setValues();
@@ -220,13 +222,15 @@ bool AutoNumberManipulator::loadProfile(QSettings &oProfile, QString const &oKey
 	return true;
 }
 
-void AutoNumberManipulator::saveProfile(QSettings &oProfile, QString const &oKey)
+void AutoNumberManipulator::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	Manipulator::saveProfile(oProfile, oKey);
 
+	auto key = spt::string::toQt(oKey);
+
 	readValues();
-	oProfile.setValue(oKey+"_value", QString::number(getValue()));
-	oProfile.setValue(oKey+"_increment", QString::number(getIncrement()));
-	oProfile.setValue(oKey+"_width", QString::number(getWidth()));
-	oProfile.setValue(oKey+"_leading_zero", QString::number(getLeadingZeroes()));
+	oProfile.setValue(key+"_value", QString::number(getValue()));
+	oProfile.setValue(key+"_increment", QString::number(getIncrement()));
+	oProfile.setValue(key+"_width", QString::number(getWidth()));
+	oProfile.setValue(key+"_leading_zero", QString::number(getLeadingZeroes()));
 }
