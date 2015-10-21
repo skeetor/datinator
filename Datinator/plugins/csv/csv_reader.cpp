@@ -7,6 +7,7 @@
 #include "csv/csv_global.h"
 #include "csv/csv_reader.h"
 #include "plugin/gui/progress.h"
+#include "plugin/container/gui/file_panel_gui.moc"
 
 #include <support/helper/string.h>
 
@@ -37,13 +38,6 @@ CSV::Openmode CSVReader::getOpenmode(void)
 bool CSVReader::isReader(void)
 {
 	return true;
-}
-
-QWidget *CSVReader::getConfigPanel(void)
-{
-	QWidget *w = FileContainerBase::getConfigPanel();
-	enlargePanel();
-	return w;
 }
 
 void CSVReader::updateSampleView(std::vector<DatabaseColumn *> const &oColumns)
@@ -128,10 +122,23 @@ std::vector<DatabaseColumn *> CSVReader::loadColumns(void)
 	return ql;
 }
 
-CSVReaderConfigPanel *CSVReader::createContainerConfigPanel(void)
+FilePanel *CSVReader::getFilePanel(void)
+{
+	FilePanel *fp = super::getFilePanel();
+	if(mConfigPanel == NULL)
+		getReaderConfigPanel();
+
+	return fp;
+}
+
+CSVReaderConfigPanel *CSVReader::getReaderConfigPanel(void)
 {
 	if(mConfigPanel == NULL)
-		mConfigPanel = new CSVReaderConfigPanel(this, super::getMainWindow());
+	{
+		FilePanel *fp = super::getFilePanel();
+		mConfigPanel = new CSVReaderConfigPanel(getMainWindow());
+		fp->addConfigPanel(mConfigPanel);
+	}
 
 	return mConfigPanel;
 }

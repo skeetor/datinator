@@ -18,9 +18,9 @@
 // The application will share a single progress dialog. Doesn't really make sense
 // to have individual ones.
 QWidget *gMainWindow = NULL;
-QProgressDialog *gProgressDlg = NULL;
+static QProgressDialog *gProgressDlg = NULL;
 static int gProgressReference = 0;
-spt::logging::Logging gLogging;
+static spt::logging::Logging gLogging;
 
 Progress::Progress(StdString const &oTitle, StdString const &oText)
 {
@@ -78,7 +78,7 @@ void Progress::showProgress(StdString const &oText, StdString const &oTitle)
 	    if(!gProgressDlg)
             gProgressDlg = new QProgressDialog(getMainWindow());
 
-	    gProgressDlg->reset();
+		gProgressDlg->reset();
 		gProgressDlg->setWindowModality(Qt::WindowModal);
 		spt::gui::center(getMainWindow(), gProgressDlg, false, true);
 		gProgressDlg->setWindowTitle(spt::string::toQt(oTitle));
@@ -100,7 +100,9 @@ void Progress::closeProgress(void)
         if(gProgressReference == 0)
         {
             if(gProgressDlg)
+            {
                 gProgressDlg->hide();
+            }
 
             showMessages();
         }

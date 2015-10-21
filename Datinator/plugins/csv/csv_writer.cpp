@@ -8,10 +8,12 @@
 
 #include <QtWidgets/QMessageBox>
 
+#include <support/helper/string.h>
+
 #include "csv/csv_global.h"
 #include "csv/csv_writer.h"
 #include "plugin/gui/progress.h"
-#include <support/helper/string.h>
+#include "plugin/container/gui/file_panel_gui.moc"
 
 CSVWriter::CSVWriter(QWidget *oMainWindow)
 : CSVContainer(oMainWindow)
@@ -71,10 +73,23 @@ void CSVWriter::setFilename(StdString const &oFilename)
 	mConfigPanel->reset();
 }
 
-CSVWriterConfigPanel *CSVWriter::createContainerConfigPanel(void)
+FilePanel *CSVWriter::getFilePanel(void)
+{
+	FilePanel *fp = super::getFilePanel();
+	if(mConfigPanel == NULL)
+		getWriterConfigPanel();
+
+	return fp;
+}
+
+CSVWriterConfigPanel *CSVWriter::getWriterConfigPanel(void)
 {
 	if(mConfigPanel == NULL)
-		mConfigPanel = new CSVWriterConfigPanel(this, super::getMainWindow());
+	{
+		FilePanel *fp = super::getFilePanel();
+		mConfigPanel = new CSVWriterConfigPanel(getMainWindow());
+		fp->addConfigPanel(mConfigPanel);
+	}
 
 	return mConfigPanel;
 }
@@ -84,7 +99,7 @@ bool CSVWriter::prepareOpen(std::vector<DatabaseColumn *> const &oColumns)
 	if(!truncateMode())
 		return true;
 
-	CSVWriterConfigPanel *p = createContainerConfigPanel();
+	CSVWriterConfigPanel *p = getWriterConfigPanel();
 	CSV &csv = getCSV();
 	csv.setSeparator(p->getSeparator());
 	StdChar closer;
@@ -160,7 +175,7 @@ bool CSVWriter::loadProfile(QSettings &oProfile, StdString const &oKey)
 	if(!FileContainerBase::loadProfile(oProfile, oKey))
 		return false;
 
-	CSVWriterConfigPanel *p = createContainerConfigPanel();
+	CSVWriterConfigPanel *p = getWriterConfigPanel();
 	StdString s = spt::string::fromQt(oProfile.value(spt::string::toQt(oKey)+"_separator", ";").toString());
 	StdChar c1 = ';';
 	if(s.length() > 0)
@@ -185,7 +200,7 @@ bool CSVWriter::loadProfile(QSettings &oProfile, StdString const &oKey)
 void CSVWriter::saveProfile(QSettings &oProfile, StdString const &oKey)
 {
 	FileContainerBase::saveProfile(oProfile, oKey);
-	CSVWriterConfigPanel *p = createContainerConfigPanel();
+	CSVWriterConfigPanel *p = getWriterConfigPanel();
 	StdChar c1 = p->getSeparator();
 	StdString s;
 	s = c1;

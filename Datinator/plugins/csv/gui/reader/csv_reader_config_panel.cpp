@@ -12,13 +12,12 @@
 #include "csv/csv_reader.h"
 #include "csv/gui/reader/csv_reader_config_panel_gui.moc"
 
-CSVReaderConfigPanel::CSVReaderConfigPanel(CSVReader *oContainer, QWidget *oParent)
-:	FilePanelConfigPanel(oParent)
+CSVReaderConfigPanel::CSVReaderConfigPanel(QWidget *oParent)
+	: QFrame(oParent)
 {
 	mGUI = new Ui::CSVReaderConfigPanelGUI();
 	mGUI->setupUi(this);
 	mGUI->mCSVTableView->enableDatatypes();
-	mGUI->mCSVTableView->setContainer(oContainer);
 }
 
 CSVReaderConfigPanel::~CSVReaderConfigPanel(void)

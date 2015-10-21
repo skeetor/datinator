@@ -8,19 +8,18 @@
 #define CSV_WRITER_CONFIG_PANEL_H_INCLUDED
 
 #include "csv/csv_dll_api.h"
-#include "plugin/container/gui/file_panel_config_panel.h"
 #include "csv/gui/writer/csv_writer_config_panel_gui.h"
 #include "datinator_types.h"
 
 class CSVWriter;
 
 class CSV_DLL_EXPORT CSVWriterConfigPanel
-	: public FilePanelConfigPanel
+	: public QFrame
 {
 	Q_OBJECT
 
 public:
-	CSVWriterConfigPanel(CSVWriter *oContainer, QWidget *oParent = NULL);
+	CSVWriterConfigPanel(QWidget *oParent = NULL);
 	virtual ~CSVWriterConfigPanel(void);
 
 	void reset(void);

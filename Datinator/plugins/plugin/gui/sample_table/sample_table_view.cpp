@@ -14,7 +14,6 @@
 SampleTableView::SampleTableView(QWidget *oParent)
 : QTableView(oParent)
 {
-	mContainer = NULL;
 	verticalHeader()->setDefaultSectionSize(20);
 	mDatatypeBox = NULL;
 
@@ -40,24 +39,12 @@ void SampleTableView::enableDatatypes(bool bEnableDatatypes)
 	else
 	{
 		mItemModel.showDatatypes(false);
-		//if(mDatatypeBox)
-		//	delete mDatatypeBox;
-
 		mDatatypeBox = NULL;
 	}
 }
 
 SampleTableView::~SampleTableView(void)
 {
-	//if(mDatatypeBox)
-	//	delete mDatatypeBox;
-}
-
-void SampleTableView::setContainer(ContainerBase *oContainer)
-{
-	mContainer = oContainer;
-	if(mDatatypeBox)
-		mDatatypeBox->setTypeStrings(TypeStringProvider.items());
 }
 
 void SampleTableView::updateWidgetView(void)

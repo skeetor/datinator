@@ -84,9 +84,9 @@ int main(int argc, char *argv[])
 
 	std::cout << "Datinator started from " << spt::string::fromQt(QDir::currentPath()) << "\n" << std::endl;
 
-	frame.show();
 	frame.reloadPlugins();
 	frame.restore(settings);
+	frame.show();
 
 	int ret = app->exec();
 	frame.store(settings);

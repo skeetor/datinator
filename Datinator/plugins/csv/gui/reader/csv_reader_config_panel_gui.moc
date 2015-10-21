@@ -10,18 +10,17 @@
 #include <vector>
 
 #include "csv/csv_dll_api.h"
-#include "plugin/container/gui/file_panel_config_panel.h"
 #include "csv/gui/reader/csv_reader_config_panel_gui.h"
 
 class CSVReader;
 
 class CSV_DLL_EXPORT CSVReaderConfigPanel
-	: public FilePanelConfigPanel
+	: public QFrame
 {
 	Q_OBJECT
 
 public:
-	CSVReaderConfigPanel(CSVReader *oContainer, QWidget *oParent = NULL);
+	CSVReaderConfigPanel(QWidget *oParent = NULL);
 	virtual ~CSVReaderConfigPanel(void);
 
 	void setColumns(std::vector<DatabaseColumn *> const &oColumns);

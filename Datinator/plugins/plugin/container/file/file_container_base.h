@@ -33,12 +33,6 @@ public:
 	bool loadProfile(QSettings &oProfile, StdString const &oKey) override;
 	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 
-	/**
-	 * For a file container, this will create the main panel which
-	 * allows to specify the overall path name. Derived classes
-	 * must add their individual configuration panel by overriding
-	 * createConfigPanel();
-	 */
 	QWidget *getConfigPanel(void) override;
 
 public:
@@ -49,9 +43,11 @@ public:
 	virtual void setUnicode(bool bUnicode = true);
 
 protected:
-	FilePanel *getFilePanel(void);
-	virtual FilePanelConfigPanel *createContainerConfigPanel(void) = 0;
-	virtual void enlargePanel(void);
+	/**
+	 *  This will create the FilePanel selection. To add custom configuration
+	 *  panels, override here and add them as
+	 */
+	virtual FilePanel *getFilePanel(void);
 	virtual bool isReader(void) = 0;
 	void releaseColumns(void) override;
 	void handleNotification(Dispatcher<StdString> *oSource, StdString oPath) override;

@@ -27,13 +27,15 @@ class PLUGIN_DLL_EXPORT FilePanel
 	Q_OBJECT
 
 public:
-	FilePanel(bool bReader, FilePanelConfigPanel *oContainerConfigPanel, QWidget *oParent = NULL);
+	FilePanel(bool bReader, QWidget *oParent = NULL);
 	virtual ~FilePanel(void);
 
 	void enlargePanel(void);
 
 	virtual void setFilename(StdString const &oFilename);
 	virtual StdString getFilename(void);
+
+	void addConfigPanel(QWidget *pConfigPanel);
 
 	virtual void addPathListener(Listener<StdString> *oListener);
 	virtual void removePathListener(Listener<StdString> *oListener);
@@ -44,7 +46,6 @@ protected:
 
 private:
 	Ui::FilePanelGUI *mGUI;
-	FilePanelConfigPanel *mContainerConfigPanel;
 	PathSelectPanel *mPathPanel;
 };
 

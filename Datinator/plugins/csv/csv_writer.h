@@ -38,10 +38,11 @@ public: // IDataContainerWriter
 	void saveProfile(QSettings &oProfile, StdString const &oKey) override;
 
 protected:
-	CSVWriterConfigPanel *createContainerConfigPanel(void) override;
+	FilePanel *getFilePanel(void) override;
 	std::vector<DatabaseColumn *> loadColumns(void) override;
 	bool isReader(void) override;
 	CSV::Openmode getOpenmode(void) override;
+	CSVWriterConfigPanel *getWriterConfigPanel(void);
 
 private:
 	typedef CSVContainer super;

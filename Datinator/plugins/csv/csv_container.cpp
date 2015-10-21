@@ -65,6 +65,9 @@ bool CSVContainer::connect(StdString const &oFilename)
 	if(fn.length() == 0)
 		fn = getConnectString();
 
+	if(fn.length() == 0)
+		return false;
+
 	bool rc = super::connect(fn);
 	if(rc == false)
 		return false;

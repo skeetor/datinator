@@ -12,11 +12,9 @@
 #include "csv/csv_writer.h"
 #include "csv/gui/writer/csv_writer_config_panel_gui.moc"
 
-CSVWriterConfigPanel::CSVWriterConfigPanel(CSVWriter *oContainer, QWidget *oParent)
-:	FilePanelConfigPanel(oParent)
+CSVWriterConfigPanel::CSVWriterConfigPanel(QWidget *oParent)
+:	QFrame(oParent)
 {
-	UNUSED(oContainer);
-
 	mGUI = new Ui::CSVWriterConfigPanelGUI();
 	mGUI->setupUi(this);
 }

@@ -22,7 +22,6 @@ public:
 	SampleTableView(QWidget *oParent = NULL);
 	virtual ~SampleTableView(void);
 
-	void setContainer(ContainerBase *oContainer);
 	void setColumns(std::vector<DatabaseColumn *> const &oColumns);
 	void clearRows(void);
 	void setRows(std::vector<std::vector<StdString>> const &oSampleRows);
@@ -35,7 +34,6 @@ private:
 	void init(void);
 
 private:
-	ContainerBase *mContainer;
 	DatatypeCombobox<spt::db::DataType> *mDatatypeBox;
 	bool mShowDatatypes;
 	SampleItemModel mItemModel;

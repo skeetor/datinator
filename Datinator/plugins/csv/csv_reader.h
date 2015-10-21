@@ -28,17 +28,16 @@ public:
 	virtual ~CSVReader(void);
 
 public: // @IDataContainer
-	QWidget *getConfigPanel(void) override;
-
 	int read(std::vector<DatabaseColumn *> &oColumns, std::vector<StdString> &oRow) override;
 	int count(void) override;
 
 protected:
+	FilePanel *getFilePanel(void) override;
 	std::vector<DatabaseColumn *> loadColumns(void) override;
-	CSVReaderConfigPanel *createContainerConfigPanel(void) override;
 	bool isReader(void) override;
 	virtual void updateSampleView(std::vector<DatabaseColumn *> const &oColumns);
 	CSV::Openmode getOpenmode(void) override;
+	CSVReaderConfigPanel *getReaderConfigPanel(void);
 
 private:
 	typedef CSVContainer super;

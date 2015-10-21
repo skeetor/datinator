@@ -35,27 +35,19 @@ void FileContainerBase::restore(QSettings &oPropertyFile, StdString const &oPref
 
 FilePanel *FileContainerBase::getFilePanel(void)
 {
-	return mFilePanel;
-}
-
-QWidget *FileContainerBase::getConfigPanel(void)
-{
 	if(mFilePanel == NULL)
 	{
-		FilePanelConfigPanel *cp = createContainerConfigPanel();
-		mFilePanel = new FilePanel(isReader(), cp, super::getMainWindow());
+		mFilePanel = new FilePanel(isReader(), super::getMainWindow());
 		mFilePanel->addPathListener(this);
+		mFilePanel->enlargePanel();
 	}
 
 	return mFilePanel;
 }
 
-void FileContainerBase::enlargePanel(void)
+QWidget *FileContainerBase::getConfigPanel(void)
 {
-	if(!mFilePanel)
-		return;
-
-	mFilePanel->enlargePanel();
+	return getFilePanel();
 }
 
 bool FileContainerBase::isUnicode(void)

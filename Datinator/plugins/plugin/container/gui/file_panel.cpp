@@ -10,23 +10,25 @@
 #include "support_qt/file/path_panel/path_panel_gui.moc"
 #include "plugin/container/gui/file_panel_gui.moc"
 #include "plugin/container/file/file_container_base.h"
-#include "plugin/container/gui/file_panel_config_panel.h"
 
-FilePanel::FilePanel(bool bReader, FilePanelConfigPanel *oContainerConfigPanel, QWidget *oParent)
+FilePanel::FilePanel(bool bReader, QWidget *oParent)
 :	QFrame(oParent)
 {
-	mContainerConfigPanel = oContainerConfigPanel;
 	mGUI = new Ui::FilePanelGUI();
 	mGUI->setupUi(this);
 	QVBoxLayout *l = mGUI->mMainLayout;
 	mPathPanel = new PathSelectPanel(bReader, false, NULL);
 	mPathPanel->addPathListener(this);
 	l->addWidget(mPathPanel);
-	l->addWidget(oContainerConfigPanel);
 }
 
 FilePanel::~FilePanel(void)
 {
+}
+
+void FilePanel::addConfigPanel(QWidget *pConfigPanel)
+{
+	mGUI->mMainLayout->addWidget(pConfigPanel);
 }
 
 void FilePanel::enlargePanel(void)
