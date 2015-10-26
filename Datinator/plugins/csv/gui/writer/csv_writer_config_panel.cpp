@@ -134,6 +134,16 @@ StdChar CSVWriterConfigPanel::getBracket(StdChar &oClose) const
 		{
 			if(s.length() > 1)
 				oClose = s[1];
+			else
+			{
+				switch(s[0])
+				{
+					case '\'':
+					case '"':
+						oClose = s[0];
+					break;
+				}
+			}
 
 			return s[0];
 		}

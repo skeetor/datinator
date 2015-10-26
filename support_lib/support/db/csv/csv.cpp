@@ -700,8 +700,10 @@ CSV::ErrorCode CSV::writeHeader(void)
 			h += opener;
 
 		h += c->getName();
+
 		if(closer)
 			h += closer;
+
 		if(sep)
 			h += sep;
 	}
