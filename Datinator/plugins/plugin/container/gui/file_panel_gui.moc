@@ -30,8 +30,6 @@ public:
 	FilePanel(bool bReader, QWidget *oParent = NULL);
 	virtual ~FilePanel(void);
 
-	void enlargePanel(void);
-
 	virtual void setFilename(StdString const &oFilename);
 	virtual StdString getFilename(void);
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
-    <height>551</height>
+    <width>485</width>
+    <height>596</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="">
    <property name="spacing">
     <number>2</number>
    </property>
@@ -35,20 +35,6 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item>
-    <layout class="QVBoxLayout" name="mMainLayout">
-     <property name="spacing">
-      <number>3</number>
-     </property>
-    </layout>
-   </item>
-   <item>
-    <widget class="QLabel" name="mDummy">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>

@@ -16,7 +16,7 @@ FilePanel::FilePanel(bool bReader, QWidget *oParent)
 {
 	mGUI = new Ui::FilePanelGUI();
 	mGUI->setupUi(this);
-	QVBoxLayout *l = mGUI->mMainLayout;
+	QVBoxLayout *l = mGUI->verticalLayout;
 	mPathPanel = new PathSelectPanel(bReader, false, NULL);
 	mPathPanel->addPathListener(this);
 	l->addWidget(mPathPanel);
@@ -28,13 +28,14 @@ FilePanel::~FilePanel(void)
 
 void FilePanel::addConfigPanel(QWidget *pConfigPanel)
 {
-	mGUI->mMainLayout->addWidget(pConfigPanel);
-}
+	QVBoxLayout *l = mGUI->verticalLayout;
 
-void FilePanel::enlargePanel(void)
-{
-	mGUI->mMainLayout->setStretch(1, 0);
-	mGUI->mDummy->hide();
+	l->addWidget(pConfigPanel);
+
+	for(int i = 0; i < l->count()-1; i++)
+		mGUI->verticalLayout->setStretch(i-1, 0);
+
+	mGUI->verticalLayout->setStretch(l->count()-1, 1);
 }
 
 void FilePanel::addPathListener(Listener<StdString> *oListener)

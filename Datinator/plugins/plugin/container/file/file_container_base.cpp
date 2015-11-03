@@ -39,7 +39,6 @@ FilePanel *FileContainerBase::getFilePanel(void)
 	{
 		mFilePanel = new FilePanel(isReader(), super::getMainWindow());
 		mFilePanel->addPathListener(this);
-		mFilePanel->enlargePanel();
 	}
 
 	return mFilePanel;

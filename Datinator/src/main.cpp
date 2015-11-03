@@ -11,8 +11,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-#include <QDir>
-#include <QTextStream>
+#include <QtCore/QDir>
+#include <QtCore/QTextStream>
 #include <QtCore/QString>
 #include <QtCore/QSettings>
 #include <QtCore/QList>
@@ -24,9 +24,10 @@
 #include <plugins/idata_container_reader.h>
 #include <plugins/idata_container_writer.h>
 
-/*#include "support/unicode/unicode_types.h"
+/*
 #include "support/helper/hexdump.h"
-bool hexdumpToFile(spt::string_t const &oInput, spt::string_t const &oOutput);*/
+bool hexdumpToFile(spt::string_t const &oInput, spt::string_t const &oOutput);
+*/
 
 #include "application.h"
 #include "gui/main_frame/main_window_gui.moc"
